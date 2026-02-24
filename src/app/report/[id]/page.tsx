@@ -156,7 +156,7 @@ export default function ReportPage({ params }: { params: Promise<{ id: string }>
         {/* 4 Pillars */}
         <section className="mb-8">
           <h2 className="text-sm font-bold text-text-primary mb-3">사주팔자 (四柱八字)</h2>
-          <div className="grid grid-cols-4 gap-2 sm:gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
             <PillarCard
               pillar={sajuResult.pillars.year}
               label="연주"
@@ -258,15 +258,15 @@ export default function ReportPage({ params }: { params: Promise<{ id: string }>
           <h3 className="text-sm font-bold text-text-primary mb-3">행운의 정보</h3>
           <div className="grid grid-cols-3 gap-3 text-center">
             <div>
-              <span className="text-text-secondary text-[10px] block mb-1">행운의 색</span>
+              <span className="text-text-secondary text-xs block mb-1">행운의 색</span>
               <p className="text-xs text-text-primary">{sajuResult.yongsin.luckyColors.join(", ")}</p>
             </div>
             <div>
-              <span className="text-text-secondary text-[10px] block mb-1">행운의 방위</span>
+              <span className="text-text-secondary text-xs block mb-1">행운의 방위</span>
               <p className="text-xs text-text-primary">{sajuResult.yongsin.luckyDirections.join(", ")}</p>
             </div>
             <div>
-              <span className="text-text-secondary text-[10px] block mb-1">행운의 숫자</span>
+              <span className="text-text-secondary text-xs block mb-1">행운의 숫자</span>
               <p className="text-xs text-text-primary">{sajuResult.yongsin.luckyNumbers.join(", ")}</p>
             </div>
           </div>
@@ -284,7 +284,7 @@ export default function ReportPage({ params }: { params: Promise<{ id: string }>
             <div className="space-y-2">
               {sajuResult.sinsals.map((s, i) => (
                 <div key={i} className="flex items-start gap-2">
-                  <span className={`text-[10px] px-1.5 py-0.5 rounded shrink-0 ${
+                  <span className={`text-xs px-1.5 py-0.5 rounded shrink-0 ${
                     s.type === "길신"
                       ? "bg-success/15 text-success"
                       : "bg-danger/15 text-danger"
@@ -293,8 +293,8 @@ export default function ReportPage({ params }: { params: Promise<{ id: string }>
                   </span>
                   <div>
                     <span className="text-xs text-text-primary font-medium">{s.name}</span>
-                    <span className="text-[10px] text-text-secondary ml-1">({s.location})</span>
-                    <p className="text-[10px] text-text-secondary">{s.meaning}</p>
+                    <span className="text-xs text-text-secondary ml-1">({s.location})</span>
+                    <p className="text-xs text-text-secondary">{s.meaning}</p>
                   </div>
                 </div>
               ))}
@@ -375,7 +375,7 @@ export default function ReportPage({ params }: { params: Promise<{ id: string }>
             <div className="space-y-2 text-xs">
               {sajuResult.interactions.haps.map((h, i) => (
                 <div key={`hap-${i}`} className="flex items-center gap-2">
-                  <span className="px-1.5 py-0.5 rounded bg-success/15 text-success text-[10px]">
+                  <span className="px-1.5 py-0.5 rounded bg-success/15 text-success text-xs">
                     {h.type}
                   </span>
                   <span className="text-text-primary">{h.elements.join(" + ")}</span>
@@ -384,7 +384,7 @@ export default function ReportPage({ params }: { params: Promise<{ id: string }>
               ))}
               {sajuResult.interactions.chungs.map((c, i) => (
                 <div key={`chung-${i}`} className="flex items-center gap-2">
-                  <span className="px-1.5 py-0.5 rounded bg-danger/15 text-danger text-[10px]">
+                  <span className="px-1.5 py-0.5 rounded bg-danger/15 text-danger text-xs">
                     {c.type}
                   </span>
                   <span className="text-text-primary">{c.elements.join(" + ")}</span>
@@ -393,7 +393,7 @@ export default function ReportPage({ params }: { params: Promise<{ id: string }>
               ))}
               {sajuResult.interactions.hyeongs.map((h, i) => (
                 <div key={`hyeong-${i}`} className="flex items-center gap-2">
-                  <span className="px-1.5 py-0.5 rounded bg-warn/15 text-warn text-[10px]">
+                  <span className="px-1.5 py-0.5 rounded bg-warn/15 text-warn text-xs">
                     {h.type}
                   </span>
                   <span className="text-text-primary">{h.elements.join(" + ")}</span>

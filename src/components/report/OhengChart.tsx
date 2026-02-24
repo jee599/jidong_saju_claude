@@ -24,7 +24,7 @@ export function OhengChart({ oheng }: OhengChartProps) {
     <div className="bg-bg-elevated rounded-2xl p-5 sm:p-6 border border-border shadow-elevation-1">
       <h3 className="text-sm font-bold text-text-primary mb-5">오행(五行) 분포</h3>
 
-      <div className="space-y-3">
+      <div className="space-y-4 sm:space-y-5">
         {elements.map((element, i) => {
           const dist = oheng.distribution[element];
           const info = ELEMENT_INFO[element];
@@ -35,41 +35,41 @@ export function OhengChart({ oheng }: OhengChartProps) {
           return (
             <div key={element} className="flex items-center gap-3">
               <span
-                className="text-xs font-bold w-12 text-right shrink-0"
+                className="text-sm sm:text-base font-bold w-16 text-right shrink-0"
                 style={{ color: info.color }}
               >
                 {info.label}
               </span>
 
-              <div className="flex-1 h-6 bg-bg-sunken rounded-full overflow-hidden relative">
+              <div className="flex-1 h-8 sm:h-10 bg-bg-sunken rounded-full overflow-hidden relative">
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${(dist.percentage / (maxPercentage || 1)) * 100}%` }}
-                  transition={{ delay: 0.3 + i * 0.1, duration: 0.8, ease: "easeOut" }}
+                  transition={{ delay: 0.3 + i * 0.1, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
                   className="h-full rounded-full"
                   style={{ backgroundColor: info.color, minWidth: dist.percentage > 0 ? "8px" : "0" }}
                 />
-                <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-white/70">
+                <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs sm:text-sm text-white/70">
                   {dist.percentage.toFixed(0)}%
                 </span>
               </div>
 
-              <span className="text-[10px] text-text-secondary w-8 shrink-0">
+              <span className="text-xs text-text-secondary w-8 shrink-0">
                 {dist.count.toFixed(1)}
               </span>
 
               {isStrongest && (
-                <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-success/15 text-success font-medium shrink-0">
+                <span className="text-xs px-2 py-1 rounded-full bg-success/15 text-success font-medium shrink-0">
                   최강
                 </span>
               )}
               {isWeakest && !isMissing && (
-                <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-danger/15 text-danger font-medium shrink-0">
+                <span className="text-xs px-2 py-1 rounded-full bg-danger/15 text-danger font-medium shrink-0">
                   최약
                 </span>
               )}
               {isMissing && (
-                <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-danger/15 text-danger font-medium shrink-0">
+                <span className="text-xs px-2 py-1 rounded-full bg-danger/15 text-danger font-medium shrink-0">
                   없음
                 </span>
               )}

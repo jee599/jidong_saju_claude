@@ -109,7 +109,7 @@ export function ShareCard({ sajuResult, reportUrl }: ShareCardProps) {
         </button>
       </div>
       {!process.env.NEXT_PUBLIC_KAKAO_JS_KEY && (
-        <p className="text-[10px] text-text-secondary mt-2 text-center">
+        <p className="text-xs text-text-secondary mt-2 text-center">
           NEXT_PUBLIC_KAKAO_JS_KEY 설정 시 카카오톡 공유가 활성화됩니다
         </p>
       )}

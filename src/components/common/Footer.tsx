@@ -27,10 +27,10 @@ export function Footer() {
         </div>
 
         <div className="mt-6 pt-4 border-t border-border-subtle text-center">
-          <p className="text-[10px] text-text-tertiary">
+          <p className="text-xs text-text-tertiary">
             본 서비스의 사주 분석은 명리학에 기반한 참고 정보이며, 의료·법률·투자 조언이 아닙니다.
           </p>
-          <p className="text-[10px] text-text-tertiary mt-1">
+          <p className="text-xs text-text-tertiary mt-1">
             &copy; {new Date().getFullYear()} FateSaju. All rights reserved.
           </p>
         </div>

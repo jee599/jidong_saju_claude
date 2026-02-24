@@ -65,7 +65,7 @@ export default function YearlyResultPage() {
           <p className="text-lg font-hanja text-accent">{basicYearly.seunGanji}</p>
           <div className="flex flex-wrap justify-center gap-2 mt-3">
             {basicYearly.keywords.map((kw, i) => (
-              <span key={i} className="text-[10px] px-3 py-1 rounded-full bg-brand-muted text-brand-light">
+              <span key={i} className="text-xs px-3 py-1 rounded-full bg-brand-muted text-brand-light">
                 {kw}
               </span>
             ))}
@@ -118,8 +118,8 @@ export default function YearlyResultPage() {
                             />
                           ))}
                         </div>
-                        {isBest && <span className="text-[9px] text-success">좋은 달</span>}
-                        {isCaution && <span className="text-[9px] text-danger">주의</span>}
+                        {isBest && <span className="text-[11px] text-success">좋은 달</span>}
+                        {isCaution && <span className="text-[11px] text-danger">주의</span>}
                       </div>
                       <p className="text-xs text-text-primary/85">{m.text}</p>
                     </div>

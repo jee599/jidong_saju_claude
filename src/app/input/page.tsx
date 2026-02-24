@@ -128,7 +128,7 @@ export default function InputPage() {
                 onChange={(e) => setForm({ ...form, birthTime: e.target.value })}
                 className="w-full bg-bg-elevated border border-border rounded-xl px-4 py-3 text-text-primary focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand/30 transition text-sm"
               />
-              <p className="text-[10px] text-text-tertiary mt-1.5">
+              <p className="text-xs text-text-tertiary mt-1.5">
                 {inp.birthTimeHint}
               </p>
             </div>
@@ -177,7 +177,7 @@ export default function InputPage() {
             </button>
           </form>
 
-          <p className="text-center text-[10px] text-text-tertiary mt-8">
+          <p className="text-center text-xs text-text-tertiary mt-8">
             {inp.privacy}
           </p>
 

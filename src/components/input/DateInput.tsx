@@ -418,6 +418,25 @@ export function DateInput({
                   </button>
                 </div>
 
+                {/* Decade quick-jump */}
+                <div className="flex gap-1.5 px-3 pt-3 pb-1 overflow-x-auto">
+                  {['60', '70', '80', '90', '00', '10', '20'].map(decade => {
+                    const fullYear = parseInt(decade) < 30 ? 2000 + parseInt(decade) : 1900 + parseInt(decade);
+                    return (
+                      <button
+                        key={decade}
+                        type="button"
+                        onClick={() => setYearPageStart(
+                          Math.floor((fullYear - MIN_YEAR) / yearPageSize) * yearPageSize + MIN_YEAR
+                        )}
+                        className="px-2.5 py-1 text-xs rounded-lg bg-bg-sunken text-text-secondary hover:bg-brand-muted hover:text-brand-light transition-colors whitespace-nowrap"
+                      >
+                        {parseInt(decade) < 30 ? `20${decade}` : `19${decade}`}
+                      </button>
+                    );
+                  })}
+                </div>
+
                 <div className="grid grid-cols-3 gap-1.5 p-3">
                   {yearRange.map((y) => (
                     <button
@@ -438,7 +457,7 @@ export function DateInput({
                 </div>
 
                 <div className="px-3 pb-2 text-center">
-                  <span className="text-[10px] text-text-tertiary">
+                  <span className="text-xs text-text-tertiary">
                     {yearPageStart} – {yearPageEnd}
                   </span>
                 </div>
@@ -521,7 +540,7 @@ export function DateInput({
                   {dp.weekdays.map((wd, i) => (
                     <div
                       key={wd}
-                      className={`text-center text-[10px] font-medium pb-1.5 ${
+                      className={`text-center text-xs font-medium pb-1.5 ${
                         i === 0
                           ? "text-danger"
                           : i === 6

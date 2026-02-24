@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import type { ReportSection } from "@/lib/saju/types";
+import { TermPopover } from "./TermPopover";
 
 interface SectionCardProps {
   section: ReportSection;
@@ -14,20 +15,20 @@ export function SectionCard({ section, isLocked, index = 0 }: SectionCardProps) 
     <motion.div
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.1 * index, duration: 0.4 }}
+      transition={{ delay: 0.1 * index, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
       className="bg-bg-elevated rounded-2xl p-5 sm:p-6 border border-border relative overflow-hidden shadow-elevation-1"
     >
-      <h3 className="text-base sm:text-lg font-bold text-text-primary mb-3">
+      <h3 className="text-lg sm:text-xl font-bold text-text-primary mb-4">
         {section.title}
       </h3>
 
       {/* Keywords */}
       {section.keywords.length > 0 && (
-        <div className="flex flex-wrap gap-1.5 mb-4">
+        <div className="flex flex-wrap gap-2 mb-4">
           {section.keywords.map((kw, i) => (
             <span
               key={i}
-              className="text-[10px] px-2 py-0.5 rounded-full bg-brand-muted text-brand-light font-medium"
+              className="text-xs px-2.5 py-1 rounded-full bg-brand-muted text-brand-light font-medium"
             >
               {kw}
             </span>
@@ -36,13 +37,17 @@ export function SectionCard({ section, isLocked, index = 0 }: SectionCardProps) 
       )}
 
       {/* Content */}
-      <div className={`relative ${isLocked ? "max-h-24 overflow-hidden" : ""}`}>
-        <p className="text-sm text-text-primary/85 leading-relaxed whitespace-pre-line">
-          {section.text}
-        </p>
+      <div className={`relative ${isLocked ? "max-h-36 sm:max-h-40 overflow-hidden" : ""}`}>
+        {isLocked ? (
+          <p className="text-sm sm:text-base text-text-primary/85 leading-relaxed whitespace-pre-line">
+            {section.text}
+          </p>
+        ) : (
+          <TermPopover text={section.text} />
+        )}
 
         {isLocked && (
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-bg-elevated/50 to-bg-elevated" />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-bg-elevated/30 to-bg-elevated" />
         )}
       </div>
 

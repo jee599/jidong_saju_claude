@@ -160,7 +160,7 @@ export default function CompatibilityResultPage() {
             {llmAnalysis.keywords?.length > 0 && (
               <div className="flex flex-wrap gap-1.5 mb-3">
                 {llmAnalysis.keywords.map((kw, i) => (
-                  <span key={i} className="text-[10px] px-2 py-0.5 rounded-full bg-brand-muted text-brand-light">
+                  <span key={i} className="text-xs px-2 py-0.5 rounded-full bg-brand-muted text-brand-light">
                     {kw}
                   </span>
                 ))}

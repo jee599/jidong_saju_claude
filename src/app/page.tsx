@@ -70,7 +70,7 @@ function SparkleField({ count }: { count: number }) {
             top: p.top,
             width: p.size,
             height: p.size,
-            animation: `sparkle-float ${p.dur} ease-in-out infinite`,
+            animation: `sparkle-fade ${p.dur} ease-in-out infinite`,
             animationDelay: p.delay,
           }}
         />
@@ -95,7 +95,7 @@ function RotatingWord() {
       {ROTATING_WORDS.map((w, i) => (
         <span
           key={w}
-          className="lav-text absolute left-0 bottom-0 whitespace-nowrap transition-all duration-500 ease-out"
+          className="lav-text lav-text-animate absolute left-0 bottom-0 whitespace-nowrap transition-all duration-500 ease-out"
           style={{
             opacity: i === idx ? 1 : 0,
             transform: i === idx ? "translateY(0)" : i === (idx - 1 + ROTATING_WORDS.length) % ROTATING_WORDS.length ? "translateY(-110%)" : "translateY(110%)",
@@ -276,11 +276,11 @@ export default function LandingPage() {
       <section className="relative min-h-screen flex flex-col items-center justify-center text-center overflow-hidden pt-[110px] pb-20 px-6 max-md:pt-24 max-md:pb-14 max-md:px-[18px]">
         {/* Glow */}
         <div className="absolute pointer-events-none" style={{ top: "-250px", left: "50%", transform: "translateX(-50%)", width: "800px", height: "800px", background: "radial-gradient(circle, var(--lav-glow) 0%, rgba(155,127,230,0.06) 40%, transparent 70%)" }} />
-        <SparkleField count={22} />
+        <SparkleField count={15} />
 
         {/* Badge */}
         <div
-          className="inline-flex items-center gap-[7px] pl-2 pr-[14px] py-[5px] rounded-full text-[12.5px] font-medium relative z-[1] mb-7"
+          className="inline-flex items-center gap-[7px] pl-2 pr-[14px] py-[5px] rounded-full text-xs font-medium relative z-[1] mb-7"
           style={{ background: "var(--lav-dim)", border: "1px solid rgba(155,127,230,0.18)", color: "var(--lav-l)", animation: "float-up 0.7s ease-out" }}
         >
           <div className="w-[7px] h-[7px] rounded-full" style={{ background: "var(--lav-l)", animation: "pulse-dot 2s infinite", boxShadow: "0 0 8px var(--lav-l)" }} />
@@ -309,16 +309,17 @@ export default function LandingPage() {
         <div className="relative z-[1] flex flex-col items-center gap-[14px]" style={{ animation: "float-up 0.7s ease-out 0.3s both" }}>
           <Link
             href="/input"
-            className="group btn-primary inline-flex items-center gap-2 px-[34px] py-[15px] rounded-full text-[15px] font-bold no-underline transition-all hover:-translate-y-[2px]"
+            className="group btn-primary inline-flex items-center gap-2 px-8 py-4 rounded-full text-base sm:text-lg font-bold no-underline transition-all hover:-translate-y-[2px]"
             style={{ background: "linear-gradient(135deg, var(--lav-d), var(--lav), var(--lav-l))", color: "#0A0810", boxShadow: "0 4px 28px rgba(155,127,230,0.35), 0 0 70px rgba(155,127,230,0.1)" }}
           >
             무료 사주 보기 <ArrowSvg />
           </Link>
-          <span className="text-[12.5px]" style={{ color: "var(--t3)" }}>30초면 완료 · 회원가입 불필요</span>
+          <span className="text-xs" style={{ color: "var(--t3)" }}>30초면 완료 · 회원가입 불필요</span>
         </div>
 
         {/* Scroll indicator */}
-        <div className="absolute bottom-9 left-1/2 -translate-x-1/2 z-[1]" style={{ animation: "float-up 0.7s ease-out 0.5s both" }}>
+        <div className="absolute bottom-9 left-1/2 -translate-x-1/2 z-[1] flex flex-col items-center gap-2" style={{ animation: "float-up 0.7s ease-out 0.5s both" }}>
+          <span className="text-xs" style={{ color: "var(--t3)" }}>스크롤해서 더 보기</span>
           <div className="w-px h-9" style={{ background: "linear-gradient(to bottom, var(--lav-l), transparent)", animation: "scroll-line 2s infinite" }} />
         </div>
       </section>
@@ -333,7 +334,7 @@ export default function LandingPage() {
       <section className="min-h-screen flex items-center justify-center py-[110px] px-6 relative max-md:py-20 max-md:px-[18px] max-md:min-h-0">
         <div className="max-w-[1040px] w-full mx-auto">
           <div className="reveal">
-            <div className="text-[12.5px] font-bold uppercase tracking-[0.1em] mb-[18px]" style={{ color: "var(--lav)" }}>How it works</div>
+            <div className="text-xs font-bold uppercase tracking-[0.1em] mb-[18px]" style={{ color: "var(--lav)" }}>How it works</div>
             <div className="mb-[18px] max-sm:!text-[24px]" style={{ fontSize: "clamp(26px, 4.2vw, 44px)", fontWeight: 900, lineHeight: 1.35, letterSpacing: "-0.02em" }}>
               3단계로 만나는<br /><span className="lav-text">나의 사주 리포트</span>
             </div>
@@ -381,7 +382,7 @@ export default function LandingPage() {
       <section className="min-h-screen flex items-center justify-center py-[110px] px-6 relative max-md:py-20 max-md:px-[18px] max-md:min-h-0" style={{ background: "var(--bg-s)" }}>
         <div className="max-w-[1040px] w-full mx-auto">
           <div className="reveal">
-            <div className="text-[12.5px] font-bold uppercase tracking-[0.1em] mb-[18px]" style={{ color: "var(--lav)" }}>Features</div>
+            <div className="text-xs font-bold uppercase tracking-[0.1em] mb-[18px]" style={{ color: "var(--lav)" }}>Features</div>
             <div className="mb-[18px] max-sm:!text-[24px]" style={{ fontSize: "clamp(26px, 4.2vw, 44px)", fontWeight: 900, lineHeight: 1.35, letterSpacing: "-0.02em" }}>
               무료 분석만으로도<br />충분히 의미 있어요
             </div>
@@ -482,7 +483,7 @@ export default function LandingPage() {
       <section id="pricing" className="min-h-screen flex items-center justify-center py-[110px] px-6 relative max-md:py-20 max-md:px-[18px] max-md:min-h-0">
         <div className="max-w-[1040px] w-full mx-auto">
           <div className="reveal">
-            <div className="text-[12.5px] font-bold uppercase tracking-[0.1em] mb-[18px]" style={{ color: "var(--lav)" }}>Pricing</div>
+            <div className="text-xs font-bold uppercase tracking-[0.1em] mb-[18px]" style={{ color: "var(--lav)" }}>Pricing</div>
             <div className="mb-[18px] max-sm:!text-[24px]" style={{ fontSize: "clamp(26px, 4.2vw, 44px)", fontWeight: 900, lineHeight: 1.35, letterSpacing: "-0.02em" }}>
               부담 없이 시작하고,<br />마음에 들면 <span className="lav-text">더 깊이</span>
             </div>
@@ -496,7 +497,7 @@ export default function LandingPage() {
             <div className="reveal reveal-d1 p-9 max-sm:p-[26px_22px] rounded-[var(--r)] relative transition-all duration-300" style={{ background: "var(--bg-card)", border: "1px solid var(--bdr)" }}>
               <h3 className="text-[16px] font-bold mb-[6px]">무료 요약</h3>
               <div className="text-[34px] font-black mb-[6px]">₩0</div>
-              <div className="text-[12.5px] mb-7" style={{ color: "var(--t3)" }}>영구 무료</div>
+              <div className="text-xs mb-7" style={{ color: "var(--t3)" }}>영구 무료</div>
               <ul className="flex flex-col gap-3 mb-7 list-none p-0">
                 {["사주팔자 계산", "오행 밸런스 차트", "성격 요약", "올해 키워드", "행운의 색·방위·숫자"].map((f) => (
                   <li key={f} className="flex items-center gap-2 text-[13.5px]" style={{ color: "var(--t2)" }}>
@@ -517,7 +518,7 @@ export default function LandingPage() {
               </div>
               <h3 className="text-[16px] font-bold mb-[6px]">풀 리포트</h3>
               <div className="text-[34px] font-black mb-[6px] lav-text">₩5,900</div>
-              <div className="text-[12.5px] mb-7" style={{ color: "var(--t3)" }}>1회 결제 · 영구 보관</div>
+              <div className="text-xs mb-7" style={{ color: "var(--t3)" }}>1회 결제 · 영구 보관</div>
               <ul className="flex flex-col gap-3 mb-7 list-none p-0">
                 {["무료 요약 전체 포함", "10개 섹션 상세 AI 분석", "성격·직업·연애·재물·건강", "대운 타임라인 해석", "맞춤 실행 팁"].map((f) => (
                   <li key={f} className="flex items-center gap-2 text-[13.5px]" style={{ color: "var(--t2)" }}>
@@ -542,7 +543,7 @@ export default function LandingPage() {
       <section className="min-h-screen flex items-center justify-center py-[110px] px-6 relative max-md:py-20 max-md:px-[18px] max-md:min-h-0" style={{ background: "var(--bg-s)" }}>
         <div className="max-w-[1040px] w-full mx-auto">
           <div className="reveal">
-            <div className="text-[12.5px] font-bold uppercase tracking-[0.1em] mb-[18px]" style={{ color: "var(--lav)" }}>Beta Feedback</div>
+            <div className="text-xs font-bold uppercase tracking-[0.1em] mb-[18px]" style={{ color: "var(--lav)" }}>Beta Feedback</div>
             <div className="mb-[18px] max-sm:!text-[24px]" style={{ fontSize: "clamp(26px, 4.2vw, 44px)", fontWeight: 900, lineHeight: 1.35, letterSpacing: "-0.02em" }}>
               여러분의 이야기를 들려주세요
             </div>
@@ -574,7 +575,7 @@ export default function LandingPage() {
       <section className="relative min-h-[70vh] flex items-center justify-center text-center py-[110px] px-6 overflow-hidden max-md:py-20 max-md:px-[18px]">
         {/* Glow */}
         <div className="absolute pointer-events-none" style={{ bottom: "-120px", left: "50%", transform: "translateX(-50%)", width: "600px", height: "600px", background: "radial-gradient(circle, var(--lav-glow) 0%, transparent 60%)" }} />
-        <SparkleField count={14} />
+        <SparkleField count={8} />
 
         <div className="reveal relative z-[1]">
           <h2 className="max-sm:!text-[28px]" style={{ fontSize: "clamp(28px, 4.5vw, 48px)", fontWeight: 900, lineHeight: 1.3, letterSpacing: "-0.02em", marginBottom: "18px" }}>
@@ -583,7 +584,7 @@ export default function LandingPage() {
           <p className="text-[17px] mb-9" style={{ color: "var(--t2)" }}>30초면 완료돼요.</p>
           <Link
             href="/input"
-            className="group btn-primary inline-flex items-center gap-2 px-[34px] py-[15px] rounded-full text-[15px] font-bold no-underline transition-all hover:-translate-y-[2px]"
+            className="group btn-primary inline-flex items-center gap-2 px-8 py-4 rounded-full text-base sm:text-lg font-bold no-underline transition-all hover:-translate-y-[2px]"
             style={{ background: "linear-gradient(135deg, var(--lav-d), var(--lav), var(--lav-l))", color: "#0A0810", boxShadow: "0 4px 28px rgba(155,127,230,0.35), 0 0 70px rgba(155,127,230,0.1)" }}
           >
             무료 사주 보기 <ArrowSvg />
@@ -593,7 +594,7 @@ export default function LandingPage() {
 
       {/* ════════ Footer ════════ */}
       <footer className="py-9 px-6 text-center" style={{ borderTop: "1px solid var(--bdr)" }}>
-        <p className="text-[12.5px]" style={{ color: "var(--t3)" }}>© 2026 운명사주 · AI가 명리학으로 풀어내는 당신의 운명</p>
+        <p className="text-xs" style={{ color: "var(--t3)" }}>© 2026 운명사주 · AI가 명리학으로 풀어내는 당신의 운명</p>
       </footer>
     </main>
   );

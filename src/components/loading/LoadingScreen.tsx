@@ -22,14 +22,34 @@ const TIPS = [
   "연주는 조상, 월주는 부모, 일주는 나, 시주는 자녀를 봅니다.",
 ];
 
+const SECTION_NAMES: Record<string, string> = {
+  personality: "성격·기질",
+  career: "직업·적성",
+  love: "연애·결혼",
+  wealth: "금전·재물",
+  health: "건강",
+  family: "가족·배우자",
+  past: "과거 (초년운)",
+  present: "현재",
+  future: "미래 전망",
+  timeline: "대운 타임라인",
+};
+
+const SECTIONS = [
+  "personality", "career", "love", "wealth", "health",
+  "family", "past", "present", "future", "timeline",
+];
+
 interface LoadingScreenProps {
   sajuResult: SajuResult | null;
   phase: "calculating" | "generating" | "done";
   sectionsCompleted?: number;
   totalSections?: number;
+  completedSections?: string[];
+  currentSection?: string;
 }
 
-export function LoadingScreen({ sajuResult, phase, sectionsCompleted = 0, totalSections = 10 }: LoadingScreenProps) {
+export function LoadingScreen({ sajuResult, phase, sectionsCompleted = 0, totalSections = 10, completedSections = [], currentSection }: LoadingScreenProps) {
   const [stepIndex, setStepIndex] = useState(0);
   const [tipIndex, setTipIndex] = useState(0);
   const [showPillars, setShowPillars] = useState(false);
@@ -88,11 +108,29 @@ export function LoadingScreen({ sajuResult, phase, sectionsCompleted = 0, totalS
 
         {/* Pillar cards reveal */}
         {showPillars && sajuResult && (
-          <div className="grid grid-cols-4 gap-2 mb-8">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-8">
             <PillarCard pillar={sajuResult.pillars.year} label="연주" delay={0} />
             <PillarCard pillar={sajuResult.pillars.month} label="월주" delay={0.4} />
             <PillarCard pillar={sajuResult.pillars.day} label="일주" isDayMaster delay={0.8} />
             <PillarCard pillar={sajuResult.pillars.hour} label="시주" delay={1.2} />
+          </div>
+        )}
+
+        {/* Section-by-section progress (Phase 2: generating) */}
+        {phase === "generating" && (
+          <div className="grid grid-cols-2 gap-2 max-w-sm mx-auto mb-6">
+            {SECTIONS.map((section) => (
+              <div key={section} className={`flex items-center gap-2 text-xs py-1.5 px-2 rounded-lg transition-all ${
+                completedSections.includes(section)
+                  ? 'text-success bg-success/10'
+                  : currentSection === section
+                  ? 'text-accent bg-accent/10 animate-pulse'
+                  : 'text-text-tertiary'
+              }`}>
+                <span>{completedSections.includes(section) ? '✓' : currentSection === section ? '⏳' : '○'}</span>
+                <span>{SECTION_NAMES[section]}</span>
+              </div>
+            ))}
           </div>
         )}
 
@@ -106,7 +144,7 @@ export function LoadingScreen({ sajuResult, phase, sectionsCompleted = 0, totalS
           />
         </div>
 
-        <p className="text-center text-[10px] text-text-secondary mb-8">
+        <p className="text-center text-xs text-text-secondary mb-8">
           {Math.round(progress)}% 완료
         </p>
 
