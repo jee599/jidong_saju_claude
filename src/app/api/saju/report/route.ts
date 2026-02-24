@@ -1,5 +1,7 @@
 // POST /api/saju/report — Generate or retrieve a saju report
 
+export const maxDuration = 60; // Vercel serverless timeout (premium: 10 parallel LLM calls)
+
 import { NextRequest, NextResponse } from "next/server";
 import { calculateSaju } from "@/lib/saju/engine";
 import { generateSajuHash } from "@/lib/utils/hash";
