@@ -9,6 +9,7 @@ import { Header } from "@/components/common/Header";
 import { Footer } from "@/components/common/Footer";
 import { PillarCard } from "@/components/report/PillarCard";
 import { OhengChart } from "@/components/report/OhengChart";
+import type { Pillar } from "@/lib/saju/types";
 
 export default function CompatibilityResultPage() {
   const [data, setData] = useState<Record<string, unknown> | null>(null);
@@ -52,8 +53,8 @@ export default function CompatibilityResultPage() {
   };
 
   const score = llmAnalysis?.score ?? basicAnalysis.score;
-  const pillarsA = (sajuA as unknown as { pillars: Record<string, unknown> }).pillars as Record<string, { gan: string; ji: string; ganInfo: unknown; jiInfo: unknown }>;
-  const pillarsB = (sajuB as unknown as { pillars: Record<string, unknown> }).pillars as Record<string, { gan: string; ji: string; ganInfo: unknown; jiInfo: unknown }>;
+  const pillarsA = (sajuA as unknown as { pillars: Record<string, Pillar> }).pillars;
+  const pillarsB = (sajuB as unknown as { pillars: Record<string, Pillar> }).pillars;
 
   return (
     <div className="min-h-screen bg-[#0D0B1A]">
@@ -100,7 +101,7 @@ export default function CompatibilityResultPage() {
               {(["year", "month", "day", "hour"] as const).map((pos) => (
                 <PillarCard
                   key={`a-${pos}`}
-                  pillar={pillarsA[pos] as unknown as { gan: string; ji: string; ganInfo: Record<string, unknown>; jiInfo: Record<string, unknown> }}
+                  pillar={pillarsA[pos]}
                   label={({ year: "연", month: "월", day: "일", hour: "시" } as const)[pos]}
                   isDayMaster={pos === "day"}
                   delay={0}
@@ -114,7 +115,7 @@ export default function CompatibilityResultPage() {
               {(["year", "month", "day", "hour"] as const).map((pos) => (
                 <PillarCard
                   key={`b-${pos}`}
-                  pillar={pillarsB[pos] as unknown as { gan: string; ji: string; ganInfo: Record<string, unknown>; jiInfo: Record<string, unknown> }}
+                  pillar={pillarsB[pos]}
                   label={({ year: "연", month: "월", day: "일", hour: "시" } as const)[pos]}
                   isDayMaster={pos === "day"}
                   delay={0}
