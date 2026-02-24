@@ -82,8 +82,8 @@ export function ShareCard({ sajuResult, reportUrl }: ShareCardProps) {
   };
 
   return (
-    <div className="bg-[#1E1A3A] rounded-2xl p-4 sm:p-5 border border-white/5">
-      <h3 className="text-sm font-bold text-[#E8E4F0] mb-3">공유하기</h3>
+    <div className="bg-bg-elevated rounded-2xl p-4 sm:p-5 border border-border">
+      <h3 className="text-sm font-bold text-text-primary mb-3">공유하기</h3>
       <div className="flex gap-2">
         {/* KakaoTalk Share */}
         <button
@@ -100,7 +100,7 @@ export function ShareCard({ sajuResult, reportUrl }: ShareCardProps) {
         {/* Copy Link */}
         <button
           onClick={handleCopyLink}
-          className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg bg-[#6C3CE1]/20 text-[#6C3CE1] text-sm font-medium hover:bg-[#6C3CE1]/30 transition"
+          className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg bg-brand-muted text-brand-light text-sm font-medium hover:bg-brand/20 transition"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
@@ -109,7 +109,7 @@ export function ShareCard({ sajuResult, reportUrl }: ShareCardProps) {
         </button>
       </div>
       {!process.env.NEXT_PUBLIC_KAKAO_JS_KEY && (
-        <p className="text-[10px] text-[#8B85A0] mt-2 text-center">
+        <p className="text-[10px] text-text-secondary mt-2 text-center">
           NEXT_PUBLIC_KAKAO_JS_KEY 설정 시 카카오톡 공유가 활성화됩니다
         </p>
       )}

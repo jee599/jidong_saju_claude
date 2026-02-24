@@ -12,8 +12,8 @@ export function DaeunTimeline({ daeun }: DaeunTimelineProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   return (
-    <div className="bg-[#1E1A3A] rounded-2xl p-4 sm:p-6 border border-white/5">
-      <h3 className="text-sm font-bold text-[#E8E4F0] mb-4">대운(大運) 타임라인</h3>
+    <div className="bg-bg-elevated rounded-2xl p-4 sm:p-6 border border-border">
+      <h3 className="text-sm font-bold text-text-primary mb-4">대운(大運) 타임라인</h3>
 
       <div
         ref={scrollRef}
@@ -28,27 +28,27 @@ export function DaeunTimeline({ daeun }: DaeunTimelineProps) {
             transition={{ delay: 0.1 * i, duration: 0.4 }}
             className={`flex-shrink-0 w-20 sm:w-24 rounded-xl p-3 text-center border transition-all ${
               entry.isCurrentDaeun
-                ? "border-[#D4A84B] bg-[#D4A84B]/10 shadow-md shadow-[#D4A84B]/10"
-                : "border-white/5 bg-[#0D0B1A] hover:border-[#6C3CE1]/30"
+                ? "border-accent bg-accent-muted shadow-md shadow-accent/10"
+                : "border-border bg-bg-sunken hover:border-brand/30"
             }`}
             style={{ scrollSnapAlign: "center" }}
           >
-            <span className="text-[10px] text-[#8B85A0] block">
+            <span className="text-[10px] text-text-secondary block">
               {entry.startAge}세~
             </span>
             <span className={`font-hanja text-lg sm:text-xl font-bold block mt-1 ${
-              entry.isCurrentDaeun ? "text-[#D4A84B]" : "text-[#E8E4F0]"
+              entry.isCurrentDaeun ? "text-accent" : "text-text-primary"
             }`}>
               {entry.ganji}
             </span>
-            <span className="text-[9px] text-[#8B85A0] block mt-1">
+            <span className="text-[9px] text-text-secondary block mt-1">
               {entry.sipseong}
             </span>
-            <span className="text-[9px] text-[#8B85A0] block">
+            <span className="text-[9px] text-text-secondary block">
               {entry.unseong}
             </span>
             {entry.isCurrentDaeun && (
-              <span className="inline-block text-[8px] mt-1 px-1.5 py-0.5 rounded-full bg-[#D4A84B]/20 text-[#D4A84B]">
+              <span className="inline-block text-[8px] mt-1 px-1.5 py-0.5 rounded-full bg-accent/20 text-accent">
                 현재
               </span>
             )}

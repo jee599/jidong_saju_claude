@@ -35,7 +35,7 @@ export default function InputPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0D0B1A]">
+    <div className="min-h-screen bg-bg-base">
       <Header />
 
       <main className="flex items-center justify-center px-4 pt-20 pb-12 min-h-screen">
@@ -45,10 +45,10 @@ export default function InputPage() {
           className="w-full max-w-md"
         >
           <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold text-[#E8E4F0] mb-2">
+            <h1 className="text-2xl font-bold text-text-primary mb-2">
               사주 정보 입력
             </h1>
-            <p className="text-[#8B85A0] text-sm">
+            <p className="text-text-secondary text-sm">
               정확한 분석을 위해 태어난 시간까지 입력해주세요.
             </p>
           </div>
@@ -56,21 +56,21 @@ export default function InputPage() {
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* 이름 */}
             <div>
-              <label className="block text-xs text-[#8B85A0] mb-1.5">
-                이름 <span className="text-[#8B85A0]/50">(선택)</span>
+              <label className="block text-xs text-text-secondary mb-1.5">
+                이름 <span className="text-text-tertiary">(선택)</span>
               </label>
               <input
                 type="text"
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
                 placeholder="홍길동"
-                className="w-full bg-[#1E1A3A] border border-white/10 rounded-xl px-4 py-3 text-[#E8E4F0] placeholder:text-[#8B85A0]/40 focus:border-[#6C3CE1] focus:outline-none focus:ring-1 focus:ring-[#6C3CE1]/30 transition text-sm"
+                className="w-full bg-bg-elevated border border-border rounded-xl px-4 py-3 text-text-primary placeholder:text-text-tertiary focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand/30 transition text-sm"
               />
             </div>
 
             {/* 양력/음력 */}
             <div>
-              <label className="block text-xs text-[#8B85A0] mb-1.5">달력 유형</label>
+              <label className="block text-xs text-text-secondary mb-1.5">달력 유형</label>
               <div className="grid grid-cols-2 gap-2">
                 {[
                   { value: "solar", label: "양력 (Solar)" },
@@ -82,8 +82,8 @@ export default function InputPage() {
                     onClick={() => setForm({ ...form, calendarType: opt.value as "solar" | "lunar" })}
                     className={`py-2.5 rounded-xl text-sm font-medium transition-all ${
                       form.calendarType === opt.value
-                        ? "bg-[#6C3CE1] text-white shadow-md shadow-[#6C3CE1]/20"
-                        : "bg-[#1E1A3A] text-[#8B85A0] border border-white/10 hover:border-[#6C3CE1]/30"
+                        ? "bg-brand text-white shadow-md shadow-brand/20"
+                        : "bg-bg-elevated text-text-secondary border border-border hover:border-brand/30"
                     }`}
                   >
                     {opt.label}
@@ -94,34 +94,34 @@ export default function InputPage() {
 
             {/* 생년월일 */}
             <div>
-              <label className="block text-xs text-[#8B85A0] mb-1.5">생년월일</label>
+              <label className="block text-xs text-text-secondary mb-1.5">생년월일</label>
               <input
                 type="date"
                 required
                 value={form.birthDate}
                 onChange={(e) => setForm({ ...form, birthDate: e.target.value })}
-                className="w-full bg-[#1E1A3A] border border-white/10 rounded-xl px-4 py-3 text-[#E8E4F0] focus:border-[#6C3CE1] focus:outline-none focus:ring-1 focus:ring-[#6C3CE1]/30 transition text-sm"
+                className="w-full bg-bg-elevated border border-border rounded-xl px-4 py-3 text-text-primary focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand/30 transition text-sm"
               />
             </div>
 
             {/* 태어난 시간 */}
             <div>
-              <label className="block text-xs text-[#8B85A0] mb-1.5">태어난 시간</label>
+              <label className="block text-xs text-text-secondary mb-1.5">태어난 시간</label>
               <input
                 type="time"
                 required
                 value={form.birthTime}
                 onChange={(e) => setForm({ ...form, birthTime: e.target.value })}
-                className="w-full bg-[#1E1A3A] border border-white/10 rounded-xl px-4 py-3 text-[#E8E4F0] focus:border-[#6C3CE1] focus:outline-none focus:ring-1 focus:ring-[#6C3CE1]/30 transition text-sm"
+                className="w-full bg-bg-elevated border border-border rounded-xl px-4 py-3 text-text-primary focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand/30 transition text-sm"
               />
-              <p className="text-[10px] text-[#8B85A0]/60 mt-1">
+              <p className="text-[10px] text-text-tertiary mt-1">
                 정확한 시간을 모르면 대략적인 시간을 입력해주세요
               </p>
             </div>
 
             {/* 성별 */}
             <div>
-              <label className="block text-xs text-[#8B85A0] mb-1.5">성별</label>
+              <label className="block text-xs text-text-secondary mb-1.5">성별</label>
               <div className="grid grid-cols-2 gap-2">
                 {[
                   { value: "male", label: "남성 (Male)" },
@@ -133,8 +133,8 @@ export default function InputPage() {
                     onClick={() => setForm({ ...form, gender: opt.value as "male" | "female" })}
                     className={`py-2.5 rounded-xl text-sm font-medium transition-all ${
                       form.gender === opt.value
-                        ? "bg-[#6C3CE1] text-white shadow-md shadow-[#6C3CE1]/20"
-                        : "bg-[#1E1A3A] text-[#8B85A0] border border-white/10 hover:border-[#6C3CE1]/30"
+                        ? "bg-brand text-white shadow-md shadow-brand/20"
+                        : "bg-bg-elevated text-text-secondary border border-border hover:border-brand/30"
                     }`}
                   >
                     {opt.label}
@@ -147,7 +147,7 @@ export default function InputPage() {
             <button
               type="submit"
               disabled={!canSubmit}
-              className="w-full bg-gradient-to-r from-[#6C3CE1] to-[#D4A84B] text-white font-semibold py-3.5 rounded-xl hover:scale-[1.02] transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100 shadow-lg shadow-[#6C3CE1]/20 text-sm"
+              className="w-full bg-brand text-white font-semibold py-3.5 rounded-xl hover:bg-brand-light hover:scale-[1.02] transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100 shadow-lg shadow-brand/20 text-sm"
             >
               {submitting ? (
                 <span className="flex items-center justify-center gap-2">
@@ -163,12 +163,12 @@ export default function InputPage() {
             </button>
           </form>
 
-          <p className="text-center text-[10px] text-[#8B85A0]/50 mt-6">
+          <p className="text-center text-[10px] text-text-tertiary mt-6">
             입력한 정보는 사주 계산에만 사용되며 안전하게 보호됩니다.
           </p>
 
           <div className="text-center mt-4">
-            <Link href="/" className="text-xs text-[#8B85A0] hover:text-[#E8E4F0] transition">
+            <Link href="/" className="text-xs text-text-secondary hover:text-text-primary transition">
               &larr; 홈으로 돌아가기
             </Link>
           </div>

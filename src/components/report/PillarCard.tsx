@@ -2,14 +2,7 @@
 
 import { motion } from "framer-motion";
 import type { Pillar } from "@/lib/saju/types";
-
-const ELEMENT_COLORS: Record<string, string> = {
-  "木": "#4CAF50",
-  "火": "#F44336",
-  "土": "#FFC107",
-  "金": "#9E9E9E",
-  "水": "#2196F3",
-};
+import { colors } from "@/styles/theme";
 
 interface PillarCardProps {
   pillar: Pillar;
@@ -21,8 +14,8 @@ interface PillarCardProps {
 }
 
 export function PillarCard({ pillar, label, isDayMaster, delay = 0, sipseong, unseong }: PillarCardProps) {
-  const ganColor = ELEMENT_COLORS[pillar.ganInfo.element] ?? "#8B85A0";
-  const jiColor = ELEMENT_COLORS[pillar.jiInfo.element] ?? "#8B85A0";
+  const ganColor = colors.oheng[pillar.ganInfo.element] ?? colors.text.secondary;
+  const jiColor = colors.oheng[pillar.jiInfo.element] ?? colors.text.secondary;
 
   return (
     <motion.div
@@ -31,13 +24,13 @@ export function PillarCard({ pillar, label, isDayMaster, delay = 0, sipseong, un
       transition={{ delay, duration: 0.6, ease: "easeOut" }}
       className={`relative flex flex-col items-center p-3 sm:p-4 rounded-2xl border ${
         isDayMaster
-          ? "border-[#D4A84B] bg-gradient-to-b from-[#D4A84B]/10 to-transparent shadow-lg shadow-[#D4A84B]/10"
-          : "border-white/10 bg-[#1E1A3A]"
+          ? "border-accent bg-gradient-to-b from-accent-muted to-transparent shadow-lg shadow-accent/10"
+          : "border-border bg-bg-elevated"
       }`}
       style={{ perspective: "1000px" }}
     >
       {/* Label */}
-      <span className={`text-[10px] sm:text-xs mb-2 ${isDayMaster ? "text-[#D4A84B] font-bold" : "text-[#8B85A0]"}`}>
+      <span className={`text-[10px] sm:text-xs mb-2 ${isDayMaster ? "text-accent font-bold" : "text-text-secondary"}`}>
         {label}
         {isDayMaster && <span className="ml-1">(나)</span>}
       </span>
@@ -50,13 +43,13 @@ export function PillarCard({ pillar, label, isDayMaster, delay = 0, sipseong, un
         >
           {pillar.gan}
         </span>
-        <span className="text-[10px] sm:text-xs text-[#8B85A0]">
+        <span className="text-[10px] sm:text-xs text-text-secondary">
           {pillar.ganInfo.hangul}
         </span>
       </div>
 
       {/* Divider */}
-      <div className="w-8 h-px bg-white/10 my-1" />
+      <div className="w-8 h-px bg-border my-1" />
 
       {/* Jiji (bottom) */}
       <div className="text-center mt-2">
@@ -66,7 +59,7 @@ export function PillarCard({ pillar, label, isDayMaster, delay = 0, sipseong, un
         >
           {pillar.ji}
         </span>
-        <span className="text-[10px] sm:text-xs text-[#8B85A0]">
+        <span className="text-[10px] sm:text-xs text-text-secondary">
           {pillar.jiInfo.hangul}({pillar.jiInfo.animal})
         </span>
       </div>
@@ -74,12 +67,12 @@ export function PillarCard({ pillar, label, isDayMaster, delay = 0, sipseong, un
       {/* Sipseong + Unseong badges */}
       <div className="mt-3 flex flex-col items-center gap-1">
         {sipseong && (
-          <span className="text-[9px] sm:text-[10px] px-2 py-0.5 rounded-full bg-[#6C3CE1]/20 text-[#6C3CE1]">
+          <span className="text-[9px] sm:text-[10px] px-2 py-0.5 rounded-full bg-brand-muted text-brand-light">
             {sipseong}
           </span>
         )}
         {unseong && (
-          <span className="text-[9px] sm:text-[10px] px-2 py-0.5 rounded-full bg-white/5 text-[#8B85A0]">
+          <span className="text-[9px] sm:text-[10px] px-2 py-0.5 rounded-full bg-white/5 text-text-secondary">
             {unseong}
           </span>
         )}

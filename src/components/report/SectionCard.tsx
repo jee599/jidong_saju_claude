@@ -15,9 +15,9 @@ export function SectionCard({ section, isLocked, index = 0 }: SectionCardProps) 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.1 * index, duration: 0.5 }}
-      className="bg-[#1E1A3A] rounded-2xl p-5 sm:p-6 border border-white/5 relative overflow-hidden"
+      className="bg-bg-elevated rounded-2xl p-5 sm:p-6 border border-border relative overflow-hidden"
     >
-      <h3 className="text-base sm:text-lg font-bold text-[#E8E4F0] mb-3">
+      <h3 className="text-base sm:text-lg font-bold text-text-primary mb-3">
         {section.title}
       </h3>
 
@@ -27,7 +27,7 @@ export function SectionCard({ section, isLocked, index = 0 }: SectionCardProps) 
           {section.keywords.map((kw, i) => (
             <span
               key={i}
-              className="text-[10px] px-2 py-0.5 rounded-full bg-[#6C3CE1]/15 text-[#6C3CE1]"
+              className="text-[10px] px-2 py-0.5 rounded-full bg-brand-muted text-brand-light"
             >
               {kw}
             </span>
@@ -37,20 +37,20 @@ export function SectionCard({ section, isLocked, index = 0 }: SectionCardProps) 
 
       {/* Content */}
       <div className={`relative ${isLocked ? "max-h-24 overflow-hidden" : ""}`}>
-        <p className="text-sm text-[#E8E4F0]/85 leading-relaxed whitespace-pre-line">
+        <p className="text-sm text-text-primary/85 leading-relaxed whitespace-pre-line">
           {section.text}
         </p>
 
         {isLocked && (
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#1E1A3A]/50 to-[#1E1A3A]" />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-bg-elevated/50 to-bg-elevated" />
         )}
       </div>
 
       {/* Highlights */}
       {!isLocked && section.highlights.length > 0 && (
-        <div className="mt-4 pt-3 border-t border-white/5">
+        <div className="mt-4 pt-3 border-t border-border-subtle">
           {section.highlights.map((h, i) => (
-            <p key={i} className="text-xs text-[#D4A84B] flex items-start gap-2 mt-1">
+            <p key={i} className="text-xs text-accent flex items-start gap-2 mt-1">
               <span className="shrink-0">&#9733;</span>
               {h}
             </p>
@@ -61,7 +61,7 @@ export function SectionCard({ section, isLocked, index = 0 }: SectionCardProps) 
       {/* Paywall overlay */}
       {isLocked && (
         <div className="mt-2 text-center">
-          <p className="text-xs text-[#8B85A0]">
+          <p className="text-xs text-text-secondary">
             전체 분석을 보려면 풀 리포트를 구매하세요
           </p>
         </div>

@@ -2,13 +2,14 @@
 
 import { motion } from "framer-motion";
 import type { OhengResult, Element } from "@/lib/saju/types";
+import { colors } from "@/styles/theme";
 
 const ELEMENT_INFO: Record<Element, { color: string; label: string }> = {
-  "木": { color: "#4CAF50", label: "목(木)" },
-  "火": { color: "#F44336", label: "화(火)" },
-  "土": { color: "#FFC107", label: "토(土)" },
-  "金": { color: "#9E9E9E", label: "금(金)" },
-  "水": { color: "#2196F3", label: "수(水)" },
+  "木": { color: colors.oheng["木"], label: "목(木)" },
+  "火": { color: colors.oheng["火"], label: "화(火)" },
+  "土": { color: colors.oheng["土"], label: "토(土)" },
+  "金": { color: colors.oheng["金"], label: "금(金)" },
+  "水": { color: colors.oheng["水"], label: "수(水)" },
 };
 
 interface OhengChartProps {
@@ -20,8 +21,8 @@ export function OhengChart({ oheng }: OhengChartProps) {
   const maxPercentage = Math.max(...elements.map((e) => oheng.distribution[e].percentage));
 
   return (
-    <div className="bg-[#1E1A3A] rounded-2xl p-4 sm:p-6 border border-white/5">
-      <h3 className="text-sm font-bold text-[#E8E4F0] mb-4">오행(五行) 분포</h3>
+    <div className="bg-bg-elevated rounded-2xl p-4 sm:p-6 border border-border">
+      <h3 className="text-sm font-bold text-text-primary mb-4">오행(五行) 분포</h3>
 
       <div className="space-y-3">
         {elements.map((element, i) => {
@@ -40,7 +41,7 @@ export function OhengChart({ oheng }: OhengChartProps) {
                 {info.label}
               </span>
 
-              <div className="flex-1 h-6 bg-[#0D0B1A] rounded-full overflow-hidden relative">
+              <div className="flex-1 h-6 bg-bg-sunken rounded-full overflow-hidden relative">
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${(dist.percentage / (maxPercentage || 1)) * 100}%` }}
@@ -53,22 +54,22 @@ export function OhengChart({ oheng }: OhengChartProps) {
                 </span>
               </div>
 
-              <span className="text-[10px] text-[#8B85A0] w-8 shrink-0">
+              <span className="text-[10px] text-text-secondary w-8 shrink-0">
                 {dist.count.toFixed(1)}
               </span>
 
               {isStrongest && (
-                <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#2ECC71]/20 text-[#2ECC71] shrink-0">
+                <span className="text-[9px] px-1.5 py-0.5 rounded bg-success/20 text-success shrink-0">
                   최강
                 </span>
               )}
               {isWeakest && !isMissing && (
-                <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#E74C3C]/20 text-[#E74C3C] shrink-0">
+                <span className="text-[9px] px-1.5 py-0.5 rounded bg-danger/20 text-danger shrink-0">
                   최약
                 </span>
               )}
               {isMissing && (
-                <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#E74C3C]/20 text-[#E74C3C] shrink-0">
+                <span className="text-[9px] px-1.5 py-0.5 rounded bg-danger/20 text-danger shrink-0">
                   없음
                 </span>
               )}
@@ -77,7 +78,7 @@ export function OhengChart({ oheng }: OhengChartProps) {
         })}
       </div>
 
-      <p className="text-xs text-[#8B85A0] mt-4 text-center">
+      <p className="text-xs text-text-secondary mt-4 text-center">
         {oheng.balance}
       </p>
     </div>

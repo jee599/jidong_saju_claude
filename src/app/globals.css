@@ -1,35 +1,74 @@
 @import "tailwindcss";
 
 :root {
-  --color-primary: #1A1147;
-  --color-secondary: #6C3CE1;
-  --color-accent: #D4A84B;
-  --color-background: #0D0B1A;
-  --color-surface: #1E1A3A;
-  --color-text: #E8E4F0;
-  --color-text-muted: #8B85A0;
+  /* Brand */
+  --color-brand: #3B5BDB;
+  --color-brand-light: #5C7CFA;
+  --color-brand-muted: rgba(59, 91, 219, 0.15);
 
-  --color-wood: #4CAF50;
-  --color-fire: #F44336;
-  --color-earth: #FFC107;
-  --color-metal: #9E9E9E;
-  --color-water: #2196F3;
+  /* Accent */
+  --color-accent: #E8990C;
+  --color-accent-hover: #D4880A;
+  --color-accent-muted: rgba(232, 153, 12, 0.15);
+
+  /* Backgrounds */
+  --color-bg-base: #0C0F1A;
+  --color-bg-elevated: #151928;
+  --color-bg-sunken: #0A0D16;
+
+  /* Borders */
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-border-subtle: rgba(255, 255, 255, 0.04);
+  --color-border-focus: #3B5BDB;
+
+  /* Text */
+  --color-text-primary: #E8ECF4;
+  --color-text-secondary: #8B95A9;
+  --color-text-tertiary: #5C6478;
+  --color-text-inverse: #0C0F1A;
+
+  /* Semantic */
+  --color-success: #34D399;
+  --color-warn: #FBBF24;
+  --color-danger: #F87171;
+  --color-info: #60A5FA;
+
+  /* 오행 */
+  --color-wood: #34D399;
+  --color-fire: #F87171;
+  --color-earth: #FBBF24;
+  --color-metal: #A1A1AA;
+  --color-water: #60A5FA;
 }
 
 @theme inline {
-  --color-primary: var(--color-primary);
-  --color-secondary: var(--color-secondary);
+  --color-brand: var(--color-brand);
+  --color-brand-light: var(--color-brand-light);
+  --color-brand-muted: var(--color-brand-muted);
   --color-accent: var(--color-accent);
-  --color-surface: var(--color-surface);
-  --color-text: var(--color-text);
-  --color-text-muted: var(--color-text-muted);
+  --color-accent-hover: var(--color-accent-hover);
+  --color-accent-muted: var(--color-accent-muted);
+  --color-bg-base: var(--color-bg-base);
+  --color-bg-elevated: var(--color-bg-elevated);
+  --color-bg-sunken: var(--color-bg-sunken);
+  --color-border: var(--color-border);
+  --color-border-subtle: var(--color-border-subtle);
+  --color-border-focus: var(--color-border-focus);
+  --color-text-primary: var(--color-text-primary);
+  --color-text-secondary: var(--color-text-secondary);
+  --color-text-tertiary: var(--color-text-tertiary);
+  --color-text-inverse: var(--color-text-inverse);
+  --color-success: var(--color-success);
+  --color-warn: var(--color-warn);
+  --color-danger: var(--color-danger);
+  --color-info: var(--color-info);
   --font-sans: var(--font-pretendard);
   --font-serif: var(--font-noto-serif-kr);
 }
 
 body {
-  background: var(--color-background);
-  color: var(--color-text);
+  background: var(--color-bg-base);
+  color: var(--color-text-primary);
   font-family: var(--font-pretendard), system-ui, -apple-system, sans-serif;
   min-height: 100vh;
 }
@@ -44,15 +83,15 @@ body {
   width: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--color-background);
+  background: var(--color-bg-base);
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--color-secondary);
+  background: var(--color-brand);
   border-radius: 3px;
 }
 
 /* 선택 영역 */
 ::selection {
-  background: rgba(108, 60, 225, 0.3);
-  color: var(--color-text);
+  background: rgba(59, 91, 219, 0.3);
+  color: var(--color-text-primary);
 }

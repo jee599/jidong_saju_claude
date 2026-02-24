@@ -72,27 +72,27 @@ export default function CompatibilityPage() {
     person: PersonInput;
     setPerson: (p: PersonInput) => void;
   }) => (
-    <div className="bg-[#1E1A3A] rounded-2xl p-5 border border-white/5">
-      <h3 className="text-sm font-bold text-[#D4A84B] mb-4">{label}</h3>
+    <div className="bg-bg-elevated rounded-2xl p-5 border border-border">
+      <h3 className="text-sm font-bold text-accent mb-4">{label}</h3>
       <div className="space-y-3">
         <input
           type="text"
           placeholder="이름 (선택)"
           value={person.name}
           onChange={(e) => setPerson({ ...person, name: e.target.value })}
-          className="w-full bg-[#0D0B1A] border border-white/10 rounded-lg px-3 py-2.5 text-sm text-[#E8E4F0] placeholder-[#8B85A0]/50 focus:border-[#6C3CE1] focus:outline-none"
+          className="w-full bg-bg-sunken border border-border rounded-lg px-3 py-2.5 text-sm text-text-primary placeholder-text-tertiary focus:border-brand focus:outline-none"
         />
         <input
           type="date"
           value={person.birthDate}
           onChange={(e) => setPerson({ ...person, birthDate: e.target.value })}
-          className="w-full bg-[#0D0B1A] border border-white/10 rounded-lg px-3 py-2.5 text-sm text-[#E8E4F0] focus:border-[#6C3CE1] focus:outline-none"
+          className="w-full bg-bg-sunken border border-border rounded-lg px-3 py-2.5 text-sm text-text-primary focus:border-brand focus:outline-none"
         />
         <input
           type="time"
           value={person.birthTime}
           onChange={(e) => setPerson({ ...person, birthTime: e.target.value })}
-          className="w-full bg-[#0D0B1A] border border-white/10 rounded-lg px-3 py-2.5 text-sm text-[#E8E4F0] focus:border-[#6C3CE1] focus:outline-none"
+          className="w-full bg-bg-sunken border border-border rounded-lg px-3 py-2.5 text-sm text-text-primary focus:border-brand focus:outline-none"
         />
         <div className="flex gap-2">
           {(["male", "female"] as const).map((g) => (
@@ -101,8 +101,8 @@ export default function CompatibilityPage() {
               onClick={() => setPerson({ ...person, gender: g })}
               className={`flex-1 py-2 rounded-lg text-sm transition ${
                 person.gender === g
-                  ? "bg-[#6C3CE1] text-white"
-                  : "bg-[#0D0B1A] text-[#8B85A0] border border-white/10"
+                  ? "bg-brand text-white"
+                  : "bg-bg-sunken text-text-secondary border border-border"
               }`}
             >
               {g === "male" ? "남성" : "여성"}
@@ -116,8 +116,8 @@ export default function CompatibilityPage() {
               onClick={() => setPerson({ ...person, calendarType: t })}
               className={`flex-1 py-2 rounded-lg text-xs transition ${
                 person.calendarType === t
-                  ? "bg-[#6C3CE1]/20 text-[#6C3CE1]"
-                  : "bg-[#0D0B1A] text-[#8B85A0] border border-white/10"
+                  ? "bg-brand-muted text-brand-light"
+                  : "bg-bg-sunken text-text-secondary border border-border"
               }`}
             >
               {t === "solar" ? "양력" : "음력"}
@@ -129,13 +129,13 @@ export default function CompatibilityPage() {
   );
 
   return (
-    <div className="min-h-screen bg-[#0D0B1A]">
+    <div className="min-h-screen bg-bg-base">
       <Header />
       <main className="max-w-2xl mx-auto px-4 pt-24 pb-12">
         <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold text-[#E8E4F0] mb-2">궁합 분석</h1>
-          <p className="text-sm text-[#8B85A0]">두 사람의 사주를 비교하여 궁합을 분석합니다</p>
-          <p className="text-xs text-[#D4A84B] mt-1">7,900원</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-text-primary mb-2">궁합 분석</h1>
+          <p className="text-sm text-text-secondary">두 사람의 사주를 비교하여 궁합을 분석합니다</p>
+          <p className="text-xs text-accent mt-1">7,900원</p>
         </motion.div>
 
         <div className="grid sm:grid-cols-2 gap-4 mb-6">
@@ -149,7 +149,7 @@ export default function CompatibilityPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="text-[#E74C3C] text-sm text-center mb-4"
+              className="text-danger text-sm text-center mb-4"
             >
               {error}
             </motion.p>
@@ -157,7 +157,7 @@ export default function CompatibilityPage() {
         </AnimatePresence>
 
         <Button
-          variant="gold"
+          variant="accent"
           size="lg"
           className="w-full"
           onClick={handleSubmit}

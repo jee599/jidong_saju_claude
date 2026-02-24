@@ -55,39 +55,39 @@ export default function YearlyPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0D0B1A]">
+    <div className="min-h-screen bg-bg-base">
       <Header />
       <main className="max-w-md mx-auto px-4 pt-24 pb-12">
         <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold text-[#E8E4F0] mb-2">{year}년 연간 운세</h1>
-          <p className="text-sm text-[#8B85A0]">월별 운세 흐름을 분석합니다</p>
-          <p className="text-xs text-[#D4A84B] mt-1">4,900원</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-text-primary mb-2">{year}년 연간 운세</h1>
+          <p className="text-sm text-text-secondary">월별 운세 흐름을 분석합니다</p>
+          <p className="text-xs text-accent mt-1">4,900원</p>
         </motion.div>
 
-        <div className="bg-[#1E1A3A] rounded-2xl p-5 border border-white/5 space-y-4 mb-6">
+        <div className="bg-bg-elevated rounded-2xl p-5 border border-border space-y-4 mb-6">
           <input
             type="text"
             placeholder="이름 (선택)"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full bg-[#0D0B1A] border border-white/10 rounded-lg px-3 py-2.5 text-sm text-[#E8E4F0] placeholder-[#8B85A0]/50 focus:border-[#6C3CE1] focus:outline-none"
+            className="w-full bg-bg-sunken border border-border rounded-lg px-3 py-2.5 text-sm text-text-primary placeholder-text-tertiary focus:border-brand focus:outline-none"
           />
           <div>
-            <label className="text-xs text-[#8B85A0] block mb-1">생년월일</label>
+            <label className="text-xs text-text-secondary block mb-1">생년월일</label>
             <input
               type="date"
               value={birthDate}
               onChange={(e) => setBirthDate(e.target.value)}
-              className="w-full bg-[#0D0B1A] border border-white/10 rounded-lg px-3 py-2.5 text-sm text-[#E8E4F0] focus:border-[#6C3CE1] focus:outline-none"
+              className="w-full bg-bg-sunken border border-border rounded-lg px-3 py-2.5 text-sm text-text-primary focus:border-brand focus:outline-none"
             />
           </div>
           <div>
-            <label className="text-xs text-[#8B85A0] block mb-1">태어난 시간</label>
+            <label className="text-xs text-text-secondary block mb-1">태어난 시간</label>
             <input
               type="time"
               value={birthTime}
               onChange={(e) => setBirthTime(e.target.value)}
-              className="w-full bg-[#0D0B1A] border border-white/10 rounded-lg px-3 py-2.5 text-sm text-[#E8E4F0] focus:border-[#6C3CE1] focus:outline-none"
+              className="w-full bg-bg-sunken border border-border rounded-lg px-3 py-2.5 text-sm text-text-primary focus:border-brand focus:outline-none"
             />
           </div>
           <div className="flex gap-2">
@@ -97,8 +97,8 @@ export default function YearlyPage() {
                 onClick={() => setGender(g)}
                 className={`flex-1 py-2.5 rounded-lg text-sm transition ${
                   gender === g
-                    ? "bg-[#6C3CE1] text-white"
-                    : "bg-[#0D0B1A] text-[#8B85A0] border border-white/10"
+                    ? "bg-brand text-white"
+                    : "bg-bg-sunken text-text-secondary border border-border"
                 }`}
               >
                 {g === "male" ? "남성" : "여성"}
@@ -112,8 +112,8 @@ export default function YearlyPage() {
                 onClick={() => setCalendarType(t)}
                 className={`flex-1 py-2 rounded-lg text-xs transition ${
                   calendarType === t
-                    ? "bg-[#6C3CE1]/20 text-[#6C3CE1]"
-                    : "bg-[#0D0B1A] text-[#8B85A0] border border-white/10"
+                    ? "bg-brand-muted text-brand-light"
+                    : "bg-bg-sunken text-text-secondary border border-border"
                 }`}
               >
                 {t === "solar" ? "양력" : "음력"}
@@ -124,13 +124,13 @@ export default function YearlyPage() {
 
         <AnimatePresence>
           {error && (
-            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-[#E74C3C] text-sm text-center mb-4">
+            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-danger text-sm text-center mb-4">
               {error}
             </motion.p>
           )}
         </AnimatePresence>
 
-        <Button variant="gold" size="lg" className="w-full" onClick={handleSubmit} disabled={loading}>
+        <Button variant="accent" size="lg" className="w-full" onClick={handleSubmit} disabled={loading}>
           {loading ? "분석 중..." : `${year}년 운세 분석하기`}
         </Button>
       </main>

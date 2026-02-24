@@ -63,7 +63,7 @@ export function LoadingScreen({ sajuResult, phase, sectionsCompleted = 0, totalS
     : 100;
 
   return (
-    <div className="min-h-screen bg-[#0D0B1A] flex flex-col items-center justify-center px-4">
+    <div className="min-h-screen bg-bg-base flex flex-col items-center justify-center px-4">
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -76,7 +76,7 @@ export function LoadingScreen({ sajuResult, phase, sectionsCompleted = 0, totalS
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="text-center text-[#E8E4F0] text-sm mb-8"
+            className="text-center text-text-primary text-sm mb-8"
           >
             {phase === "calculating"
               ? CALC_STEPS[stepIndex]
@@ -97,16 +97,16 @@ export function LoadingScreen({ sajuResult, phase, sectionsCompleted = 0, totalS
         )}
 
         {/* Progress bar */}
-        <div className="w-full h-2 bg-[#1E1A3A] rounded-full overflow-hidden mb-4">
+        <div className="w-full h-2 bg-bg-elevated rounded-full overflow-hidden mb-4">
           <motion.div
-            className="h-full bg-gradient-to-r from-[#6C3CE1] to-[#D4A84B] rounded-full"
+            className="h-full bg-gradient-to-r from-brand to-brand-light rounded-full"
             initial={{ width: 0 }}
             animate={{ width: `${progress}%` }}
             transition={{ duration: 0.5 }}
           />
         </div>
 
-        <p className="text-center text-[10px] text-[#8B85A0] mb-8">
+        <p className="text-center text-[10px] text-text-secondary mb-8">
           {Math.round(progress)}% 완료
         </p>
 
@@ -117,7 +117,7 @@ export function LoadingScreen({ sajuResult, phase, sectionsCompleted = 0, totalS
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="text-center text-xs text-[#8B85A0] bg-[#1E1A3A] rounded-xl px-4 py-3 border border-white/5"
+            className="text-center text-xs text-text-secondary bg-bg-elevated rounded-xl px-4 py-3 border border-border"
           >
             {TIPS[tipIndex]}
           </motion.p>

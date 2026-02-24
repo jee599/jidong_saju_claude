@@ -24,10 +24,10 @@ export default function YearlyResultPage() {
 
   if (!data) {
     return (
-      <div className="min-h-screen bg-[#0D0B1A] flex items-center justify-center">
+      <div className="min-h-screen bg-bg-base flex items-center justify-center">
         <div className="text-center">
-          <p className="text-[#E8E4F0] mb-4">연간 운세 데이터를 찾을 수 없습니다.</p>
-          <Link href="/yearly" className="text-[#6C3CE1] underline text-sm">다시 분석하기</Link>
+          <p className="text-text-primary mb-4">연간 운세 데이터를 찾을 수 없습니다.</p>
+          <Link href="/yearly" className="text-brand-light underline text-sm">다시 분석하기</Link>
         </div>
       </div>
     );
@@ -57,15 +57,15 @@ export default function YearlyResultPage() {
   const MONTH_NAMES = ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"];
 
   return (
-    <div className="min-h-screen bg-[#0D0B1A]">
+    <div className="min-h-screen bg-bg-base">
       <Header />
       <main className="max-w-2xl mx-auto px-4 pt-24 pb-12">
         <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold text-[#E8E4F0] mb-2">{year}년 연간 운세</h1>
-          <p className="text-lg font-hanja text-[#D4A84B]">{basicYearly.seunGanji}</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-text-primary mb-2">{year}년 연간 운세</h1>
+          <p className="text-lg font-hanja text-accent">{basicYearly.seunGanji}</p>
           <div className="flex flex-wrap justify-center gap-2 mt-3">
             {basicYearly.keywords.map((kw, i) => (
-              <span key={i} className="text-[10px] px-3 py-1 rounded-full bg-[#6C3CE1]/15 text-[#6C3CE1]">
+              <span key={i} className="text-[10px] px-3 py-1 rounded-full bg-brand-muted text-brand-light">
                 {kw}
               </span>
             ))}
@@ -76,11 +76,11 @@ export default function YearlyResultPage() {
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-[#1E1A3A] rounded-2xl p-5 border border-white/5 mb-6"
+          className="bg-bg-elevated rounded-2xl p-5 border border-border mb-6"
         >
-          <h3 className="text-sm font-bold text-[#E8E4F0] mb-3">연간 요약</h3>
-          <p className="text-sm text-[#E8E4F0]/85 leading-relaxed">{basicYearly.summary}</p>
-          <p className="text-xs text-[#D4A84B] mt-3">{basicYearly.yongsinAdvice}</p>
+          <h3 className="text-sm font-bold text-text-primary mb-3">연간 요약</h3>
+          <p className="text-sm text-text-primary/85 leading-relaxed">{basicYearly.summary}</p>
+          <p className="text-xs text-accent mt-3">{basicYearly.yongsinAdvice}</p>
         </motion.div>
 
         {/* LLM 월별 운세 */}
@@ -88,9 +88,9 @@ export default function YearlyResultPage() {
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-[#1E1A3A] rounded-2xl p-5 border border-white/5 mb-6"
+            className="bg-bg-elevated rounded-2xl p-5 border border-border mb-6"
           >
-            <h3 className="text-sm font-bold text-[#E8E4F0] mb-4">월별 운세</h3>
+            <h3 className="text-sm font-bold text-text-primary mb-4">월별 운세</h3>
             <div className="space-y-3">
               {yearlyAnalysis.months.map((m) => {
                 const isBest = yearlyAnalysis.bestMonths?.includes(m.month);
@@ -99,7 +99,7 @@ export default function YearlyResultPage() {
                 return (
                   <div key={m.month} className="flex items-start gap-3">
                     <span className={`text-xs font-bold w-8 shrink-0 ${
-                      isBest ? "text-[#2ECC71]" : isCaution ? "text-[#E74C3C]" : "text-[#8B85A0]"
+                      isBest ? "text-success" : isCaution ? "text-danger" : "text-text-secondary"
                     }`}>
                       {MONTH_NAMES[m.month - 1]}
                     </span>
@@ -112,16 +112,16 @@ export default function YearlyResultPage() {
                               key={level}
                               className={`w-3 h-3 rounded-sm ${
                                 level <= m.energy
-                                  ? m.energy >= 4 ? "bg-[#2ECC71]" : m.energy >= 3 ? "bg-[#D4A84B]" : "bg-[#E74C3C]"
+                                  ? m.energy >= 4 ? "bg-success" : m.energy >= 3 ? "bg-accent" : "bg-danger"
                                   : "bg-white/10"
                               }`}
                             />
                           ))}
                         </div>
-                        {isBest && <span className="text-[9px] text-[#2ECC71]">좋은 달</span>}
-                        {isCaution && <span className="text-[9px] text-[#E74C3C]">주의</span>}
+                        {isBest && <span className="text-[9px] text-success">좋은 달</span>}
+                        {isCaution && <span className="text-[9px] text-danger">주의</span>}
                       </div>
-                      <p className="text-xs text-[#E8E4F0]/85">{m.text}</p>
+                      <p className="text-xs text-text-primary/85">{m.text}</p>
                     </div>
                   </div>
                 );
@@ -135,12 +135,12 @@ export default function YearlyResultPage() {
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-[#1E1A3A] rounded-2xl p-5 border border-white/5 mb-6"
+            className="bg-bg-elevated rounded-2xl p-5 border border-border mb-6"
           >
-            <h3 className="text-sm font-bold text-[#E8E4F0] mb-3">주요 전환점</h3>
+            <h3 className="text-sm font-bold text-text-primary mb-3">주요 전환점</h3>
             {yearlyAnalysis.turningPoints.map((tp, i) => (
-              <p key={i} className="text-xs text-[#8B85A0] flex items-start gap-2 mt-1">
-                <span className="text-[#D4A84B] shrink-0">&#9733;</span> {tp}
+              <p key={i} className="text-xs text-text-secondary flex items-start gap-2 mt-1">
+                <span className="text-accent shrink-0">&#9733;</span> {tp}
               </p>
             ))}
           </motion.div>
@@ -151,17 +151,17 @@ export default function YearlyResultPage() {
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-[#1E1A3A] rounded-2xl p-5 border border-white/5 mb-6"
+            className="bg-bg-elevated rounded-2xl p-5 border border-border mb-6"
           >
-            <h3 className="text-sm font-bold text-[#E8E4F0] mb-3">상세 분석</h3>
-            <p className="text-sm text-[#E8E4F0]/85 leading-relaxed whitespace-pre-line">
+            <h3 className="text-sm font-bold text-text-primary mb-3">상세 분석</h3>
+            <p className="text-sm text-text-primary/85 leading-relaxed whitespace-pre-line">
               {yearlyAnalysis.summary}
             </p>
           </motion.div>
         )}
 
         <div className="text-center pt-4">
-          <Link href="/yearly" className="text-[#6C3CE1] text-sm hover:underline">
+          <Link href="/yearly" className="text-brand-light text-sm hover:underline">
             다시 분석하기 &rarr;
           </Link>
         </div>

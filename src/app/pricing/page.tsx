@@ -58,7 +58,7 @@ const plans = [
 
 export default function PricingPage() {
   return (
-    <div className="min-h-screen bg-[#0D0B1A]">
+    <div className="min-h-screen bg-bg-base">
       <Header />
 
       <main className="max-w-5xl mx-auto px-4 pt-24 pb-16">
@@ -67,10 +67,10 @@ export default function PricingPage() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-12"
         >
-          <h1 className="text-3xl sm:text-4xl font-bold text-[#E8E4F0] mb-3">
+          <h1 className="text-3xl sm:text-4xl font-bold text-text-primary mb-3">
             합리적인 가격
           </h1>
-          <p className="text-[#8B85A0] text-sm">
+          <p className="text-text-secondary text-sm">
             무료 요약으로 시작하고, 원하면 풀 리포트를 받아보세요.
           </p>
         </motion.div>
@@ -84,25 +84,25 @@ export default function PricingPage() {
               transition={{ delay: i * 0.1 }}
               className={`relative rounded-2xl p-6 border flex flex-col ${
                 plan.highlight
-                  ? "border-[#D4A84B] bg-gradient-to-b from-[#1E1A3A] to-[#0D0B1A] shadow-lg shadow-[#D4A84B]/5"
-                  : "border-white/5 bg-[#1E1A3A]"
+                  ? "border-accent bg-gradient-to-b from-bg-elevated to-bg-base shadow-lg shadow-accent/5"
+                  : "border-border bg-bg-elevated"
               }`}
             >
               {plan.badge && (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 text-[10px] font-bold px-3 py-1 rounded-full bg-[#D4A84B] text-[#0D0B1A]">
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 text-[10px] font-bold px-3 py-1 rounded-full bg-accent text-text-inverse">
                   {plan.badge}
                 </span>
               )}
 
-              <h3 className="text-lg font-bold text-[#E8E4F0] mb-2">{plan.name}</h3>
-              <p className="text-3xl font-bold text-[#D4A84B] mb-6">
+              <h3 className="text-lg font-bold text-text-primary mb-2">{plan.name}</h3>
+              <p className="text-3xl font-bold text-accent mb-6">
                 {plan.priceLabel}
               </p>
 
-              <ul className="text-sm text-[#8B85A0] space-y-2.5 mb-8 flex-1">
+              <ul className="text-sm text-text-secondary space-y-2.5 mb-8 flex-1">
                 {plan.features.map((f) => (
                   <li key={f} className="flex items-start gap-2">
-                    <span className="text-[#2ECC71] mt-0.5 shrink-0">&#10003;</span>
+                    <span className="text-success mt-0.5 shrink-0">&#10003;</span>
                     {f}
                   </li>
                 ))}
@@ -112,8 +112,8 @@ export default function PricingPage() {
                 href={plan.href}
                 className={`block text-center py-3 rounded-lg font-medium transition text-sm ${
                   plan.highlight
-                    ? "bg-[#D4A84B] text-[#0D0B1A] hover:bg-[#C09A40]"
-                    : "bg-[#6C3CE1]/20 text-[#6C3CE1] hover:bg-[#6C3CE1]/30"
+                    ? "bg-accent text-text-inverse hover:bg-accent-hover"
+                    : "bg-brand-muted text-brand-light hover:bg-brand/20"
                 }`}
               >
                 {plan.cta}
@@ -123,7 +123,7 @@ export default function PricingPage() {
         </div>
 
         <div className="mt-12 text-center">
-          <p className="text-xs text-[#8B85A0]">
+          <p className="text-xs text-text-secondary">
             모든 결제는 토스페이먼츠를 통해 안전하게 처리됩니다.
             <br />
             카카오페이 · 토스 · 신용카드 결제 가능

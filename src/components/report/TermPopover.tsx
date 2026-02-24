@@ -79,14 +79,14 @@ export function TermPopover({ text }: TermPopoverProps) {
 
   return (
     <div ref={containerRef} className="relative">
-      <p className="text-sm text-[#E8E4F0]/85 leading-relaxed">
+      <p className="text-sm text-text-primary/85 leading-relaxed">
         {parts.map((part, i) => {
           if (TERM_DICTIONARY[part]) {
             return (
               <span
                 key={i}
                 onClick={(e) => handleTermClick(part, e)}
-                className="underline decoration-dotted decoration-[#6C3CE1]/50 underline-offset-2 cursor-pointer hover:text-[#6C3CE1] transition-colors"
+                className="underline decoration-dotted decoration-brand/50 underline-offset-2 cursor-pointer hover:text-brand-light transition-colors"
               >
                 {part}
               </span>
@@ -99,19 +99,19 @@ export function TermPopover({ text }: TermPopoverProps) {
       {/* Popover */}
       {activeTerm && TERM_DICTIONARY[activeTerm] && (
         <div
-          className="absolute z-50 w-64 bg-[#1A1147] border border-[#6C3CE1]/30 rounded-xl p-3 shadow-xl"
+          className="absolute z-50 w-64 bg-bg-elevated border border-brand/30 rounded-xl p-3 shadow-xl"
           style={{ left: `${position.x}px`, top: `${position.y}px`, transform: "translateX(-50%)" }}
         >
           <div className="flex items-center gap-2 mb-1.5">
-            <span className="font-hanja text-base text-[#D4A84B]">
+            <span className="font-hanja text-base text-accent">
               {TERM_DICTIONARY[activeTerm].hanja}
             </span>
-            <span className="text-sm font-bold text-[#E8E4F0]">{activeTerm}</span>
+            <span className="text-sm font-bold text-text-primary">{activeTerm}</span>
           </div>
-          <p className="text-xs text-[#8B85A0] leading-relaxed">
+          <p className="text-xs text-text-secondary leading-relaxed">
             {TERM_DICTIONARY[activeTerm].desc}
           </p>
-          <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-[#1A1147] border-l border-t border-[#6C3CE1]/30 rotate-45" />
+          <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-bg-elevated border-l border-t border-brand/30 rotate-45" />
         </div>
       )}
     </div>

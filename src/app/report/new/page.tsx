@@ -97,12 +97,12 @@ function NewReportContent() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-[#0D0B1A] flex items-center justify-center px-4">
+      <div className="min-h-screen bg-bg-base flex items-center justify-center px-4">
         <div className="text-center">
-          <p className="text-[#E74C3C] mb-4">{error}</p>
+          <p className="text-danger mb-4">{error}</p>
           <button
             onClick={() => router.push("/input")}
-            className="text-[#6C3CE1] text-sm hover:underline"
+            className="text-brand-light text-sm hover:underline"
           >
             다시 시도하기
           </button>
@@ -123,8 +123,8 @@ export default function NewReportPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-[#0D0B1A] flex items-center justify-center">
-          <div className="text-[#8B85A0] text-sm animate-pulse">준비 중...</div>
+        <div className="min-h-screen bg-bg-base flex items-center justify-center">
+          <div className="text-text-secondary text-sm animate-pulse">준비 중...</div>
         </div>
       }
     >
