@@ -3,10 +3,44 @@
 > **최종 갱신:** 2026-02-24
 > **갱신자:** Claude Opus 4.6
 > **브랜치:** main
-> **최신 커밋:** `90948d2` feat: landing page redesign — Soft Lavender dark theme
+> **최신 커밋:** `17a6a9f` docs: AI 작업 핸드오프 문서 (WORK_LOG.md) 생성
 > **빌드 상태:** PASS (Next.js 16.1.6, Turbopack)
 > **테스트:** 392/392 통과 (16 suites, ~500ms)
 > **배포:** https://fatesaju.vercel.app (Vercel 프로덕션)
+
+---
+
+## !! 멀티 AI 작업 규칙 (필독) !!
+
+**이 프로젝트는 여러 AI(Claude Code, Gemini 등)가 교대로 작업합니다.**
+**이 파일(`WORK_LOG.md`)이 AI 간 유일한 소통 채널입니다.**
+
+### 작업 시작 전 (필수)
+1. `git pull origin main` — 최신 코드 받기
+2. **이 파일(`WORK_LOG.md`) 전체 읽기** — 현재 상태, 완료/미완료 항목, 주의사항 파악
+3. `CLAUDE.md` 읽기 — 프로젝트 기획서 및 기술 스펙
+4. `git log --oneline -5` — 최근 작업 내역 확인
+
+### 작업 완료 후 (가장 중요!!)
+1. `npx vitest run` — 전체 테스트 통과 확인
+2. `npx next build` — 빌드 통과 확인
+3. **이 파일(`WORK_LOG.md`) 갱신** — 아래 항목 반드시 업데이트:
+   - 상단 메타정보 (최신 커밋, 갱신자, 테스트 수, 빌드 상태)
+   - 섹션 2: 새로 구현한 항목 체크
+   - 섹션 3: 해결한 TODO 제거, 새로 발견한 이슈 추가
+   - 섹션 6: 커밋 히스토리에 새 커밋 추가
+4. 커밋 + 푸시 (`git push origin main`)
+
+### 충돌 방지 원칙
+- **같은 파일을 여러 AI가 동시에 수정하지 않는다** — 영역(백엔드/프론트 등)을 나눠서 작업
+- 작업을 오래 들고 있지 않는다 — 완료 즉시 커밋+푸시
+- 다른 AI가 작업 중인 파일을 알면 건드리지 않는다
+
+### 참고 문서 우선순위
+1. `WORK_LOG.md` (이 파일) — 현재 상태 + 작업 로그
+2. `CLAUDE.md` — 전체 기획서 + 프롬프트 + 스펙
+3. `docs/STATUS.md` — API 스펙, DB 스키마, 상세 아키텍처
+4. `docs/db.sql` — Supabase SQL 스키마
 
 ---
 
