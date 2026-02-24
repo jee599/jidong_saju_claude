@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { calculateSaju } from "@/lib/saju/engine";
 import { callClaudeWithRetry } from "@/lib/llm/client";
 import { SYSTEM_PROMPT, getCompatibilityPrompt } from "@/lib/llm/prompts";
+import { checkRateLimit, rateLimitResponse, RATE_LIMITS } from "@/lib/ratelimit/limiter";
 import type { SajuInput } from "@/lib/saju/types";
 
 interface CompatibilityBody {
@@ -13,6 +14,10 @@ interface CompatibilityBody {
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limit
+    const rl = checkRateLimit(request, RATE_LIMITS.compatibility);
+    if (!rl.allowed) return rateLimitResponse(rl);
+
     const body: CompatibilityBody = await request.json();
 
     if (
@@ -20,7 +25,7 @@ export async function POST(request: NextRequest) {
       !body.personB?.birthDate || !body.personB?.birthTime || !body.personB?.gender
     ) {
       return NextResponse.json(
-        { error: "두 사람의 생년월일시와 성별을 모두 입력해주세요." },
+        { error: "두 사람의 생년월일시와 성별을 모두 입력해주세요.", code: "MISSING_INPUT" },
         { status: 400 }
       );
     }
@@ -70,7 +75,7 @@ export async function POST(request: NextRequest) {
   } catch (err) {
     console.error("Compatibility error:", err);
     return NextResponse.json(
-      { error: "궁합 분석 중 오류가 발생했습니다." },
+      { error: "궁합 분석 중 오류가 발생했습니다.", code: "INTERNAL_ERROR" },
       { status: 500 }
     );
   }

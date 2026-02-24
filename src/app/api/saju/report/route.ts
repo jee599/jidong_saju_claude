@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { calculateSaju } from "@/lib/saju/engine";
 import { generateSajuHash } from "@/lib/utils/hash";
 import { generateReport, generatePlaceholderReport } from "@/lib/llm/parallel";
+import { checkRateLimit, rateLimitResponse, RATE_LIMITS } from "@/lib/ratelimit/limiter";
 import type { SajuInput, SajuResult, ReportResult, ReportTier } from "@/lib/saju/types";
 
 /**
@@ -36,12 +37,19 @@ export async function POST(request: NextRequest) {
 
     if (!input?.birthDate || !input?.birthTime || !input?.gender || !input?.calendarType) {
       return NextResponse.json(
-        { error: "필수 입력값이 누락되었습니다." },
+        { error: "필수 입력값이 누락되었습니다.", code: "MISSING_INPUT" },
         { status: 400 }
       );
     }
 
     const tier: ReportTier = rawTier === "premium" ? "premium" : "free";
+
+    // Rate limit check
+    const rlConfig = tier === "premium" ? RATE_LIMITS.premiumReport : RATE_LIMITS.freeReport;
+    const rl = checkRateLimit(request, rlConfig);
+    if (!rl.allowed) {
+      return rateLimitResponse(rl);
+    }
 
     const sajuResult = calculateSaju(input);
     const sajuHash = generateSajuHash(
@@ -61,7 +69,7 @@ export async function POST(request: NextRequest) {
       reportResult = await generateReport(sajuResult, { tier });
     }
 
-    // Try to persist to DB (graceful fallback if Supabase unavailable)
+    // Persist to DB (required — user_id is optional for anonymous access)
     let reportId: string | null = null;
     try {
       const { createReport: createDbReport } = await import("@/lib/db/queries");
@@ -73,8 +81,9 @@ export async function POST(request: NextRequest) {
         tier,
       });
       reportId = dbReport.id;
-    } catch {
-      console.warn("DB not available, proceeding without persistence");
+    } catch (dbErr) {
+      console.error("DB persistence failed:", dbErr);
+      // Still return the report but without persistence
     }
 
     return NextResponse.json({
@@ -89,7 +98,7 @@ export async function POST(request: NextRequest) {
   } catch (err) {
     console.error("Report generation error:", err);
     return NextResponse.json(
-      { error: "리포트 생성 중 오류가 발생했습니다." },
+      { error: "리포트 생성 중 오류가 발생했습니다.", code: "INTERNAL_ERROR" },
       { status: 500 }
     );
   }

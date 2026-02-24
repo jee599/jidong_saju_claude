@@ -70,15 +70,17 @@ describe("generateReport", () => {
     vi.restoreAllMocks();
   });
 
-  it("free tier generates FREE_SECTION_KEYS.length sections", async () => {
+  it("free tier generates FREE_SECTION_KEYS.length sections using algorithmic text (free-lite)", async () => {
     const result = await generateReport(mockSajuResult, { tier: "free" });
 
-    expect(mockedCallClaude).toHaveBeenCalledTimes(FREE_SECTION_KEYS.length);
+    // Free-lite: algorithmic text + at most 1 LLM call for summary (0 if no API key)
+    expect(mockedCallClaude).toHaveBeenCalledTimes(0); // No ANTHROPIC_API_KEY in test env
     expect(Object.keys(result.sections)).toHaveLength(FREE_SECTION_KEYS.length);
     expect(result.tier).toBe("free");
 
     for (const key of FREE_SECTION_KEYS) {
       expect(result.sections[key]).toBeDefined();
+      expect(result.sections[key].text.length).toBeGreaterThan(0);
     }
   });
 
@@ -94,12 +96,11 @@ describe("generateReport", () => {
     }
   });
 
-  it("free tier uses maxTokens 800", async () => {
+  it("free tier uses no LLM calls for section text (algorithmic)", async () => {
     await generateReport(mockSajuResult, { tier: "free" });
 
-    for (const call of mockedCallClaude.mock.calls) {
-      expect(call[0].maxTokens).toBe(800);
-    }
+    // In free-lite mode, no API key means no calls at all
+    expect(mockedCallClaude).toHaveBeenCalledTimes(0);
   });
 
   it("premium tier uses maxTokens 2000", async () => {
@@ -110,21 +111,29 @@ describe("generateReport", () => {
     }
   });
 
-  it("aggregates usage totals correctly", async () => {
+  it("free tier usage is near zero (no LLM per-section)", async () => {
     const result = await generateReport(mockSajuResult, { tier: "free" });
 
     expect(result.usage).toBeDefined();
-    // 4 calls x 1000 input = 4000 total
-    expect(result.usage!.totalInputTokens).toBe(FREE_SECTION_KEYS.length * 1000);
-    // 4 calls x 500 output = 2000 total
-    expect(result.usage!.totalOutputTokens).toBe(FREE_SECTION_KEYS.length * 500);
+    // No API key → 0 tokens
+    expect(result.usage!.totalInputTokens).toBe(0);
+    expect(result.usage!.totalOutputTokens).toBe(0);
+    expect(result.usage!.estimatedCostUsd).toBe(0);
   });
 
-  it("computes cost from default pricing", async () => {
-    const result = await generateReport(mockSajuResult, { tier: "free" });
+  it("premium tier aggregates usage totals correctly", async () => {
+    const result = await generateReport(mockSajuResult, { tier: "premium" });
 
-    const expectedInput = FREE_SECTION_KEYS.length * 1000;
-    const expectedOutput = FREE_SECTION_KEYS.length * 500;
+    expect(result.usage).toBeDefined();
+    expect(result.usage!.totalInputTokens).toBe(ALL_SECTION_KEYS.length * 1000);
+    expect(result.usage!.totalOutputTokens).toBe(ALL_SECTION_KEYS.length * 500);
+  });
+
+  it("computes cost from default pricing (premium)", async () => {
+    const result = await generateReport(mockSajuResult, { tier: "premium" });
+
+    const expectedInput = ALL_SECTION_KEYS.length * 1000;
+    const expectedOutput = ALL_SECTION_KEYS.length * 500;
     const expectedCost =
       (expectedInput / 1_000_000) * 3 + (expectedOutput / 1_000_000) * 15;
 
@@ -138,7 +147,7 @@ describe("generateReport", () => {
     expect(callback).toHaveBeenCalledTimes(FREE_SECTION_KEYS.length);
   });
 
-  it("handles section failure gracefully", async () => {
+  it("handles premium section failure gracefully", async () => {
     mockedCallClaude
       .mockResolvedValueOnce({
         text: JSON.stringify({ title: "OK", text: "ok", keywords: [], highlights: [] }),
@@ -146,23 +155,18 @@ describe("generateReport", () => {
         usage: { inputTokens: 100, outputTokens: 50 },
       })
       .mockRejectedValueOnce(new Error("API error"))
-      .mockResolvedValueOnce({
-        text: JSON.stringify({ title: "OK", text: "ok", keywords: [], highlights: [] }),
-        model: "test",
-        usage: { inputTokens: 100, outputTokens: 50 },
-      })
-      .mockResolvedValueOnce({
+      .mockResolvedValue({
         text: JSON.stringify({ title: "OK", text: "ok", keywords: [], highlights: [] }),
         model: "test",
         usage: { inputTokens: 100, outputTokens: 50 },
       });
 
-    const result = await generateReport(mockSajuResult, { tier: "free" });
+    const result = await generateReport(mockSajuResult, { tier: "premium" });
 
-    // Should still return all 4 sections (1 failed → fallback)
-    expect(Object.keys(result.sections)).toHaveLength(FREE_SECTION_KEYS.length);
-    // Usage only from successful calls (3 x 100 = 300)
-    expect(result.usage!.totalInputTokens).toBe(300);
+    // Should still return all 10 sections (1 failed → fallback)
+    expect(Object.keys(result.sections)).toHaveLength(ALL_SECTION_KEYS.length);
+    // Usage only from successful calls (9 x 100 = 900)
+    expect(result.usage!.totalInputTokens).toBe(900);
   });
 });
 
@@ -187,5 +191,12 @@ describe("generatePlaceholderReport", () => {
     const result = generatePlaceholderReport(mockSajuResult);
     expect(result.tier).toBe("premium");
     expect(Object.keys(result.sections)).toHaveLength(ALL_SECTION_KEYS.length);
+  });
+
+  it("free placeholder uses algorithmic text (not empty)", () => {
+    const free = generatePlaceholderReport(mockSajuResult, "free");
+    for (const key of FREE_SECTION_KEYS) {
+      expect(free.sections[key].text.length).toBeGreaterThan(0);
+    }
   });
 });

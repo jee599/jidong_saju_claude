@@ -9,6 +9,7 @@ import type {
   UsageStats,
 } from "@/lib/saju/types";
 import { FREE_SECTION_KEYS, ALL_SECTION_KEYS } from "@/lib/saju/types";
+import { generateAlgorithmicSections } from "@/lib/saju/interpretations";
 import { callClaudeWithRetry } from "./client";
 import { SYSTEM_PROMPT, getSectionPrompt, SECTION_TITLES } from "./prompts";
 
@@ -67,14 +68,109 @@ async function generateSection(
 }
 
 /**
+ * Free-lite: algorithmic text for 4 sections + 1 LLM call for 1-line summary
+ * Drastically reduces LLM cost (4 LLM calls → 1 small call)
+ */
+async function generateFreeLiteReport(
+  sajuResult: SajuResult,
+  onSectionComplete?: (section: ReportSectionKey, result: ReportSection) => void
+): Promise<ReportResult> {
+  // Step 1: Generate algorithmic sections (no LLM)
+  const algoSections = generateAlgorithmicSections(sajuResult);
+
+  const sections: Record<string, ReportSection> = {};
+  for (const key of FREE_SECTION_KEYS) {
+    sections[key] = algoSections[key];
+    onSectionComplete?.(key, algoSections[key]);
+  }
+
+  // Step 2: One small LLM call for a personalized 1-line insight/summary
+  let totalInputTokens = 0;
+  let totalOutputTokens = 0;
+  let model = "algorithmic";
+
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (apiKey) {
+    try {
+      const dm = sajuResult.dayMaster;
+      const summaryPrompt = `사주 일간: ${dm.gan}(${dm.element}, ${dm.yinYang}), 격국: ${sajuResult.geokguk.name}, 용신: ${sajuResult.yongsin.yongsin}, 올해 세운: ${sajuResult.seun.ganJi}(${sajuResult.seun.sipseong}).
+
+이 사주의 핵심을 한 문장(50자 이내)으로 요약하세요. 명리학 용어와 쉬운 설명을 병기. JSON 출력: {"summary":"..."}`;
+
+      const response = await callClaudeWithRetry({
+        system: "한국 명리학 전문가. 요약만 출력. JSON만.",
+        prompt: summaryPrompt,
+        maxTokens: 150,
+      });
+
+      totalInputTokens = response.usage.inputTokens;
+      totalOutputTokens = response.usage.outputTokens;
+      model = response.model;
+
+      try {
+        let text = response.text.trim();
+        if (text.startsWith("```")) {
+          text = text.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
+        }
+        const parsed = JSON.parse(text);
+        if (parsed.summary) {
+          // Prepend LLM insight to personality section
+          sections.personality = {
+            ...sections.personality,
+            highlights: [parsed.summary, ...sections.personality.highlights],
+          };
+        }
+      } catch {
+        // JSON parse failed — ignore, algorithmic text is sufficient
+      }
+    } catch (err) {
+      console.error("[free-lite] Summary LLM call failed:", err);
+      // No problem — algorithmic text is the fallback
+    }
+  }
+
+  const inputPricePerM = parseFloat(process.env.LLM_INPUT_PRICE_PER_M ?? "3");
+  const outputPricePerM = parseFloat(process.env.LLM_OUTPUT_PRICE_PER_M ?? "15");
+  const estimatedCostUsd =
+    (totalInputTokens / 1_000_000) * inputPricePerM +
+    (totalOutputTokens / 1_000_000) * outputPricePerM;
+
+  console.log(
+    `[LLM Usage] tier=free-lite sections=${FREE_SECTION_KEYS.length} input=${totalInputTokens} output=${totalOutputTokens} cost=$${estimatedCostUsd.toFixed(4)}`
+  );
+
+  return {
+    sections,
+    generatedAt: new Date().toISOString(),
+    model,
+    tier: "free",
+    usage: {
+      totalInputTokens,
+      totalOutputTokens,
+      estimatedCostUsd,
+    },
+  };
+}
+
+/**
  * tier에 따라 섹션 리스트 선택 → 병렬 호출 → 사용량 집계
+ *
+ * - free: algorithmic text + 1 small LLM call (free-lite mode)
+ * - premium: full LLM parallel calls (10 sections)
  */
 export async function generateReport(
   sajuResult: SajuResult,
   options: GenerateReportOptions
 ): Promise<ReportResult> {
   const { tier, onSectionComplete } = options;
-  const sectionKeys = tier === "free" ? FREE_SECTION_KEYS : ALL_SECTION_KEYS;
+
+  // Free tier: use algorithmic text + 1 tiny LLM call
+  if (tier === "free") {
+    return generateFreeLiteReport(sajuResult, onSectionComplete);
+  }
+
+  // Premium tier: full LLM parallel calls
+  const sectionKeys = ALL_SECTION_KEYS;
 
   const results = new Map<ReportSectionKey, ReportSection>();
   let totalInputTokens = 0;
@@ -136,7 +232,22 @@ export function generatePlaceholderReport(
   sajuResult: SajuResult,
   tier: ReportTier = "premium"
 ): ReportResult {
-  const sectionKeys = tier === "free" ? FREE_SECTION_KEYS : ALL_SECTION_KEYS;
+  // For free tier without API key, use algorithmic sections
+  if (tier === "free") {
+    const algoSections = generateAlgorithmicSections(sajuResult);
+    const sections: Record<string, ReportSection> = {};
+    for (const key of FREE_SECTION_KEYS) {
+      sections[key] = algoSections[key];
+    }
+    return {
+      sections,
+      generatedAt: new Date().toISOString(),
+      model: "algorithmic",
+      tier,
+    };
+  }
+
+  const sectionKeys = ALL_SECTION_KEYS;
 
   const sections = Object.fromEntries(
     sectionKeys.map((key) => [

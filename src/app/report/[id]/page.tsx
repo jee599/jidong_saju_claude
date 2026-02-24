@@ -13,6 +13,7 @@ import { SectionCard } from "@/components/report/SectionCard";
 import { ShareCard } from "@/components/report/ShareCard";
 import { PaywallCTA } from "@/components/report/PaywallCTA";
 import { Header } from "@/components/common/Header";
+import { ErrorFallback } from "@/components/common/ErrorFallback";
 
 interface ReportData {
   reportId: string | null;
@@ -34,32 +35,34 @@ export default function ReportPage({ params }: { params: Promise<{ id: string }>
   const [data, setData] = useState<ReportData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [errorCode, setErrorCode] = useState<string | null>(null);
   const [paymentLoading, setPaymentLoading] = useState(false);
 
   const isPremium = data?.tier === "premium";
 
   useEffect(() => {
-    if (id === "local") {
-      // Load from sessionStorage (no DB mode)
-      const stored = sessionStorage.getItem("saju_report");
-      if (stored) {
-        setData(JSON.parse(stored));
-      } else {
-        setError("리포트 데이터를 찾을 수 없습니다.");
+    async function fetchReport() {
+      try {
+        const res = await fetch(`/api/saju/report/${id}`);
+        if (res.status === 404) {
+          setError("리포트를 찾을 수 없습니다.");
+          setErrorCode("REPORT_NOT_FOUND");
+          return;
+        }
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.error || "리포트를 불러올 수 없습니다.");
+        }
+        const result = await res.json();
+        setData(result);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "리포트를 불러올 수 없습니다.");
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
-      return;
     }
 
-    // TODO: Fetch from DB when Supabase is configured
-    // For now, try sessionStorage fallback
-    const stored = sessionStorage.getItem("saju_report");
-    if (stored) {
-      setData(JSON.parse(stored));
-    } else {
-      setError("리포트를 불러올 수 없습니다. 다시 분석해주세요.");
-    }
-    setLoading(false);
+    fetchReport();
   }, [id]);
 
   const handlePurchase = async () => {
@@ -121,16 +124,7 @@ export default function ReportPage({ params }: { params: Promise<{ id: string }>
   }
 
   if (error || !data) {
-    return (
-      <div className="min-h-screen bg-bg-base flex items-center justify-center px-4">
-        <div className="text-center">
-          <p className="text-danger mb-4">{error}</p>
-          <Link href="/input" className="text-brand-light text-sm hover:underline">
-            새로 분석하기
-          </Link>
-        </div>
-      </div>
-    );
+    return <ErrorFallback error={error || "리포트를 불러올 수 없습니다."} code={errorCode} />;
   }
 
   const { sajuResult, freeSummary, report } = data;

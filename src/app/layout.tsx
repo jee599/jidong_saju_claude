@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import { Noto_Serif_KR } from "next/font/google";
 import { cookies } from "next/headers";
 import { LocaleProvider } from "@/lib/i18n/context";
+import { GoogleAnalytics } from "@/components/common/GoogleAnalytics";
 import type { Locale } from "@/lib/i18n/dictionary";
 import "./globals.css";
 
@@ -63,6 +64,7 @@ export default async function RootLayout({
       <body
         className={`${pretendard.variable} ${notoSerifKR.variable} antialiased`}
       >
+        <GoogleAnalytics />
         <LocaleProvider locale={locale}>{children}</LocaleProvider>
       </body>
     </html>

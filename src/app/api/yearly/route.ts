@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { calculateSaju } from "@/lib/saju/engine";
 import { callClaudeWithRetry } from "@/lib/llm/client";
 import { SYSTEM_PROMPT, getYearlyPrompt } from "@/lib/llm/prompts";
+import { checkRateLimit, rateLimitResponse, RATE_LIMITS } from "@/lib/ratelimit/limiter";
 import type { SajuInput } from "@/lib/saju/types";
 
 interface YearlyBody {
@@ -13,12 +14,16 @@ interface YearlyBody {
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limit
+    const rl = checkRateLimit(request, RATE_LIMITS.yearly);
+    if (!rl.allowed) return rateLimitResponse(rl);
+
     const body: YearlyBody = await request.json();
     const { input, year = 2026 } = body;
 
     if (!input?.birthDate || !input?.birthTime || !input?.gender) {
       return NextResponse.json(
-        { error: "생년월일시와 성별을 입력해주세요." },
+        { error: "생년월일시와 성별을 입력해주세요.", code: "MISSING_INPUT" },
         { status: 400 }
       );
     }
@@ -63,7 +68,7 @@ export async function POST(request: NextRequest) {
   } catch (err) {
     console.error("Yearly fortune error:", err);
     return NextResponse.json(
-      { error: "연간 운세 분석 중 오류가 발생했습니다." },
+      { error: "연간 운세 분석 중 오류가 발생했습니다.", code: "INTERNAL_ERROR" },
       { status: 500 }
     );
   }

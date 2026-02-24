@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { LoadingScreen } from "@/components/loading/LoadingScreen";
+import { ErrorFallback } from "@/components/common/ErrorFallback";
 import type { SajuResult, ReportResult, ReportTier, UsageStats } from "@/lib/saju/types";
 
 function NewReportContent() {
@@ -88,8 +89,8 @@ function NewReportContent() {
       if (data.reportId) {
         router.replace(`/report/${data.reportId}`);
       } else {
-        sessionStorage.setItem("saju_report", JSON.stringify(data));
-        router.replace(`/report/local`);
+        // DB unavailable — show error instead of silent fallback
+        throw new Error("리포트를 저장하지 못했습니다. 잠시 후 다시 시도해주세요.");
       }
     } catch (err) {
       console.error(err);
@@ -98,19 +99,7 @@ function NewReportContent() {
   }
 
   if (error) {
-    return (
-      <div className="min-h-screen bg-bg-base flex items-center justify-center px-4">
-        <div className="text-center">
-          <p className="text-danger mb-4">{error}</p>
-          <button
-            onClick={() => router.push("/input")}
-            className="text-brand-light text-sm hover:underline"
-          >
-            다시 시도하기
-          </button>
-        </div>
-      </div>
-    );
+    return <ErrorFallback error={error} onRetry={() => router.push("/input")} />;
   }
 
   return (
