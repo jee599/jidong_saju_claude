@@ -1,0 +1,97 @@
+"use client";
+
+import { motion } from "framer-motion";
+import type { Pillar } from "@/lib/saju/types";
+
+const ELEMENT_COLORS: Record<string, string> = {
+  "木": "#4CAF50",
+  "火": "#F44336",
+  "土": "#FFC107",
+  "金": "#9E9E9E",
+  "水": "#2196F3",
+};
+
+interface PillarCardProps {
+  pillar: Pillar;
+  label: string;
+  isDayMaster?: boolean;
+  delay?: number;
+  sipseong?: string;
+  unseong?: string;
+}
+
+export function PillarCard({ pillar, label, isDayMaster, delay = 0, sipseong, unseong }: PillarCardProps) {
+  const ganColor = ELEMENT_COLORS[pillar.ganInfo.element] ?? "#8B85A0";
+  const jiColor = ELEMENT_COLORS[pillar.jiInfo.element] ?? "#8B85A0";
+
+  return (
+    <motion.div
+      initial={{ rotateY: 180, opacity: 0 }}
+      animate={{ rotateY: 0, opacity: 1 }}
+      transition={{ delay, duration: 0.6, ease: "easeOut" }}
+      className={`relative flex flex-col items-center p-3 sm:p-4 rounded-2xl border ${
+        isDayMaster
+          ? "border-[#D4A84B] bg-gradient-to-b from-[#D4A84B]/10 to-transparent shadow-lg shadow-[#D4A84B]/10"
+          : "border-white/10 bg-[#1E1A3A]"
+      }`}
+      style={{ perspective: "1000px" }}
+    >
+      {/* Label */}
+      <span className={`text-[10px] sm:text-xs mb-2 ${isDayMaster ? "text-[#D4A84B] font-bold" : "text-[#8B85A0]"}`}>
+        {label}
+        {isDayMaster && <span className="ml-1">(나)</span>}
+      </span>
+
+      {/* Cheongan (top) */}
+      <div className="text-center mb-2">
+        <span
+          className="font-hanja text-2xl sm:text-3xl font-bold block"
+          style={{ color: ganColor }}
+        >
+          {pillar.gan}
+        </span>
+        <span className="text-[10px] sm:text-xs text-[#8B85A0]">
+          {pillar.ganInfo.hangul}
+        </span>
+      </div>
+
+      {/* Divider */}
+      <div className="w-8 h-px bg-white/10 my-1" />
+
+      {/* Jiji (bottom) */}
+      <div className="text-center mt-2">
+        <span
+          className="font-hanja text-2xl sm:text-3xl font-bold block"
+          style={{ color: jiColor }}
+        >
+          {pillar.ji}
+        </span>
+        <span className="text-[10px] sm:text-xs text-[#8B85A0]">
+          {pillar.jiInfo.hangul}({pillar.jiInfo.animal})
+        </span>
+      </div>
+
+      {/* Sipseong + Unseong badges */}
+      <div className="mt-3 flex flex-col items-center gap-1">
+        {sipseong && (
+          <span className="text-[9px] sm:text-[10px] px-2 py-0.5 rounded-full bg-[#6C3CE1]/20 text-[#6C3CE1]">
+            {sipseong}
+          </span>
+        )}
+        {unseong && (
+          <span className="text-[9px] sm:text-[10px] px-2 py-0.5 rounded-full bg-white/5 text-[#8B85A0]">
+            {unseong}
+          </span>
+        )}
+      </div>
+
+      {/* Element badge */}
+      <div
+        className="absolute -top-2 -right-2 w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold text-white"
+        style={{ backgroundColor: ganColor }}
+      >
+        {pillar.ganInfo.element}
+      </div>
+    </motion.div>
+  );
+}
