@@ -176,8 +176,38 @@ export type ReportSectionKey =
   | "future"
   | "timeline";
 
+export type ReportTier = "free" | "premium";
+
+export const FREE_SECTION_KEYS: ReportSectionKey[] = [
+  "personality",
+  "career",
+  "love",
+  "present",
+];
+
+export const ALL_SECTION_KEYS: ReportSectionKey[] = [
+  "personality",
+  "career",
+  "love",
+  "wealth",
+  "health",
+  "family",
+  "past",
+  "present",
+  "future",
+  "timeline",
+];
+
+export interface UsageStats {
+  totalInputTokens: number;
+  totalOutputTokens: number;
+  estimatedCostUsd: number;
+}
+
 export interface ReportResult {
-  sections: Record<ReportSectionKey, ReportSection>;
+  sections: Record<string, ReportSection>;
   generatedAt: string;
   model: string;
+  tier: ReportTier;
+  usage?: UsageStats;
 }

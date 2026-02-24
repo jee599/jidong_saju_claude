@@ -1,74 +1,92 @@
-// src/lib/llm/parallel.ts — 섹션별 병렬 호출 + 에러 재시도
+// src/lib/llm/parallel.ts — 섹션별 병렬 호출 + 에러 재시도 + 사용량 추적
 
 import type {
   SajuResult,
   ReportSection,
   ReportSectionKey,
   ReportResult,
+  ReportTier,
+  UsageStats,
 } from "@/lib/saju/types";
+import { FREE_SECTION_KEYS, ALL_SECTION_KEYS } from "@/lib/saju/types";
 import { callClaudeWithRetry } from "./client";
 import { SYSTEM_PROMPT, getSectionPrompt, SECTION_TITLES } from "./prompts";
 
-const SECTIONS: ReportSectionKey[] = [
-  "personality",
-  "career",
-  "love",
-  "wealth",
-  "health",
-  "family",
-  "past",
-  "present",
-  "future",
-  "timeline",
-];
+interface SectionResult {
+  section: ReportSection;
+  usage: { inputTokens: number; outputTokens: number };
+}
+
+interface GenerateReportOptions {
+  tier: ReportTier;
+  onSectionComplete?: (section: ReportSectionKey, result: ReportSection) => void;
+}
 
 /**
- * 섹션 하나 생성 (Claude API 호출 + JSON 파싱)
+ * 섹션 하나 생성 (Claude API 호출 + JSON 파싱 + 사용량 반환)
  */
 async function generateSection(
   sajuResult: SajuResult,
-  section: ReportSectionKey
-): Promise<ReportSection> {
-  const prompt = getSectionPrompt(section, sajuResult);
+  section: ReportSectionKey,
+  tier: ReportTier = "premium"
+): Promise<SectionResult> {
+  const prompt = getSectionPrompt(section, sajuResult, tier);
+  const maxTokens = tier === "free" ? 800 : 2000;
 
   const response = await callClaudeWithRetry({
     system: SYSTEM_PROMPT,
     prompt,
-    maxTokens: 2000,
+    maxTokens,
   });
 
+  let parsedSection: ReportSection;
   try {
     // JSON 파싱 시도 — 코드블록 감싸진 경우 처리
     let text = response.text.trim();
     if (text.startsWith("```")) {
       text = text.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
     }
-    return JSON.parse(text) as ReportSection;
+    parsedSection = JSON.parse(text) as ReportSection;
   } catch {
     // JSON 파싱 실패 시 원본 텍스트를 section으로 래핑
-    return {
+    parsedSection = {
       title: SECTION_TITLES[section],
       text: response.text,
       keywords: [],
       highlights: [],
     };
   }
+
+  return {
+    section: parsedSection,
+    usage: {
+      inputTokens: response.usage.inputTokens,
+      outputTokens: response.usage.outputTokens,
+    },
+  };
 }
 
 /**
- * 10개 섹션 병렬 호출 → 완료 순서대로 콜백
+ * tier에 따라 섹션 리스트 선택 → 병렬 호출 → 사용량 집계
  */
 export async function generateReport(
   sajuResult: SajuResult,
-  onSectionComplete?: (section: ReportSectionKey, result: ReportSection) => void
+  options: GenerateReportOptions
 ): Promise<ReportResult> {
-  const results = new Map<ReportSectionKey, ReportSection>();
+  const { tier, onSectionComplete } = options;
+  const sectionKeys = tier === "free" ? FREE_SECTION_KEYS : ALL_SECTION_KEYS;
 
-  // 10개 동시 호출
-  const promises = SECTIONS.map(async (section) => {
+  const results = new Map<ReportSectionKey, ReportSection>();
+  let totalInputTokens = 0;
+  let totalOutputTokens = 0;
+
+  // 병렬 호출
+  const promises = sectionKeys.map(async (section) => {
     try {
-      const result = await generateSection(sajuResult, section);
+      const { section: result, usage } = await generateSection(sajuResult, section, tier);
       results.set(section, result);
+      totalInputTokens += usage.inputTokens;
+      totalOutputTokens += usage.outputTokens;
       onSectionComplete?.(section, result);
     } catch (err) {
       console.error(`Section ${section} failed:`, err);
@@ -85,15 +103,29 @@ export async function generateReport(
 
   await Promise.all(promises);
 
-  const sections = Object.fromEntries(results) as Record<
-    ReportSectionKey,
-    ReportSection
-  >;
+  // 비용 계산
+  const inputPricePerM = parseFloat(process.env.LLM_INPUT_PRICE_PER_M ?? "3");
+  const outputPricePerM = parseFloat(process.env.LLM_OUTPUT_PRICE_PER_M ?? "15");
+  const estimatedCostUsd =
+    (totalInputTokens / 1_000_000) * inputPricePerM +
+    (totalOutputTokens / 1_000_000) * outputPricePerM;
+
+  console.log(
+    `[LLM Usage] tier=${tier} sections=${sectionKeys.length} input=${totalInputTokens} output=${totalOutputTokens} cost=$${estimatedCostUsd.toFixed(4)}`
+  );
+
+  const sections = Object.fromEntries(results) as Record<string, ReportSection>;
 
   return {
     sections,
     generatedAt: new Date().toISOString(),
     model: "claude-sonnet-4-5-20250514",
+    tier,
+    usage: {
+      totalInputTokens,
+      totalOutputTokens,
+      estimatedCostUsd,
+    },
   };
 }
 
@@ -101,10 +133,13 @@ export async function generateReport(
  * 플레이스홀더 리포트 (API 키 없을 때)
  */
 export function generatePlaceholderReport(
-  sajuResult: SajuResult
+  sajuResult: SajuResult,
+  tier: ReportTier = "premium"
 ): ReportResult {
+  const sectionKeys = tier === "free" ? FREE_SECTION_KEYS : ALL_SECTION_KEYS;
+
   const sections = Object.fromEntries(
-    SECTIONS.map((key) => [
+    sectionKeys.map((key) => [
       key,
       {
         title: SECTION_TITLES[key],
@@ -115,11 +150,12 @@ export function generatePlaceholderReport(
         ],
       },
     ])
-  ) as Record<ReportSectionKey, ReportSection>;
+  ) as Record<string, ReportSection>;
 
   return {
     sections,
     generatedAt: new Date().toISOString(),
     model: "placeholder",
+    tier,
   };
 }

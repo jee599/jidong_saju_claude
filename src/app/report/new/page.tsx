@@ -3,7 +3,7 @@
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { LoadingScreen } from "@/components/loading/LoadingScreen";
-import type { SajuResult, ReportResult } from "@/lib/saju/types";
+import type { SajuResult, ReportResult, ReportTier, UsageStats } from "@/lib/saju/types";
 
 function NewReportContent() {
   const router = useRouter();
@@ -78,6 +78,8 @@ function NewReportContent() {
         sajuHash: string;
         freeSummary: { personalitySummary: string; yearKeyword: string };
         report: ReportResult | null;
+        tier: ReportTier;
+        usage?: UsageStats;
       };
       setPhase("done");
 

@@ -3,7 +3,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import type { SajuInput, SajuResult, ReportResult } from "@/lib/saju/types";
+import type { SajuInput, SajuResult, ReportResult, ReportTier, UsageStats } from "@/lib/saju/types";
 
 interface ReportResponse {
   reportId: string | null;
@@ -11,6 +11,8 @@ interface ReportResponse {
   sajuHash: string;
   freeSummary: { personalitySummary: string; yearKeyword: string };
   report: ReportResult | null;
+  tier: ReportTier;
+  usage?: UsageStats;
 }
 
 interface UseReportGenerationReturn {

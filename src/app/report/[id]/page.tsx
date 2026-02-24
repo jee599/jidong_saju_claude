@@ -3,7 +3,9 @@
 import { useState, useEffect, use } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import type { SajuResult, ReportResult, ReportSectionKey } from "@/lib/saju/types";
+import type { SajuResult, ReportResult, ReportSectionKey, UsageStats } from "@/lib/saju/types";
+import { FREE_SECTION_KEYS } from "@/lib/saju/types";
+import { SECTION_TITLES } from "@/lib/llm/prompts";
 import { PillarCard } from "@/components/report/PillarCard";
 import { OhengChart } from "@/components/report/OhengChart";
 import { DaeunTimeline } from "@/components/report/DaeunTimeline";
@@ -19,9 +21,9 @@ interface ReportData {
   freeSummary: { personalitySummary: string; yearKeyword: string };
   report: ReportResult | null;
   tier?: string;
+  usage?: UsageStats;
 }
 
-const FREE_SECTIONS: ReportSectionKey[] = ["personality", "present"];
 const SECTION_ORDER: ReportSectionKey[] = [
   "personality", "career", "love", "wealth", "health",
   "family", "past", "present", "future", "timeline",
@@ -34,7 +36,7 @@ export default function ReportPage({ params }: { params: Promise<{ id: string }>
   const [error, setError] = useState("");
   const [paymentLoading, setPaymentLoading] = useState(false);
 
-  const isPremium = data?.tier === "premium" || (data?.report?.model !== "placeholder" && data?.report !== null && data?.tier !== "free");
+  const isPremium = data?.tier === "premium";
 
   useEffect(() => {
     if (id === "local") {
@@ -333,7 +335,7 @@ export default function ReportPage({ params }: { params: Promise<{ id: string }>
         ) : (
           <section className="mb-8 space-y-4">
             {/* Show locked preview of premium sections */}
-            {report && FREE_SECTIONS.map((key, i) => (
+            {report && FREE_SECTION_KEYS.map((key, i) => (
               report.sections[key] && (
                 <SectionCard
                   key={key}
@@ -347,28 +349,17 @@ export default function ReportPage({ params }: { params: Promise<{ id: string }>
             <PaywallCTA onPurchase={handlePurchase} loading={paymentLoading} />
 
             {/* Locked sections preview */}
-            {SECTION_ORDER.filter(k => !FREE_SECTIONS.includes(k)).map((key, i) => (
+            {SECTION_ORDER.filter(k => !FREE_SECTION_KEYS.includes(k)).map((key, i) => (
               <SectionCard
                 key={key}
                 section={{
-                  title: ({
-                    personality: "성격과 기질",
-                    career: "직업과 적성",
-                    love: "연애와 결혼",
-                    wealth: "금전과 재물",
-                    health: "건강",
-                    family: "가족과 대인관계",
-                    past: "과거 (초년운)",
-                    present: "현재",
-                    future: "미래 전망",
-                    timeline: "대운 타임라인 분석",
-                  } as Record<string, string>)[key] ?? key,
+                  title: SECTION_TITLES[key],
                   text: "이 섹션은 풀 리포트에서 확인할 수 있습니다. 전문 명리학 분석으로 상세한 해석과 실행 팁을 제공합니다.",
                   keywords: [],
                   highlights: [],
                 }}
                 isLocked
-                index={i + FREE_SECTIONS.length}
+                index={i + FREE_SECTION_KEYS.length}
               />
             ))}
           </section>

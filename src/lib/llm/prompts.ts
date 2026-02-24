@@ -1,6 +1,19 @@
 // src/lib/llm/prompts.ts — 섹션별 프롬프트
 
-import type { SajuResult, ReportSectionKey } from "@/lib/saju/types";
+import type { SajuResult, ReportSectionKey, ReportTier } from "@/lib/saju/types";
+
+export const BANNED_PHRASES = [
+  "이러한 조합은",
+  "종합적으로 볼 때",
+  "흥미로운 점은",
+  "주목할 만한 점은",
+  "특이한 점은",
+  "결론적으로",
+  "전반적으로",
+  "이를 통해 알 수 있듯이",
+  "한마디로 정리하면",
+  "이상을 종합하면",
+];
 
 export const SYSTEM_PROMPT = `당신은 한국 명리학(사주팔자) 전문 해석가입니다.
 
@@ -12,6 +25,19 @@ export const SYSTEM_PROMPT = `당신은 한국 명리학(사주팔자) 전문 �
 4. 구조: 근거(왜) → 패턴(어떻게 나타남) → 리스크(주의) → 실행 팁(구체적 행동)
 5. 금지: 의료 진단, 법률 조언, 투자 추천, 공포 조장, 단정적 표현.
 6. 반복 금지. 간결하고 밀도 있게.
+
+증거 인용 규칙:
+7. 한 문장당 최소 1개의 사주 데이터를 직접 인용하세요. 다음 항목을 적극 인용:
+   - 일간의 신강/신약 여부와 그 근거
+   - 용신(用神)·기신(忌神)
+   - 십성 배치 (어떤 위치에 어떤 십성이 있는지)
+   - 오행 분포 (강한 오행, 약한 오행, 비율)
+   - 합충형파해 (어떤 지지 간 관계가 있는지)
+   - 신살 (천을귀인, 도화살, 역마살 등)
+   - 현재 대운·세운의 간지와 십성
+   - 12운성 (어떤 에너지 단계에 있는지)
+
+사용 금지 표현: ${BANNED_PHRASES.join(", ")}
 
 출력 형식: 반드시 유효한 JSON만 출력하세요. 코드블록 없이 순수 JSON만.
 {"title":"섹션 제목","text":"본문 내용","keywords":["키워드1","키워드2"],"highlights":["핵심 문장"]}`;
@@ -53,22 +79,26 @@ const SECTION_EXTRAS: Record<ReportSectionKey, string> = {
 };
 
 /**
- * 특정 섹션에 대한 프롬프트 생성
+ * 특정 섹션에 대한 프롬프트 생성 (tier에 따라 분량 조절)
  */
 export function getSectionPrompt(
   section: ReportSectionKey,
-  sajuResult: SajuResult
+  sajuResult: SajuResult,
+  tier: ReportTier = "premium"
 ): string {
+  const lengthGuide = tier === "free" ? "400~700자" : "800~1,500자";
+
   return `다음 사주 데이터를 바탕으로 [${SECTION_TITLES[section]}] 섹션을 작성하세요.
 
 사주 데이터:
 ${JSON.stringify(sajuResult, null, 2)}
 
 공통 요구사항:
-- 800~1,500자
+- ${lengthGuide}
 - 근거 → 패턴 → 리스크 → 실행 팁 흐름
 - 명리 용어 + 쉬운 설명 병기
 - 실행 팁에 구체적 행동 1개 이상
+- 한 문장당 최소 1개 사주 데이터 인용
 
 추가 요구사항:
 ${SECTION_EXTRAS[section]}
