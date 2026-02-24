@@ -3,7 +3,7 @@
 > **최종 갱신:** 2026-02-24
 > **갱신자:** Claude Opus 4.6
 > **브랜치:** main
-> **최신 커밋:** (pending — UI/UX 16개 태스크 커밋 예정)
+> **최신 커밋:** `d327601` feat: UI/UX 디자인 개선 16개 태스크 전체 구현
 > **빌드 상태:** PASS (Next.js 16.1.6, Turbopack)
 > **테스트:** 392/392 통과 (16 suites, ~500ms)
 > **배포:** https://fatesaju.vercel.app (Vercel 프로덕션)
@@ -248,7 +248,8 @@ vitest.config.ts                   ← 테스트 설정
 
 | 해시 | 설명 | 날짜 |
 |------|------|------|
-| `90948d2` | 랜딩 페이지 리디자인 — Soft Lavender 다크 테마 | 최신 |
+| `d327601` | UI/UX 디자인 개선 16개 태스크 전체 구현 | 최신 |
+| `90948d2` | 랜딩 페이지 리디자인 — Soft Lavender 다크 테마 | |
 | `2272b5b` | 운영 대시보드 `/log` — 구조화 로깅, LLM 비용 추적 | |
 | `e3a7878` | LLM 비용 최적화 — 프롬프트 압축 + Prompt Caching | |
 | `3741f52` | P0 패널 리뷰 — 익명 접근, GA4, Rate Limiting | |
@@ -383,7 +384,7 @@ OPS_PASSWORD=...
 - `src/components/loading/LoadingScreen.tsx` (Tasks 3,13)
 - `src/components/common/Footer.tsx` (Task 3)
 - `src/lib/saju/terms.ts` (Task 16 — 신규, 42개 용어)
-**커밋:** (아래 참조)
+**커밋:** `d327601` feat: UI/UX 디자인 개선 16개 태스크 전체 구현
 **QA 결과:** 테스트 392/392 통과, 빌드 PASS
 **다음 AI에게:**
 - 16개 UI/UX 태스크 전부 완료. UI_UX_DESIGN_TASKS.md 문서와 대조 가능
