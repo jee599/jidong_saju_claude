@@ -3,8 +3,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PRICING } from "@/lib/payment/toss";
 import { generateOrderId } from "@/lib/utils/hash";
+import { logPayment, logError, generateRequestId } from "@/lib/logging/opsLogger";
 
 export async function POST(request: NextRequest) {
+  const requestId = generateRequestId();
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+
   try {
     const body = await request.json();
     const { reportId, productType } = body as {
@@ -56,6 +60,16 @@ export async function POST(request: NextRequest) {
       console.warn("DB not available, proceeding without payment record");
     }
 
+    logPayment({
+      endpoint: "/api/payment/create",
+      statusCode: 200,
+      amount,
+      orderId,
+      ip,
+      requestId,
+      metadata: { productType },
+    });
+
     return NextResponse.json({
       orderId,
       amount,
@@ -66,6 +80,14 @@ export async function POST(request: NextRequest) {
     });
   } catch (err) {
     console.error("Payment creation error:", err);
+    logError({
+      endpoint: "/api/payment/create",
+      statusCode: 500,
+      errorCode: "PAYMENT_CREATE_ERROR",
+      errorMessage: err instanceof Error ? err.message : "Unknown error",
+      ip,
+      requestId,
+    });
     return NextResponse.json(
       { error: "결제 생성 중 오류가 발생했습니다." },
       { status: 500 }

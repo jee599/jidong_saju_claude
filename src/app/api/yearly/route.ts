@@ -5,6 +5,7 @@ import { calculateSaju } from "@/lib/saju/engine";
 import { callClaudeWithRetry } from "@/lib/llm/client";
 import { SYSTEM_PROMPT, getYearlyPrompt } from "@/lib/llm/prompts";
 import { checkRateLimit, rateLimitResponse, RATE_LIMITS } from "@/lib/ratelimit/limiter";
+import { logLLMUsage, logRateLimit, logError, generateRequestId } from "@/lib/logging/opsLogger";
 import type { SajuInput } from "@/lib/saju/types";
 
 interface YearlyBody {
@@ -13,10 +14,16 @@ interface YearlyBody {
 }
 
 export async function POST(request: NextRequest) {
+  const requestId = generateRequestId();
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+
   try {
     // Rate limit
     const rl = checkRateLimit(request, RATE_LIMITS.yearly);
-    if (!rl.allowed) return rateLimitResponse(rl);
+    if (!rl.allowed) {
+      logRateLimit({ endpoint: "/api/yearly", ip, requestId });
+      return rateLimitResponse(rl);
+    }
 
     const body: YearlyBody = await request.json();
     const { input, year = 2026 } = body;
@@ -51,6 +58,17 @@ export async function POST(request: NextRequest) {
           text = text.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
         }
         yearlyAnalysis = JSON.parse(text);
+
+        logLLMUsage({
+          endpoint: "/api/yearly",
+          sectionCount: 1,
+          inputTokens: response.usage.inputTokens,
+          outputTokens: response.usage.outputTokens,
+          cacheWriteTokens: response.usage.cacheCreationInputTokens,
+          cacheReadTokens: response.usage.cacheReadInputTokens,
+          ip,
+          requestId,
+        });
       } catch (err) {
         console.error("LLM yearly analysis failed:", err);
       }
@@ -67,6 +85,14 @@ export async function POST(request: NextRequest) {
     });
   } catch (err) {
     console.error("Yearly fortune error:", err);
+    logError({
+      endpoint: "/api/yearly",
+      statusCode: 500,
+      errorCode: "INTERNAL_ERROR",
+      errorMessage: err instanceof Error ? err.message : "Unknown error",
+      ip,
+      requestId,
+    });
     return NextResponse.json(
       { error: "연간 운세 분석 중 오류가 발생했습니다.", code: "INTERNAL_ERROR" },
       { status: 500 }

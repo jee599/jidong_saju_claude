@@ -5,6 +5,7 @@ import { calculateSaju } from "@/lib/saju/engine";
 import { generateSajuHash } from "@/lib/utils/hash";
 import { generateReport, generatePlaceholderReport } from "@/lib/llm/parallel";
 import { checkRateLimit, rateLimitResponse, RATE_LIMITS } from "@/lib/ratelimit/limiter";
+import { logLLMUsage, logRateLimit, logError, generateRequestId } from "@/lib/logging/opsLogger";
 import type { SajuInput, SajuResult, ReportResult, ReportTier } from "@/lib/saju/types";
 
 /**
@@ -31,6 +32,9 @@ function generateFreeSummary(sajuResult: SajuResult): {
 }
 
 export async function POST(request: NextRequest) {
+  const requestId = generateRequestId();
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+
   try {
     const body = await request.json();
     const { input, tier: rawTier } = body as { input: SajuInput; tier?: string };
@@ -48,6 +52,7 @@ export async function POST(request: NextRequest) {
     const rlConfig = tier === "premium" ? RATE_LIMITS.premiumReport : RATE_LIMITS.freeReport;
     const rl = checkRateLimit(request, rlConfig);
     if (!rl.allowed) {
+      logRateLimit({ endpoint: "/api/saju/report", tier, ip, requestId });
       return rateLimitResponse(rl);
     }
 
@@ -86,6 +91,23 @@ export async function POST(request: NextRequest) {
       // Still return the report but without persistence
     }
 
+    // Log LLM usage
+    if (reportResult.usage) {
+      logLLMUsage({
+        endpoint: "/api/saju/report",
+        tier,
+        sectionCount: Object.keys(reportResult.sections).length,
+        inputTokens: reportResult.usage.totalInputTokens,
+        outputTokens: reportResult.usage.totalOutputTokens,
+        cacheWriteTokens: reportResult.usage.totalCacheWriteTokens,
+        cacheReadTokens: reportResult.usage.totalCacheReadTokens,
+        estimatedCostUsd: reportResult.usage.estimatedCostUsd,
+        sajuHash,
+        ip,
+        requestId,
+      });
+    }
+
     return NextResponse.json({
       reportId,
       sajuResult,
@@ -97,6 +119,14 @@ export async function POST(request: NextRequest) {
     });
   } catch (err) {
     console.error("Report generation error:", err);
+    logError({
+      endpoint: "/api/saju/report",
+      statusCode: 500,
+      errorCode: "INTERNAL_ERROR",
+      errorMessage: err instanceof Error ? err.message : "Unknown error",
+      ip,
+      requestId,
+    });
     return NextResponse.json(
       { error: "리포트 생성 중 오류가 발생했습니다.", code: "INTERNAL_ERROR" },
       { status: 500 }

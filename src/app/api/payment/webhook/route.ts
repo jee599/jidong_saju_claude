@@ -1,6 +1,7 @@
 // POST /api/payment/webhook — Toss Payments webhook handler
 
 import { NextRequest, NextResponse } from "next/server";
+import { logPayment, logError } from "@/lib/logging/opsLogger";
 
 export async function POST(request: NextRequest) {
   try {
@@ -49,9 +50,24 @@ export async function POST(request: NextRequest) {
         console.log(`Unhandled webhook event: ${eventType}`);
     }
 
+    logPayment({
+      endpoint: "/api/payment/webhook",
+      statusCode: 200,
+      orderId: data.orderId,
+      ip: request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown",
+      metadata: { eventType, paymentStatus: data.status },
+    });
+
     return NextResponse.json({ success: true });
   } catch (err) {
     console.error("Webhook error:", err);
+    logError({
+      endpoint: "/api/payment/webhook",
+      statusCode: 500,
+      errorCode: "WEBHOOK_ERROR",
+      errorMessage: err instanceof Error ? err.message : "Unknown error",
+      ip: request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown",
+    });
     return NextResponse.json({ error: "Webhook processing failed" }, { status: 500 });
   }
 }
