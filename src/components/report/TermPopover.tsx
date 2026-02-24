@@ -48,28 +48,43 @@ export function TermPopover({ text }: TermPopoverProps) {
     return () => document.removeEventListener("click", handleClick);
   }, []);
 
-  const parts = text.split(pattern);
+  // Render a text segment with bold (**text**) and term popover support
+  const renderSegment = (raw: string, keyPrefix: string) => {
+    const boldParts = raw.split(/(\*\*[^*]+\*\*)/g);
+    return boldParts.map((bp, bi) => {
+      const boldMatch = bp.match(/^\*\*(.+)\*\*$/);
+      if (boldMatch) {
+        return <strong key={`${keyPrefix}-b${bi}`} className="text-text-primary font-semibold">{boldMatch[1]}</strong>;
+      }
+      const termParts = bp.split(pattern);
+      return termParts.map((part, ti) => {
+        if (SAJU_TERMS[part]) {
+          return (
+            <span
+              key={`${keyPrefix}-${bi}-${ti}`}
+              onClick={(e) => handleTermClick(part, e)}
+              onMouseEnter={(e) => showPopover(part, e)}
+              onMouseLeave={() => setActiveTerm(null)}
+              className="underline decoration-dotted decoration-brand/50 underline-offset-2 cursor-help hover:text-brand-light transition-colors"
+            >
+              {part}
+            </span>
+          );
+        }
+        return <span key={`${keyPrefix}-${bi}-${ti}`}>{part}</span>;
+      });
+    });
+  };
+
+  const paragraphs = text.split(/\n\n+/);
 
   return (
-    <div ref={containerRef} className="relative">
-      <p className="text-sm sm:text-base text-text-primary/85 leading-relaxed whitespace-pre-line">
-        {parts.map((part, i) => {
-          if (SAJU_TERMS[part]) {
-            return (
-              <span
-                key={i}
-                onClick={(e) => handleTermClick(part, e)}
-                onMouseEnter={(e) => showPopover(part, e)}
-                onMouseLeave={() => setActiveTerm(null)}
-                className="underline decoration-dotted decoration-brand/50 underline-offset-2 cursor-help hover:text-brand-light transition-colors"
-              >
-                {part}
-              </span>
-            );
-          }
-          return <span key={i}>{part}</span>;
-        })}
-      </p>
+    <div ref={containerRef} className="relative space-y-3">
+      {paragraphs.map((para, pi) => (
+        <p key={pi} className="text-sm sm:text-base text-text-primary/85 leading-relaxed">
+          {renderSegment(para, `p${pi}`)}
+        </p>
+      ))}
 
       {activeTerm && SAJU_TERMS[activeTerm] && (
         <div
