@@ -6,9 +6,13 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { Header } from "@/components/common/Header";
 import { DateInput } from "@/components/input/DateInput";
+import { useTranslations } from "@/lib/i18n/context";
 
 export default function InputPage() {
   const router = useRouter();
+  const t = useTranslations();
+  const inp = t.input;
+
   const [form, setForm] = useState({
     name: "",
     birthDate: "",
@@ -48,35 +52,35 @@ export default function InputPage() {
         >
           <div className="text-center mb-10">
             <h1 className="text-2xl sm:text-3xl font-bold text-text-primary mb-2 tracking-tight">
-              사주 정보 입력
+              {inp.title}
             </h1>
             <p className="text-text-secondary text-sm">
-              정확한 분석을 위해 태어난 시간까지 입력해주세요.
+              {inp.subtitle}
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
-            {/* 이름 */}
+            {/* Name */}
             <div>
               <label className="block text-xs text-text-secondary mb-1.5 font-medium">
-                이름 <span className="text-text-tertiary">(선택)</span>
+                {inp.nameLabel} <span className="text-text-tertiary">{inp.nameOptional}</span>
               </label>
               <input
                 type="text"
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
-                placeholder="홍길동"
+                placeholder={inp.namePlaceholder}
                 className="w-full bg-bg-elevated border border-border rounded-xl px-4 py-3 text-text-primary placeholder:text-text-tertiary focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand/30 transition text-sm"
               />
             </div>
 
-            {/* 양력/음력 */}
+            {/* Calendar type */}
             <div>
-              <label className="block text-xs text-text-secondary mb-1.5 font-medium">달력 유형</label>
+              <label className="block text-xs text-text-secondary mb-1.5 font-medium">{inp.calendarLabel}</label>
               <div className="grid grid-cols-2 gap-2">
                 {[
-                  { value: "solar", label: "양력 (Solar)" },
-                  { value: "lunar", label: "음력 (Lunar)" },
+                  { value: "solar", label: inp.solar },
+                  { value: "lunar", label: inp.lunar },
                 ].map((opt) => (
                   <button
                     key={opt.value}
@@ -94,9 +98,9 @@ export default function InputPage() {
               </div>
             </div>
 
-            {/* 생년월일 */}
+            {/* Birth date */}
             <div>
-              <label className="block text-xs text-text-secondary mb-1.5 font-medium">생년월일</label>
+              <label className="block text-xs text-text-secondary mb-1.5 font-medium">{inp.birthDateLabel}</label>
               <DateInput
                 value={form.birthDate}
                 onChange={(v) => setForm({ ...form, birthDate: v })}
@@ -105,9 +109,9 @@ export default function InputPage() {
               />
             </div>
 
-            {/* 태어난 시간 */}
+            {/* Birth time */}
             <div>
-              <label className="block text-xs text-text-secondary mb-1.5 font-medium">태어난 시간</label>
+              <label className="block text-xs text-text-secondary mb-1.5 font-medium">{inp.birthTimeLabel}</label>
               <input
                 type="time"
                 required
@@ -116,17 +120,17 @@ export default function InputPage() {
                 className="w-full bg-bg-elevated border border-border rounded-xl px-4 py-3 text-text-primary focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand/30 transition text-sm"
               />
               <p className="text-[10px] text-text-tertiary mt-1.5">
-                정확한 시간을 모르면 대략적인 시간을 입력해주세요
+                {inp.birthTimeHint}
               </p>
             </div>
 
-            {/* 성별 */}
+            {/* Gender */}
             <div>
-              <label className="block text-xs text-text-secondary mb-1.5 font-medium">성별</label>
+              <label className="block text-xs text-text-secondary mb-1.5 font-medium">{inp.genderLabel}</label>
               <div className="grid grid-cols-2 gap-2">
                 {[
-                  { value: "male", label: "남성 (Male)" },
-                  { value: "female", label: "여성 (Female)" },
+                  { value: "male", label: inp.male },
+                  { value: "female", label: inp.female },
                 ].map((opt) => (
                   <button
                     key={opt.value}
@@ -144,7 +148,7 @@ export default function InputPage() {
               </div>
             </div>
 
-            {/* 제출 */}
+            {/* Submit */}
             <button
               type="submit"
               disabled={!canSubmit}
@@ -156,21 +160,21 @@ export default function InputPage() {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                   </svg>
-                  분석 시작 중...
+                  {inp.submitting}
                 </span>
               ) : (
-                "무료 사주 분석 시작 →"
+                inp.submit
               )}
             </button>
           </form>
 
           <p className="text-center text-[10px] text-text-tertiary mt-8">
-            입력한 정보는 사주 계산에만 사용되며 안전하게 보호됩니다.
+            {inp.privacy}
           </p>
 
           <div className="text-center mt-4">
             <Link href="/" className="text-xs text-text-secondary hover:text-text-primary transition">
-              &larr; 홈으로 돌아가기
+              {inp.backHome}
             </Link>
           </div>
         </motion.div>

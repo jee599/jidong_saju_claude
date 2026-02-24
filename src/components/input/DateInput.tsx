@@ -9,6 +9,8 @@ import {
   type KeyboardEvent,
 } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { useTranslations } from "@/lib/i18n/context";
+import type { Locale } from "@/lib/i18n/dictionary";
 
 /* ─── props ─── */
 interface DateInputProps {
@@ -18,67 +20,115 @@ interface DateInputProps {
   required?: boolean;
 }
 
-/* ─── helpers ─── */
-const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
-const MONTHS = [
-  "1월", "2월", "3월", "4월", "5월", "6월",
-  "7월", "8월", "9월", "10월", "11월", "12월",
-];
-
-function daysInMonth(year: number, month: number): number {
+/* ─── helpers (exported for tests) ─── */
+export function daysInMonth(year: number, month: number): number {
   return new Date(year, month + 1, 0).getDate();
 }
 
-function startDayOfMonth(year: number, month: number): number {
+export function startDayOfMonth(year: number, month: number): number {
   return new Date(year, month, 1).getDay();
 }
 
-function pad(n: number): string {
+export function pad(n: number): string {
   return n < 10 ? `0${n}` : `${n}`;
 }
 
-function formatDisplay(value: string): string {
+export function formatDisplay(
+  value: string,
+  locale: Locale,
+  monthNames: readonly string[],
+): string {
   if (!value) return "";
   const [y, m, d] = value.split("-");
   if (!y || !m || !d) return value;
-  return `${y}년 ${parseInt(m, 10)}월 ${parseInt(d, 10)}일`;
+  const mi = parseInt(m, 10);
+  const di = parseInt(d, 10);
+  if (locale === "ko") {
+    return `${y}년 ${mi}월 ${di}일`;
+  }
+  return `${monthNames[mi - 1]} ${di}, ${y}`;
 }
 
-function parseValue(value: string): { year: number; month: number; day: number } | null {
+export function parseValue(
+  value: string,
+): { year: number; month: number; day: number } | null {
   if (!value) return null;
   const parts = value.split("-").map(Number);
   if (parts.length !== 3 || parts.some(isNaN)) return null;
   return { year: parts[0], month: parts[1] - 1, day: parts[2] };
 }
 
-/* ─── year range for dropdown ─── */
+export function buildDateString(
+  year: number,
+  month: number,
+  day: number,
+): string {
+  return `${year}-${pad(month + 1)}-${pad(day)}`;
+}
+
+export function buildCalendarGrid(
+  year: number,
+  month: number,
+): (number | null)[] {
+  const start = startDayOfMonth(year, month);
+  const total = daysInMonth(year, month);
+  const cells: (number | null)[] = [];
+  for (let i = 0; i < start; i++) cells.push(null);
+  for (let d = 1; d <= total; d++) cells.push(d);
+  return cells;
+}
+
+/* ─── year range ─── */
 const CURRENT_YEAR = new Date().getFullYear();
 const MIN_YEAR = 1920;
 const MAX_YEAR = CURRENT_YEAR;
 
+type DateStep = "year" | "month" | "day";
+
 /* ─── component ─── */
-export function DateInput({ value, onChange, className, required }: DateInputProps) {
+export function DateInput({
+  value,
+  onChange,
+  className,
+  required,
+}: DateInputProps) {
+  const t = useTranslations();
+  const dp = t.datePicker;
   const parsed = parseValue(value);
   const today = useMemo(() => new Date(), []);
 
-  // Calendar view state
+  // Popup state
   const [open, setOpen] = useState(false);
-  const [viewYear, setViewYear] = useState(parsed?.year ?? today.getFullYear() - 30);
-  const [viewMonth, setViewMonth] = useState(parsed?.month ?? today.getMonth());
-  const [mode, setMode] = useState<"calendar" | "year">("calendar");
+  const [step, setStep] = useState<DateStep>(parsed ? "day" : "year");
+
+  // Selection state (separate from final value to allow step-by-step)
+  const [selectedYear, setSelectedYear] = useState<number | null>(
+    parsed?.year ?? null,
+  );
+  const [selectedMonth, setSelectedMonth] = useState<number | null>(
+    parsed?.month ?? null,
+  );
   const [focusedDay, setFocusedDay] = useState<number | null>(null);
+
+  // Year pagination
+  const yearPageSize = 12;
+  const [yearPageStart, setYearPageStart] = useState(() => {
+    const base = parsed?.year ?? CURRENT_YEAR - 30;
+    return (
+      Math.floor((base - MIN_YEAR) / yearPageSize) * yearPageSize + MIN_YEAR
+    );
+  });
 
   // Refs
   const containerRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
-  const calendarRef = useRef<HTMLDivElement>(null);
 
-  // Sync view when value changes externally
+  // Sync when value changes externally
   useEffect(() => {
     const p = parseValue(value);
     if (p) {
-      setViewYear(p.year);
-      setViewMonth(p.month);
+      setSelectedYear(p.year);
+      setSelectedMonth(p.month);
     }
   }, [value]);
 
@@ -86,9 +136,11 @@ export function DateInput({ value, onChange, className, required }: DateInputPro
   useEffect(() => {
     if (!open) return;
     function handleClick(e: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(e.target as Node)
+      ) {
         setOpen(false);
-        setMode("calendar");
       }
     }
     document.addEventListener("mousedown", handleClick);
@@ -101,7 +153,6 @@ export function DateInput({ value, onChange, className, required }: DateInputPro
     function handleKey(e: globalThis.KeyboardEvent) {
       if (e.key === "Escape") {
         setOpen(false);
-        setMode("calendar");
         triggerRef.current?.focus();
       }
     }
@@ -109,65 +160,62 @@ export function DateInput({ value, onChange, className, required }: DateInputPro
     return () => document.removeEventListener("keydown", handleKey);
   }, [open]);
 
-  /* ─── navigation ─── */
-  const prevMonth = useCallback(() => {
-    setViewMonth((m) => {
-      if (m === 0) {
-        setViewYear((y) => Math.max(MIN_YEAR, y - 1));
-        return 11;
-      }
-      return m - 1;
-    });
+  /* ─── open popup ─── */
+  const openPicker = useCallback(() => {
+    const p = parseValue(value);
+    if (p) {
+      setSelectedYear(p.year);
+      setSelectedMonth(p.month);
+      setStep("day");
+    } else {
+      setStep("year");
+    }
+    setFocusedDay(null);
+    setOpen(true);
+  }, [value]);
+
+  /* ─── year selection ─── */
+  const handleSelectYear = useCallback((y: number) => {
+    setSelectedYear(y);
+    setStep("month");
+  }, []);
+
+  /* ─── month selection ─── */
+  const handleSelectMonth = useCallback((m: number) => {
+    setSelectedMonth(m);
+    setStep("day");
     setFocusedDay(null);
   }, []);
 
-  const nextMonth = useCallback(() => {
-    setViewMonth((m) => {
-      if (m === 11) {
-        setViewYear((y) => Math.min(MAX_YEAR, y + 1));
-        return 0;
-      }
-      return m + 1;
-    });
-    setFocusedDay(null);
-  }, []);
-
-  /* ─── select a day ─── */
-  const selectDay = useCallback(
+  /* ─── day selection ─── */
+  const handleSelectDay = useCallback(
     (day: number) => {
-      const dateStr = `${viewYear}-${pad(viewMonth + 1)}-${pad(day)}`;
+      if (selectedYear === null || selectedMonth === null) return;
+      const dateStr = buildDateString(selectedYear, selectedMonth, day);
       onChange(dateStr);
       setOpen(false);
-      setMode("calendar");
-      // Return focus to trigger
       setTimeout(() => triggerRef.current?.focus(), 0);
     },
-    [viewYear, viewMonth, onChange],
+    [selectedYear, selectedMonth, onChange],
   );
 
-  /* ─── select a year (from year picker) ─── */
-  const selectYear = useCallback((y: number) => {
-    setViewYear(y);
-    setMode("calendar");
-  }, []);
-
-  /* ─── keyboard navigation in calendar grid ─── */
-  const totalDays = daysInMonth(viewYear, viewMonth);
+  /* ─── day grid navigation ─── */
+  const dayViewYear = selectedYear ?? today.getFullYear();
+  const dayViewMonth = selectedMonth ?? today.getMonth();
+  const totalDays = daysInMonth(dayViewYear, dayViewMonth);
+  const cells = buildCalendarGrid(dayViewYear, dayViewMonth);
 
   const handleCalendarKeyDown = useCallback(
     (e: KeyboardEvent<HTMLDivElement>) => {
       const current = focusedDay ?? parsed?.day ?? 1;
-
       switch (e.key) {
         case "ArrowLeft":
           e.preventDefault();
           if (current > 1) setFocusedDay(current - 1);
-          else prevMonth();
           break;
         case "ArrowRight":
           e.preventDefault();
           if (current < totalDays) setFocusedDay(current + 1);
-          else nextMonth();
           break;
         case "ArrowUp":
           e.preventDefault();
@@ -180,7 +228,7 @@ export function DateInput({ value, onChange, className, required }: DateInputPro
         case "Enter":
         case " ":
           e.preventDefault();
-          selectDay(current);
+          handleSelectDay(current);
           break;
         case "Home":
           e.preventDefault();
@@ -192,44 +240,71 @@ export function DateInput({ value, onChange, className, required }: DateInputPro
           break;
       }
     },
-    [focusedDay, parsed, totalDays, prevMonth, nextMonth, selectDay],
+    [focusedDay, parsed, totalDays, handleSelectDay],
   );
-
-  /* ─── build calendar grid ─── */
-  const startDay = startDayOfMonth(viewYear, viewMonth);
-  const cells: (number | null)[] = [];
-  for (let i = 0; i < startDay; i++) cells.push(null);
-  for (let d = 1; d <= totalDays; d++) cells.push(d);
 
   const isSelected = (day: number) =>
     parsed !== null &&
-    parsed.year === viewYear &&
-    parsed.month === viewMonth &&
+    parsed.year === dayViewYear &&
+    parsed.month === dayViewMonth &&
     parsed.day === day;
 
   const isToday = (day: number) =>
-    today.getFullYear() === viewYear &&
-    today.getMonth() === viewMonth &&
+    today.getFullYear() === dayViewYear &&
+    today.getMonth() === dayViewMonth &&
     today.getDate() === day;
 
   const isFocused = (day: number) => focusedDay === day;
 
-  /* ─── year picker grid ─── */
-  const yearPageSize = 12;
-  const [yearPageStart, setYearPageStart] = useState(
-    Math.floor(((parsed?.year ?? CURRENT_YEAR - 30) - MIN_YEAR) / yearPageSize) * yearPageSize + MIN_YEAR,
-  );
+  /* ─── year grid ─── */
+  useEffect(() => {
+    if (step === "year") {
+      const base = selectedYear ?? CURRENT_YEAR - 30;
+      setYearPageStart(
+        Math.floor((base - MIN_YEAR) / yearPageSize) * yearPageSize + MIN_YEAR,
+      );
+    }
+  }, [step, selectedYear]);
+
   const yearPageEnd = Math.min(yearPageStart + yearPageSize - 1, MAX_YEAR);
   const yearRange: number[] = [];
   for (let y = yearPageStart; y <= yearPageEnd; y++) yearRange.push(y);
 
-  // Reset year page when opening year mode
-  useEffect(() => {
-    if (mode === "year") {
-      const centered = Math.floor((viewYear - MIN_YEAR) / yearPageSize) * yearPageSize + MIN_YEAR;
-      setYearPageStart(centered);
-    }
-  }, [mode, viewYear]);
+  /* ─── derive locale from dictionary key ─── */
+  const locale: Locale = dp.weekdays[0] === "일" ? "ko" : "en";
+
+  /* ─── back arrow icon ─── */
+  const BackIcon = (
+    <svg
+      className="w-3.5 h-3.5"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth={2}
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M15.75 19.5L8.25 12l7.5-7.5"
+      />
+    </svg>
+  );
+
+  const ChevronRight = (
+    <svg
+      className="w-4 h-4"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth={2}
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M8.25 4.5l7.5 7.5-7.5 7.5"
+      />
+    </svg>
+  );
 
   /* ─── render ─── */
   return (
@@ -238,13 +313,10 @@ export function DateInput({ value, onChange, className, required }: DateInputPro
       <button
         ref={triggerRef}
         type="button"
-        onClick={() => {
-          setOpen((o) => !o);
-          if (!open) setMode("calendar");
-        }}
+        onClick={() => (open ? setOpen(false) : openPicker())}
         aria-haspopup="dialog"
         aria-expanded={open}
-        aria-label="생년월일 선택"
+        aria-label={dp.selectDate}
         className={`flex items-center w-full bg-bg-elevated border border-border rounded-xl px-4 py-3 text-left transition
           focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand/30
           ${open ? "border-brand ring-1 ring-brand/30" : ""}
@@ -265,7 +337,9 @@ export function DateInput({ value, onChange, className, required }: DateInputPro
           />
         </svg>
         <span className="text-sm truncate">
-          {value ? formatDisplay(value) : "날짜를 선택하세요"}
+          {value
+            ? formatDisplay(value, locale, dp.months)
+            : dp.selectDate}
         </span>
         {/* Chevron */}
         <svg
@@ -275,7 +349,11 @@ export function DateInput({ value, onChange, className, required }: DateInputPro
           strokeWidth={2}
           stroke="currentColor"
         >
-          <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M19.5 8.25l-7.5 7.5-7.5-7.5"
+          />
         </svg>
       </button>
 
@@ -292,64 +370,163 @@ export function DateInput({ value, onChange, className, required }: DateInputPro
         />
       )}
 
-      {/* Calendar popup */}
+      {/* Popup */}
       <AnimatePresence>
         {open && (
           <motion.div
-            ref={calendarRef}
             initial={{ opacity: 0, y: -4, scale: 0.97 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -4, scale: 0.97 }}
             transition={{ duration: 0.15 }}
             role="dialog"
             aria-modal="true"
-            aria-label="달력"
+            aria-label={dp.selectDate}
             className="absolute z-50 left-0 right-0 mt-2 bg-bg-elevated border border-border rounded-xl shadow-elevation-3 overflow-hidden"
           >
-            {mode === "calendar" ? (
-              /* ─── Calendar view ─── */
+            {/* ─── STEP: Year ─── */}
+            {step === "year" && (
               <div>
-                {/* Header: month/year nav */}
                 <div className="flex items-center justify-between px-3 py-2.5 border-b border-border-subtle">
                   <button
                     type="button"
-                    onClick={prevMonth}
-                    aria-label="이전 달"
-                    className="p-1.5 rounded-lg text-text-secondary hover:text-text-primary hover:bg-bg-sunken transition"
+                    onClick={() =>
+                      setYearPageStart((s) =>
+                        Math.max(MIN_YEAR, s - yearPageSize),
+                      )
+                    }
+                    disabled={yearPageStart <= MIN_YEAR}
+                    aria-label="Previous years"
+                    className="p-1.5 rounded-lg text-text-secondary hover:text-text-primary hover:bg-bg-sunken transition disabled:opacity-30"
                   >
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-                    </svg>
+                    {BackIcon}
                   </button>
-
+                  <span className="text-sm font-semibold text-text-primary">
+                    {dp.selectYear}
+                  </span>
                   <button
                     type="button"
-                    onClick={() => setMode("year")}
-                    aria-label="연도 선택"
-                    className="text-sm font-semibold text-text-primary hover:text-brand transition px-2 py-1 rounded-lg hover:bg-brand-muted"
+                    onClick={() =>
+                      setYearPageStart((s) =>
+                        Math.min(MAX_YEAR - yearPageSize + 1, s + yearPageSize),
+                      )
+                    }
+                    disabled={yearPageEnd >= MAX_YEAR}
+                    aria-label="Next years"
+                    className="p-1.5 rounded-lg text-text-secondary hover:text-text-primary hover:bg-bg-sunken transition disabled:opacity-30"
                   >
-                    {viewYear}년 {MONTHS[viewMonth]}
+                    {ChevronRight}
                   </button>
+                </div>
 
+                <div className="grid grid-cols-3 gap-1.5 p-3">
+                  {yearRange.map((y) => (
+                    <button
+                      key={y}
+                      type="button"
+                      onClick={() => handleSelectYear(y)}
+                      className={`py-3 rounded-lg text-sm font-medium transition-all active:scale-95
+                        ${
+                          y === selectedYear
+                            ? "bg-brand text-white shadow-brand"
+                            : "text-text-primary hover:bg-bg-sunken"
+                        }
+                      `}
+                    >
+                      {y}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="px-3 pb-2 text-center">
+                  <span className="text-[10px] text-text-tertiary">
+                    {yearPageStart} – {yearPageEnd}
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {/* ─── STEP: Month ─── */}
+            {step === "month" && (
+              <div>
+                <div className="flex items-center gap-2 px-3 py-2.5 border-b border-border-subtle">
                   <button
                     type="button"
-                    onClick={nextMonth}
-                    aria-label="다음 달"
+                    onClick={() => setStep("year")}
+                    aria-label={dp.back}
                     className="p-1.5 rounded-lg text-text-secondary hover:text-text-primary hover:bg-bg-sunken transition"
                   >
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-                    </svg>
+                    {BackIcon}
+                  </button>
+                  <span className="text-sm font-semibold text-text-primary">
+                    {selectedYear}
+                    {dp.yearSuffix} &middot; {dp.selectMonth}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-3 gap-1.5 p-3">
+                  {dp.months.map((monthName, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => handleSelectMonth(i)}
+                      className={`py-3 rounded-lg text-sm font-medium transition-all active:scale-95
+                        ${
+                          i === selectedMonth &&
+                          selectedYear === parsed?.year
+                            ? "bg-brand text-white shadow-brand"
+                            : "text-text-primary hover:bg-bg-sunken"
+                        }
+                      `}
+                    >
+                      {monthName}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* ─── STEP: Day ─── */}
+            {step === "day" && (
+              <div>
+                {/* Header: shows selected year + month, with back to month */}
+                <div className="flex items-center gap-2 px-3 py-2.5 border-b border-border-subtle">
+                  <button
+                    type="button"
+                    onClick={() => setStep("month")}
+                    aria-label={dp.back}
+                    className="p-1.5 rounded-lg text-text-secondary hover:text-text-primary hover:bg-bg-sunken transition"
+                  >
+                    {BackIcon}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setStep("year")}
+                    className="text-sm font-semibold text-text-primary hover:text-brand transition px-1"
+                  >
+                    {dayViewYear}
+                    {dp.yearSuffix}
+                  </button>
+                  <span className="text-text-tertiary text-sm">/</span>
+                  <button
+                    type="button"
+                    onClick={() => setStep("month")}
+                    className="text-sm font-semibold text-text-primary hover:text-brand transition px-1"
+                  >
+                    {dp.months[dayViewMonth]}
                   </button>
                 </div>
 
                 {/* Weekday headers */}
                 <div className="grid grid-cols-7 px-2 pt-2">
-                  {WEEKDAYS.map((wd, i) => (
+                  {dp.weekdays.map((wd, i) => (
                     <div
                       key={wd}
                       className={`text-center text-[10px] font-medium pb-1.5 ${
-                        i === 0 ? "text-danger" : i === 6 ? "text-info" : "text-text-tertiary"
+                        i === 0
+                          ? "text-danger"
+                          : i === 6
+                            ? "text-info"
+                            : "text-text-tertiary"
                       }`}
                     >
                       {wd}
@@ -361,13 +538,13 @@ export function DateInput({ value, onChange, className, required }: DateInputPro
                 <div
                   className="grid grid-cols-7 gap-0.5 px-2 pb-2"
                   role="grid"
-                  aria-label={`${viewYear}년 ${MONTHS[viewMonth]}`}
+                  aria-label={`${dayViewYear} ${dp.months[dayViewMonth]}`}
                   tabIndex={0}
                   onKeyDown={handleCalendarKeyDown}
                 >
                   {cells.map((day, i) =>
                     day === null ? (
-                      <div key={`empty-${i}`} className="h-9" />
+                      <div key={`empty-${i}`} className="h-10" />
                     ) : (
                       <button
                         key={day}
@@ -376,13 +553,14 @@ export function DateInput({ value, onChange, className, required }: DateInputPro
                         aria-selected={isSelected(day)}
                         aria-current={isToday(day) ? "date" : undefined}
                         tabIndex={-1}
-                        onClick={() => selectDay(day)}
-                        className={`h-9 rounded-lg text-sm transition-all relative
-                          ${isSelected(day)
-                            ? "bg-brand text-white font-semibold shadow-brand"
-                            : isToday(day)
-                              ? "text-brand font-medium ring-1 ring-brand/40"
-                              : "text-text-primary hover:bg-bg-sunken"
+                        onClick={() => handleSelectDay(day)}
+                        className={`h-10 rounded-lg text-sm transition-all relative active:scale-95
+                          ${
+                            isSelected(day)
+                              ? "bg-brand text-white font-semibold shadow-brand"
+                              : isToday(day)
+                                ? "text-brand font-medium ring-1 ring-brand/40"
+                                : "text-text-primary hover:bg-bg-sunken"
                           }
                           ${isFocused(day) && !isSelected(day) ? "ring-2 ring-brand/60" : ""}
                           ${i % 7 === 0 && !isSelected(day) ? "text-danger/80" : ""}
@@ -400,71 +578,15 @@ export function DateInput({ value, onChange, className, required }: DateInputPro
                   <button
                     type="button"
                     onClick={() => {
-                      setViewYear(today.getFullYear());
-                      setViewMonth(today.getMonth());
+                      setSelectedYear(today.getFullYear());
+                      setSelectedMonth(today.getMonth());
+                      handleSelectDay(today.getDate());
                     }}
                     className="w-full text-[11px] text-text-tertiary hover:text-brand py-1 transition"
                   >
-                    오늘: {today.getFullYear()}년 {today.getMonth() + 1}월 {today.getDate()}일
-                  </button>
-                </div>
-              </div>
-            ) : (
-              /* ─── Year picker view ─── */
-              <div>
-                <div className="flex items-center justify-between px-3 py-2.5 border-b border-border-subtle">
-                  <button
-                    type="button"
-                    onClick={() => setYearPageStart((s) => Math.max(MIN_YEAR, s - yearPageSize))}
-                    disabled={yearPageStart <= MIN_YEAR}
-                    aria-label="이전 연도"
-                    className="p-1.5 rounded-lg text-text-secondary hover:text-text-primary hover:bg-bg-sunken transition disabled:opacity-30"
-                  >
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-                    </svg>
-                  </button>
-                  <span className="text-sm font-semibold text-text-primary">
-                    {yearPageStart} – {yearPageEnd}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => setYearPageStart((s) => Math.min(MAX_YEAR - yearPageSize + 1, s + yearPageSize))}
-                    disabled={yearPageEnd >= MAX_YEAR}
-                    aria-label="다음 연도"
-                    className="p-1.5 rounded-lg text-text-secondary hover:text-text-primary hover:bg-bg-sunken transition disabled:opacity-30"
-                  >
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-                    </svg>
-                  </button>
-                </div>
-
-                <div className="grid grid-cols-3 gap-1.5 p-3">
-                  {yearRange.map((y) => (
-                    <button
-                      key={y}
-                      type="button"
-                      onClick={() => selectYear(y)}
-                      className={`py-2.5 rounded-lg text-sm transition-all
-                        ${y === viewYear
-                          ? "bg-brand text-white font-semibold shadow-brand"
-                          : "text-text-primary hover:bg-bg-sunken"
-                        }
-                      `}
-                    >
-                      {y}
-                    </button>
-                  ))}
-                </div>
-
-                <div className="px-3 pb-2">
-                  <button
-                    type="button"
-                    onClick={() => setMode("calendar")}
-                    className="w-full text-[11px] text-text-tertiary hover:text-brand py-1 transition"
-                  >
-                    달력으로 돌아가기
+                    {dp.today}: {locale === "ko"
+                      ? `${today.getFullYear()}년 ${today.getMonth() + 1}월 ${today.getDate()}일`
+                      : `${dp.months[today.getMonth()]} ${today.getDate()}, ${today.getFullYear()}`}
                   </button>
                 </div>
               </div>

@@ -1,49 +1,16 @@
 // tests/components/DateInput.test.ts — DateInput calendar picker logic tests
-// Tests the pure helper functions extracted from the DateInput calendar component.
+// Tests the pure helper functions from the DateInput component.
 
 import { describe, it, expect } from "vitest";
-
-/* ─── Helpers extracted from DateInput.tsx ─── */
-
-function daysInMonth(year: number, month: number): number {
-  return new Date(year, month + 1, 0).getDate();
-}
-
-function startDayOfMonth(year: number, month: number): number {
-  return new Date(year, month, 1).getDay();
-}
-
-function pad(n: number): string {
-  return n < 10 ? `0${n}` : `${n}`;
-}
-
-function formatDisplay(value: string): string {
-  if (!value) return "";
-  const [y, m, d] = value.split("-");
-  if (!y || !m || !d) return value;
-  return `${y}년 ${parseInt(m, 10)}월 ${parseInt(d, 10)}일`;
-}
-
-function parseValue(value: string): { year: number; month: number; day: number } | null {
-  if (!value) return null;
-  const parts = value.split("-").map(Number);
-  if (parts.length !== 3 || parts.some(isNaN)) return null;
-  return { year: parts[0], month: parts[1] - 1, day: parts[2] };
-}
-
-function buildDateString(year: number, month: number, day: number): string {
-  return `${year}-${pad(month + 1)}-${pad(day)}`;
-}
-
-/* ─── Grid generation (same logic as component) ─── */
-function buildCalendarGrid(year: number, month: number): (number | null)[] {
-  const start = startDayOfMonth(year, month);
-  const total = daysInMonth(year, month);
-  const cells: (number | null)[] = [];
-  for (let i = 0; i < start; i++) cells.push(null);
-  for (let d = 1; d <= total; d++) cells.push(d);
-  return cells;
-}
+import {
+  daysInMonth,
+  startDayOfMonth,
+  pad,
+  formatDisplay,
+  parseValue,
+  buildDateString,
+  buildCalendarGrid,
+} from "@/components/input/DateInput";
 
 /* ─── Tests ─── */
 
@@ -89,15 +56,23 @@ describe("DateInput calendar helpers", () => {
   });
 
   describe("formatDisplay", () => {
+    const koMonths = ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"];
+    const enMonths = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
     it("formats YYYY-MM-DD to Korean display", () => {
-      expect(formatDisplay("1990-05-24")).toBe("1990년 5월 24일");
-      expect(formatDisplay("2000-12-01")).toBe("2000년 12월 1일");
+      expect(formatDisplay("1990-05-24", "ko", koMonths)).toBe("1990년 5월 24일");
+      expect(formatDisplay("2000-12-01", "ko", koMonths)).toBe("2000년 12월 1일");
+    });
+    it("formats YYYY-MM-DD to English display", () => {
+      expect(formatDisplay("1990-05-24", "en", enMonths)).toBe("May 24, 1990");
+      expect(formatDisplay("2000-12-01", "en", enMonths)).toBe("Dec 1, 2000");
     });
     it("returns empty string for empty value", () => {
-      expect(formatDisplay("")).toBe("");
+      expect(formatDisplay("", "ko", koMonths)).toBe("");
+      expect(formatDisplay("", "en", enMonths)).toBe("");
     });
     it("returns raw value for incomplete format", () => {
-      expect(formatDisplay("1990-05")).toBe("1990-05");
+      expect(formatDisplay("1990-05", "ko", koMonths)).toBe("1990-05");
     });
   });
 
@@ -168,24 +143,33 @@ describe("DateInput calendar helpers", () => {
     });
   });
 
-  describe("date selection produces valid YYYY-MM-DD", () => {
-    it("selecting day 15 in May 2000 produces 2000-05-15", () => {
-      // Simulates what happens when selectDay(15) is called with viewYear=2000, viewMonth=4
+  describe("step-by-step date selection", () => {
+    it("year → month → day produces valid date string", () => {
+      // Simulates: select year 2000, month May (4), day 15
       const result = buildDateString(2000, 4, 15);
       expect(result).toBe("2000-05-15");
-      // Also verify it round-trips through parse
       const parsed = parseValue(result);
       expect(parsed).toEqual({ year: 2000, month: 4, day: 15 });
     });
 
-    it("selecting day 1 in January 1920 produces 1920-01-01", () => {
+    it("handles boundary: first possible date 1920-01-01", () => {
       const result = buildDateString(1920, 0, 1);
       expect(result).toBe("1920-01-01");
     });
 
-    it("selecting day 29 in Feb 2024 (leap year) produces 2024-02-29", () => {
+    it("handles leap year day 29", () => {
       const result = buildDateString(2024, 1, 29);
       expect(result).toBe("2024-02-29");
+    });
+
+    it("formatDisplay round-trips correctly for both locales", () => {
+      const koMonths = ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"];
+      const enMonths = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+      const dateStr = buildDateString(1995, 6, 20);
+      expect(dateStr).toBe("1995-07-20");
+      expect(formatDisplay(dateStr, "ko", koMonths)).toBe("1995년 7월 20일");
+      expect(formatDisplay(dateStr, "en", enMonths)).toBe("Jul 20, 1995");
     });
   });
 });

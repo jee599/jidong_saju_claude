@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Header } from "@/components/common/Header";
+import { useTranslations } from "@/lib/i18n/context";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -14,6 +15,9 @@ const fadeUp = {
 };
 
 export default function LandingPage() {
+  const t = useTranslations();
+  const l = t.landing;
+
   return (
     <main className="min-h-screen bg-bg-base">
       <Header />
@@ -28,7 +32,7 @@ export default function LandingPage() {
             variants={fadeUp}
             className="text-brand-light text-xs tracking-[0.2em] uppercase mb-5 font-medium"
           >
-            AI x 명리학
+            {l.heroLabel}
           </motion.p>
           <motion.h1
             initial="hidden"
@@ -37,9 +41,9 @@ export default function LandingPage() {
             variants={fadeUp}
             className="text-4xl sm:text-5xl md:text-6xl font-bold text-text-primary leading-[1.15] mb-7 tracking-tight"
           >
-            AI가 명리학으로 풀어내는
+            {l.heroTitle1}
             <br />
-            <span className="text-accent">당신의 운명</span>
+            <span className="text-accent">{l.heroTitle2}</span>
           </motion.h1>
           <motion.p
             initial="hidden"
@@ -48,9 +52,9 @@ export default function LandingPage() {
             variants={fadeUp}
             className="text-base sm:text-lg text-text-secondary max-w-2xl mx-auto mb-12 leading-relaxed"
           >
-            생년월일시만 입력하면, 만세력 엔진이 정확히 계산하고
+            {l.heroDesc1}
             <br className="hidden md:block" />
-            AI가 전문 명리학자 수준으로 해석합니다.
+            {l.heroDesc2}
           </motion.p>
           <motion.div
             initial="hidden"
@@ -62,10 +66,10 @@ export default function LandingPage() {
               href="/input"
               className="inline-block bg-brand text-white text-base sm:text-lg font-semibold px-10 py-4 rounded-xl hover:bg-brand-light hover:scale-[1.03] transition-all shadow-elevation-3"
             >
-              무료 사주 보기 &rarr;
+              {l.heroCta} &rarr;
             </Link>
             <p className="text-text-secondary text-sm mt-5">
-              30초면 완료 &middot; 회원가입 불필요
+              {l.heroSub}
             </p>
           </motion.div>
         </div>
@@ -75,9 +79,9 @@ export default function LandingPage() {
       <section className="py-10 px-4 border-t border-border-subtle">
         <div className="max-w-4xl mx-auto flex flex-wrap justify-center gap-8 sm:gap-14 text-center">
           {[
-            { value: "15,000+", label: "분석 완료" },
-            { value: "4.8", label: "평균 만족도" },
-            { value: "만세력", label: "코드 기반 정밀 계산" },
+            { value: l.statAnalysesValue, label: l.statAnalyses },
+            { value: l.statRatingValue, label: l.statRating },
+            { value: l.statEngineValue, label: l.statEngine },
           ].map((stat) => (
             <div key={stat.label}>
               <p className="text-xl sm:text-2xl font-bold text-accent">{stat.value}</p>
@@ -91,17 +95,17 @@ export default function LandingPage() {
       <section className="py-20 sm:py-24 px-4 border-t border-border-subtle">
         <div className="max-w-5xl mx-auto">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center text-text-primary mb-4 tracking-tight">
-            어떻게 작동하나요?
+            {l.howTitle}
           </h2>
           <p className="text-text-secondary text-center text-sm mb-14 max-w-md mx-auto">
-            3단계로 정밀한 사주 분석을 받아보세요.
+            {l.howSub}
           </p>
           <div className="grid md:grid-cols-3 gap-5 sm:gap-6">
             {[
               {
                 step: "01",
-                title: "생년월일시 입력",
-                desc: "양력 또는 음력, 태어난 시간까지 정확하게 입력합니다.",
+                title: l.step1Title,
+                desc: l.step1Desc,
                 icon: (
                   <svg className="w-5 h-5 text-brand-light" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -110,8 +114,8 @@ export default function LandingPage() {
               },
               {
                 step: "02",
-                title: "만세력 엔진 계산",
-                desc: "사주팔자, 십성, 12운성, 대운, 신살을 코드로 정밀 계산합니다.",
+                title: l.step2Title,
+                desc: l.step2Desc,
                 icon: (
                   <svg className="w-5 h-5 text-brand-light" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -120,8 +124,8 @@ export default function LandingPage() {
               },
               {
                 step: "03",
-                title: "AI 전문 해석",
-                desc: "계산 결과를 Claude AI가 명리학 전문가 수준으로 해석합니다.",
+                title: l.step3Title,
+                desc: l.step3Desc,
                 icon: (
                   <svg className="w-5 h-5 text-brand-light" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -162,19 +166,19 @@ export default function LandingPage() {
       <section className="py-20 sm:py-24 px-4 border-t border-border-subtle">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-text-primary mb-4 tracking-tight">
-            무엇을 알 수 있나요?
+            {l.whatTitle}
           </h2>
-          <p className="text-text-secondary text-sm mb-12">무료 분석만으로도 핵심을 파악할 수 있습니다.</p>
+          <p className="text-text-secondary text-sm mb-12">{l.whatSub}</p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
             {[
-              { title: "성격·기질", desc: "타고난 성향", free: true },
-              { title: "오행 밸런스", desc: "에너지 분포", free: true },
-              { title: "올해 운세", desc: "2026 키워드", free: true },
-              { title: "행운 정보", desc: "색·방위·숫자", free: true },
-              { title: "직업 적성", desc: "재능의 방향" },
-              { title: "연애·결혼", desc: "배우자궁 분석" },
-              { title: "재물운", desc: "금전 흐름" },
-              { title: "대운 흐름", desc: "인생 로드맵" },
+              { title: l.personality, desc: l.personalityDesc, free: true },
+              { title: l.balance, desc: l.balanceDesc, free: true },
+              { title: l.yearly, desc: l.yearlyDesc, free: true },
+              { title: l.lucky, desc: l.luckyDesc, free: true },
+              { title: l.career, desc: l.careerDesc },
+              { title: l.love, desc: l.loveDesc },
+              { title: l.wealth, desc: l.wealthDesc },
+              { title: l.daeun, desc: l.daeunDesc },
             ].map((item) => (
               <div
                 key={item.title}
@@ -187,7 +191,7 @@ export default function LandingPage() {
                 <div className="flex items-center gap-1.5 mb-1">
                   <h4 className="text-sm font-bold text-text-primary">{item.title}</h4>
                   {item.free && (
-                    <span className="text-[8px] px-1.5 py-0.5 rounded-full bg-success/15 text-success font-medium">무료</span>
+                    <span className="text-[8px] px-1.5 py-0.5 rounded-full bg-success/15 text-success font-medium">{l.free}</span>
                   )}
                 </div>
                 <p className="text-xs text-text-secondary">{item.desc}</p>
@@ -201,18 +205,18 @@ export default function LandingPage() {
       <section className="py-20 sm:py-24 px-4 border-t border-border-subtle" id="pricing">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-text-primary mb-4 tracking-tight">
-            합리적인 가격
+            {l.pricingTitle}
           </h2>
           <p className="text-text-secondary text-sm mb-12">
-            무료 요약으로 시작하고, 원하면 풀 리포트를 받아보세요.
+            {l.pricingSub}
           </p>
           <div className="grid sm:grid-cols-2 gap-4 sm:gap-6 max-w-xl mx-auto">
             {/* Free */}
             <div className="rounded-2xl p-6 sm:p-7 border border-border bg-bg-elevated shadow-elevation-1">
-              <h3 className="text-base font-bold text-text-primary mb-1">무료 요약</h3>
-              <p className="text-3xl font-bold text-accent mb-5">&#8361;0</p>
+              <h3 className="text-base font-bold text-text-primary mb-1">{l.freePlanName}</h3>
+              <p className="text-3xl font-bold text-accent mb-5">{l.freePlanPrice}</p>
               <ul className="text-sm text-text-secondary space-y-2.5 mb-7 text-left">
-                {["사주팔자 계산", "오행 밸런스 차트", "성격 요약 3~4문장", "올해 키워드 1줄", "행운의 색/방위/숫자"].map((f) => (
+                {l.freePlanFeatures.map((f) => (
                   <li key={f} className="flex items-start gap-2">
                     <span className="text-success mt-0.5">&#10003;</span>{f}
                   </li>
@@ -222,19 +226,19 @@ export default function LandingPage() {
                 href="/input"
                 className="block text-center py-3 rounded-xl text-sm font-medium bg-brand-muted text-brand-light hover:bg-brand/20 transition"
               >
-                무료로 시작
+                {l.freePlanCta}
               </Link>
             </div>
 
             {/* Premium */}
             <div className="rounded-2xl p-6 sm:p-7 border border-accent/50 bg-gradient-to-b from-bg-elevated to-bg-base relative shadow-elevation-2">
               <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-accent text-text-inverse text-[10px] font-bold px-3 py-1 rounded-full">
-                BEST
+                {l.premiumBadge}
               </span>
-              <h3 className="text-base font-bold text-text-primary mb-1">풀 리포트</h3>
-              <p className="text-3xl font-bold text-accent mb-5">&#8361;5,900</p>
+              <h3 className="text-base font-bold text-text-primary mb-1">{l.premiumPlanName}</h3>
+              <p className="text-3xl font-bold text-accent mb-5">{l.premiumPlanPrice}</p>
               <ul className="text-sm text-text-secondary space-y-2.5 mb-7 text-left">
-                {["무료 요약 전체 포함", "10개 섹션 상세 AI 분석", "성격·직업·연애·재물·건강", "대운 타임라인 해석", "맞춤 실행 팁"].map((f) => (
+                {l.premiumPlanFeatures.map((f) => (
                   <li key={f} className="flex items-start gap-2">
                     <span className="text-accent mt-0.5">&#10003;</span>{f}
                   </li>
@@ -244,7 +248,7 @@ export default function LandingPage() {
                 href="/input"
                 className="block text-center py-3 rounded-xl text-sm font-semibold bg-accent text-text-inverse hover:bg-accent-hover transition shadow-elevation-1"
               >
-                풀 리포트 받기
+                {l.premiumPlanCta}
               </Link>
             </div>
           </div>
@@ -255,15 +259,10 @@ export default function LandingPage() {
       <section className="py-20 sm:py-24 px-4 border-t border-border-subtle">
         <div className="max-w-2xl mx-auto">
           <h2 className="text-2xl sm:text-3xl font-bold text-center text-text-primary mb-12 tracking-tight">
-            자주 묻는 질문
+            {l.faqTitle}
           </h2>
           <div className="space-y-4">
-            {[
-              { q: "사주 분석이 정확한가요?", a: "만세력 엔진으로 사주팔자를 코드 기반으로 정밀 계산합니다. 계산의 정확성은 전통 만세력과 동일하며, AI가 계산 결과를 해석합니다." },
-              { q: "무료 분석으로도 충분한가요?", a: "무료 분석은 사주팔자, 오행 차트, 성격 요약, 올해 키워드를 제공합니다. 상세한 직업, 연애, 재물 분석은 풀 리포트에서 확인할 수 있습니다." },
-              { q: "태어난 시간을 모르면 어떻게 하나요?", a: "태어난 시간은 시주(時柱) 계산에 필요합니다. 정확한 시간을 모르면 대략적인 시간대를 입력해주세요." },
-              { q: "결제는 안전한가요?", a: "토스페이먼츠를 통한 안전한 결제를 제공합니다. 카카오페이, 토스, 신용카드 등 다양한 결제 수단을 지원합니다." },
-            ].map((item) => (
+            {l.faq.map((item) => (
               <div key={item.q} className="bg-bg-elevated rounded-2xl p-5 sm:p-6 border border-border shadow-elevation-1">
                 <h4 className="text-sm font-bold text-text-primary mb-2">{item.q}</h4>
                 <p className="text-sm text-text-secondary leading-relaxed">{item.a}</p>
@@ -277,16 +276,16 @@ export default function LandingPage() {
       <section className="py-20 sm:py-24 px-4 border-t border-border-subtle">
         <div className="max-w-md mx-auto text-center">
           <h2 className="text-2xl sm:text-3xl font-bold text-text-primary mb-5 tracking-tight">
-            지금 바로 시작하세요
+            {l.ctaTitle}
           </h2>
           <p className="text-sm text-text-secondary mb-10">
-            30초 만에 AI가 분석한 사주 리포트를 받아보세요.
+            {l.ctaSub}
           </p>
           <Link
             href="/input"
             className="inline-block bg-brand text-white font-semibold px-10 py-4 rounded-xl hover:bg-brand-light hover:scale-[1.03] transition-all shadow-elevation-3"
           >
-            무료 사주 보기 &rarr;
+            {l.heroCta} &rarr;
           </Link>
         </div>
       </section>
@@ -295,12 +294,12 @@ export default function LandingPage() {
       <footer className="py-12 px-4 border-t border-border-subtle">
         <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-text-secondary">
           <div className="flex items-center gap-4">
-            <span className="text-accent font-bold">운명사주</span>
-            <span className="text-xs">AI가 명리학으로 풀어내는 당신의 운명</span>
+            <span className="text-accent font-bold">{t.brand}</span>
+            <span className="text-xs">{t.tagline}</span>
           </div>
           <div className="flex items-center gap-5 text-xs">
-            <Link href="/auth/login" className="hover:text-text-primary transition">로그인</Link>
-            <Link href="/pricing" className="hover:text-text-primary transition">가격</Link>
+            <Link href="/auth/login" className="hover:text-text-primary transition">{l.footerLogin}</Link>
+            <Link href="/pricing" className="hover:text-text-primary transition">{l.footerPricing}</Link>
             <span>&copy; 2026 FateSaju</span>
           </div>
         </div>

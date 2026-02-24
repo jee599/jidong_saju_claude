@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { Noto_Serif_KR } from "next/font/google";
+import { cookies } from "next/headers";
+import { LocaleProvider } from "@/lib/i18n/context";
+import type { Locale } from "@/lib/i18n/dictionary";
 import "./globals.css";
 
 const pretendard = localFont({
@@ -46,17 +49,21 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookieStore = await cookies();
+  const raw = cookieStore.get("locale")?.value;
+  const locale: Locale = raw === "en" ? "en" : "ko";
+
   return (
-    <html lang="ko">
+    <html lang={locale === "ko" ? "ko" : "en"}>
       <body
         className={`${pretendard.variable} ${notoSerifKR.variable} antialiased`}
       >
-        {children}
+        <LocaleProvider locale={locale}>{children}</LocaleProvider>
       </body>
     </html>
   );

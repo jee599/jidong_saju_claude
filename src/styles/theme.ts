@@ -1,70 +1,70 @@
-// src/styles/theme.ts — 운명사주 디자인 시스템 v2
-// Premium, global SaaS-ready token system with light/dark support.
+// src/styles/theme.ts — 운명사주 Design System v3
+// Modern, trendy SaaS palette — violet brand + amber accent
 
 export const colors = {
-  // Brand — refined indigo
+  // Brand — vibrant violet (trendy, modern)
   brand: {
-    primary: "#4361EE",   // Vibrant yet sophisticated indigo
-    secondary: "#6380F5", // Lighter indigo for hover states
+    primary: "#6366F1",   // Violet-500 — modern SaaS standard
+    secondary: "#818CF8", // Violet-400 — hover / lighter states
   },
 
-  // Accent — warm, refined gold (used sparingly)
-  accent: "#C9973B",       // Sophisticated muted gold
-  accentMuted: "#B8882E",  // Hover state
+  // Accent — warm amber (vibrant, premium)
+  accent: "#F59E0B",       // Amber-500
+  accentMuted: "#D97706",  // Amber-600 hover
 
-  // Dark mode backgrounds — desaturated, near-neutral
+  // Dark mode backgrounds — deep, clean
   bg: {
-    base: "#0A0A0F",       // Deep neutral (minimal blue tint)
-    elevated: "#141418",   // Cards, surfaces (subtle lift)
-    sunken: "#07070B",     // Inputs, inset areas
+    base: "#09090B",       // Zinc-950
+    elevated: "#18181B",   // Zinc-900
+    sunken: "#0A0A0C",     // Deeper than base
   },
 
   // Light mode backgrounds
   bgLight: {
-    base: "#FAFAFA",       // Clean off-white
-    elevated: "#FFFFFF",   // Cards — pure white
-    sunken: "#F4F4F5",    // Inputs, inset areas
+    base: "#FAFAFA",       // Zinc-50
+    elevated: "#FFFFFF",   // Pure white cards
+    sunken: "#F4F4F5",     // Zinc-100
   },
 
   // Borders — dark mode
   border: {
     default: "rgba(255, 255, 255, 0.08)",
     subtle: "rgba(255, 255, 255, 0.04)",
-    focus: "#4361EE",
+    focus: "#6366F1",
   },
 
   // Borders — light mode
   borderLight: {
     default: "rgba(0, 0, 0, 0.08)",
     subtle: "rgba(0, 0, 0, 0.04)",
-    focus: "#4361EE",
+    focus: "#6366F1",
   },
 
   // Text — dark mode
   text: {
-    primary: "#EDEDF0",    // Slightly warm white
-    secondary: "#8A8D9B",  // Desaturated muted
-    tertiary: "#55575F",   // Hints / disabled
-    inverse: "#0A0A0F",    // Text on light surfaces
+    primary: "#FAFAFA",    // Zinc-50
+    secondary: "#A1A1AA",  // Zinc-400
+    tertiary: "#52525B",   // Zinc-600
+    inverse: "#09090B",    // Zinc-950
   },
 
   // Text — light mode
   textLight: {
-    primary: "#18181B",    // Near-black
-    secondary: "#71717A",  // Zinc-600
+    primary: "#18181B",    // Zinc-900
+    secondary: "#71717A",  // Zinc-500
     tertiary: "#A1A1AA",   // Zinc-400
-    inverse: "#FAFAFA",    // Text on dark surfaces
+    inverse: "#FAFAFA",    // Zinc-50
   },
 
   // Semantic
   semantic: {
-    success: "#34D399",    // Emerald
-    warn: "#FBBF24",       // Amber
-    danger: "#EF4444",     // Red
-    info: "#60A5FA",       // Sky blue
+    success: "#34D399",    // Emerald-400
+    warn: "#FBBF24",       // Amber-300
+    danger: "#F87171",     // Red-400
+    info: "#60A5FA",       // Blue-400
   },
 
-  // 오행 컬러 — softer, cohesive
+  // 오행 컬러 — harmonized
   oheng: {
     木: "#34D399",  // Emerald
     火: "#F87171",  // Soft red
@@ -73,14 +73,14 @@ export const colors = {
     水: "#60A5FA",  // Sky blue
   } as Record<string, string>,
 
-  // Shadows (used inline or via CSS vars)
+  // Shadows
   shadow: {
     sm: "0 1px 2px rgba(0, 0, 0, 0.3)",
-    md: "0 4px 12px rgba(0, 0, 0, 0.25)",
-    lg: "0 8px 24px rgba(0, 0, 0, 0.3)",
-    xl: "0 16px 48px rgba(0, 0, 0, 0.35)",
-    brand: "0 4px 20px rgba(67, 97, 238, 0.2)",
-    accent: "0 4px 20px rgba(201, 151, 59, 0.15)",
+    md: "0 4px 12px rgba(0, 0, 0, 0.2)",
+    lg: "0 8px 24px rgba(0, 0, 0, 0.25)",
+    xl: "0 20px 48px rgba(0, 0, 0, 0.3)",
+    brand: "0 4px 24px rgba(99, 102, 241, 0.25)",
+    accent: "0 4px 20px rgba(245, 158, 11, 0.2)",
   },
 } as const;
 

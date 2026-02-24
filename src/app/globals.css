@@ -1,40 +1,40 @@
 @import "tailwindcss";
 
 /* ============================================
-   운명사주 Design Tokens — Dark-first, auto light mode
+   운명사주 Design Tokens v3 — Modern Violet + Amber
    ============================================ */
 
 :root {
-  /* Brand */
-  --color-brand: #4361EE;
-  --color-brand-light: #6380F5;
-  --color-brand-muted: rgba(67, 97, 238, 0.12);
+  /* Brand — violet */
+  --color-brand: #6366F1;
+  --color-brand-light: #818CF8;
+  --color-brand-muted: rgba(99, 102, 241, 0.12);
 
-  /* Accent — refined warm gold */
-  --color-accent: #C9973B;
-  --color-accent-hover: #B8882E;
-  --color-accent-muted: rgba(201, 151, 59, 0.12);
+  /* Accent — warm amber */
+  --color-accent: #F59E0B;
+  --color-accent-hover: #D97706;
+  --color-accent-muted: rgba(245, 158, 11, 0.12);
 
-  /* Backgrounds — dark, near-neutral */
-  --color-bg-base: #0A0A0F;
-  --color-bg-elevated: #141418;
-  --color-bg-sunken: #07070B;
+  /* Backgrounds — dark, zinc-based */
+  --color-bg-base: #09090B;
+  --color-bg-elevated: #18181B;
+  --color-bg-sunken: #0A0A0C;
 
   /* Borders */
   --color-border: rgba(255, 255, 255, 0.08);
   --color-border-subtle: rgba(255, 255, 255, 0.04);
-  --color-border-focus: #4361EE;
+  --color-border-focus: #6366F1;
 
   /* Text */
-  --color-text-primary: #EDEDF0;
-  --color-text-secondary: #8A8D9B;
-  --color-text-tertiary: #55575F;
-  --color-text-inverse: #0A0A0F;
+  --color-text-primary: #FAFAFA;
+  --color-text-secondary: #A1A1AA;
+  --color-text-tertiary: #52525B;
+  --color-text-inverse: #09090B;
 
   /* Semantic */
   --color-success: #34D399;
   --color-warn: #FBBF24;
-  --color-danger: #EF4444;
+  --color-danger: #F87171;
   --color-info: #60A5FA;
 
   /* 오행 */
@@ -46,16 +46,16 @@
 
   /* Shadows */
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.25);
-  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.3);
-  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.35);
-  --shadow-brand: 0 4px 20px rgba(67, 97, 238, 0.2);
-  --shadow-accent: 0 4px 20px rgba(201, 151, 59, 0.15);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.2);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.25);
+  --shadow-xl: 0 20px 48px rgba(0, 0, 0, 0.3);
+  --shadow-brand: 0 4px 24px rgba(99, 102, 241, 0.25);
+  --shadow-accent: 0 4px 20px rgba(245, 158, 11, 0.2);
 
   /* Typography */
   --text-base-size: 15px;
   --leading-body: 1.65;
-  --leading-heading: 1.25;
+  --leading-heading: 1.2;
 
   /* Radius */
   --radius-sm: 8px;
@@ -66,7 +66,7 @@
 }
 
 /* ============================================
-   Light mode overrides (auto via system pref)
+   Light mode overrides
    ============================================ */
 @media (prefers-color-scheme: light) {
   :root {
@@ -82,15 +82,15 @@
     --color-text-tertiary: #A1A1AA;
     --color-text-inverse: #FAFAFA;
 
-    --color-brand-muted: rgba(67, 97, 238, 0.08);
-    --color-accent-muted: rgba(201, 151, 59, 0.08);
+    --color-brand-muted: rgba(99, 102, 241, 0.08);
+    --color-accent-muted: rgba(245, 158, 11, 0.08);
 
     --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
-    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1);
-    --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.12);
-    --shadow-brand: 0 4px 20px rgba(67, 97, 238, 0.12);
-    --shadow-accent: 0 4px 20px rgba(201, 151, 59, 0.1);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.08);
+    --shadow-xl: 0 20px 48px rgba(0, 0, 0, 0.1);
+    --shadow-brand: 0 4px 24px rgba(99, 102, 241, 0.15);
+    --shadow-accent: 0 4px 20px rgba(245, 158, 11, 0.12);
   }
 }
 
@@ -160,7 +160,7 @@ body {
 
 /* Selection */
 ::selection {
-  background: rgba(67, 97, 238, 0.25);
+  background: rgba(99, 102, 241, 0.25);
   color: var(--color-text-primary);
 }
 

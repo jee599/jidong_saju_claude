@@ -3,9 +3,11 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { getSupabaseBrowser } from "@/lib/db/supabase";
+import { useTranslations } from "@/lib/i18n/context";
 import type { User } from "@supabase/supabase-js";
 
 export function Header() {
+  const t = useTranslations();
   const [user, setUser] = useState<User | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -26,13 +28,13 @@ export function Header() {
     <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl bg-bg-base/70 border-b border-border-subtle">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         <Link href="/" className="text-lg font-bold text-accent tracking-tight">
-          운명사주
+          {t.brand}
         </Link>
 
         {/* Desktop nav */}
         <nav className="hidden sm:flex items-center gap-6 text-sm">
           <Link href="/pricing" className="text-text-secondary hover:text-text-primary transition">
-            가격
+            {t.nav.pricing}
           </Link>
           {user ? (
             <div className="flex items-center gap-3">
@@ -43,7 +45,7 @@ export function Header() {
                 href="/input"
                 className="bg-brand text-white px-5 py-2 rounded-xl text-sm font-medium hover:bg-brand-light transition shadow-elevation-1"
               >
-                사주 분석
+                {t.nav.analyze}
               </Link>
             </div>
           ) : (
@@ -52,13 +54,13 @@ export function Header() {
                 href="/auth/login"
                 className="text-text-secondary hover:text-text-primary transition"
               >
-                로그인
+                {t.nav.login}
               </Link>
               <Link
                 href="/input"
                 className="bg-brand text-white px-5 py-2 rounded-xl text-sm font-medium hover:bg-brand-light transition shadow-elevation-1"
               >
-                무료로 시작
+                {t.nav.startFree}
               </Link>
             </div>
           )}
@@ -68,7 +70,7 @@ export function Header() {
         <button
           onClick={() => setMenuOpen(!menuOpen)}
           className="sm:hidden p-2 text-text-secondary"
-          aria-label="메뉴"
+          aria-label={t.nav.menu}
         >
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             {menuOpen ? (
@@ -88,7 +90,7 @@ export function Header() {
             onClick={() => setMenuOpen(false)}
             className="block text-sm text-text-secondary hover:text-text-primary"
           >
-            가격
+            {t.nav.pricing}
           </Link>
           {!user && (
             <Link
@@ -96,7 +98,7 @@ export function Header() {
               onClick={() => setMenuOpen(false)}
               className="block text-sm text-text-secondary hover:text-text-primary"
             >
-              로그인
+              {t.nav.login}
             </Link>
           )}
           <Link
@@ -104,7 +106,7 @@ export function Header() {
             onClick={() => setMenuOpen(false)}
             className="block text-center bg-brand text-white py-2.5 rounded-xl text-sm font-medium"
           >
-            {user ? "사주 분석" : "무료로 시작"}
+            {user ? t.nav.analyze : t.nav.startFree}
           </Link>
         </div>
       )}
