@@ -9,9 +9,12 @@ import { Header } from "@/components/common/Header";
 import { Footer } from "@/components/common/Footer";
 import { Button } from "@/components/ui/Button";
 import { DateInput } from "@/components/input/DateInput";
+import { useLocale } from "@/lib/i18n/context";
+import { getTimeBranchLabel } from "@/lib/saju/timeBranch";
 
 export default function YearlyPage() {
   const router = useRouter();
+  const locale = useLocale();
   const [name, setName] = useState("");
   const [birthDate, setBirthDate] = useState("");
   const [birthTime, setBirthTime] = useState("");
@@ -82,7 +85,14 @@ export default function YearlyPage() {
             />
           </div>
           <div>
-            <label className="text-xs text-text-secondary block mb-1">태어난 시간</label>
+            <label className="text-xs text-text-secondary block mb-1">
+              태어난 시간
+              {birthTime && (
+                <span className="ml-1.5 text-accent font-semibold">
+                  {getTimeBranchLabel(birthTime, locale)}
+                </span>
+              )}
+            </label>
             <input
               type="time"
               value={birthTime}

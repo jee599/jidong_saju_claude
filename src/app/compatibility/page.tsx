@@ -9,6 +9,8 @@ import { Header } from "@/components/common/Header";
 import { Footer } from "@/components/common/Footer";
 import { Button } from "@/components/ui/Button";
 import { DateInput } from "@/components/input/DateInput";
+import { useLocale } from "@/lib/i18n/context";
+import { getTimeBranchLabel } from "@/lib/saju/timeBranch";
 
 interface PersonInput {
   name: string;
@@ -28,6 +30,7 @@ const emptyPerson: PersonInput = {
 
 export default function CompatibilityPage() {
   const router = useRouter();
+  const locale = useLocale();
   const [personA, setPersonA] = useState<PersonInput>({ ...emptyPerson, name: "" });
   const [personB, setPersonB] = useState<PersonInput>({ ...emptyPerson, name: "", gender: "female" });
   const [loading, setLoading] = useState(false);
@@ -88,12 +91,19 @@ export default function CompatibilityPage() {
           onChange={(v) => setPerson({ ...person, birthDate: v })}
           className="w-full text-sm !bg-bg-sunken !rounded-lg !px-3 !py-2.5"
         />
-        <input
-          type="time"
-          value={person.birthTime}
-          onChange={(e) => setPerson({ ...person, birthTime: e.target.value })}
-          className="w-full bg-bg-sunken border border-border rounded-lg px-3 py-2.5 text-sm text-text-primary focus:border-brand focus:outline-none"
-        />
+        <div>
+          <input
+            type="time"
+            value={person.birthTime}
+            onChange={(e) => setPerson({ ...person, birthTime: e.target.value })}
+            className="w-full bg-bg-sunken border border-border rounded-lg px-3 py-2.5 text-sm text-text-primary focus:border-brand focus:outline-none"
+          />
+          {person.birthTime && (
+            <span className="text-[11px] text-accent font-medium mt-0.5 block">
+              {getTimeBranchLabel(person.birthTime, locale)}
+            </span>
+          )}
+        </div>
         <div className="flex gap-2">
           {(["male", "female"] as const).map((g) => (
             <button

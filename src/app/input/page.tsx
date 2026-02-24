@@ -6,10 +6,12 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { Header } from "@/components/common/Header";
 import { DateInput } from "@/components/input/DateInput";
-import { useTranslations } from "@/lib/i18n/context";
+import { useLocale, useTranslations } from "@/lib/i18n/context";
+import { getTimeBranchLabel } from "@/lib/saju/timeBranch";
 
 export default function InputPage() {
   const router = useRouter();
+  const locale = useLocale();
   const t = useTranslations();
   const inp = t.input;
 
@@ -111,7 +113,14 @@ export default function InputPage() {
 
             {/* Birth time */}
             <div>
-              <label className="block text-xs text-text-secondary mb-1.5 font-medium">{inp.birthTimeLabel}</label>
+              <label className="block text-xs text-text-secondary mb-1.5 font-medium">
+                {inp.birthTimeLabel}
+                {form.birthTime && (
+                  <span className="ml-1.5 text-accent font-semibold">
+                    {getTimeBranchLabel(form.birthTime, locale)}
+                  </span>
+                )}
+              </label>
               <input
                 type="time"
                 required
