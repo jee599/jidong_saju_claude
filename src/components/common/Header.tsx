@@ -23,14 +23,14 @@ export function Header() {
   }, []);
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-bg-base/80 border-b border-border-subtle">
-      <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
-        <Link href="/" className="text-lg font-bold text-accent">
+    <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl bg-bg-base/70 border-b border-border-subtle">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+        <Link href="/" className="text-lg font-bold text-accent tracking-tight">
           운명사주
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden sm:flex items-center gap-5 text-sm">
+        <nav className="hidden sm:flex items-center gap-6 text-sm">
           <Link href="/pricing" className="text-text-secondary hover:text-text-primary transition">
             가격
           </Link>
@@ -41,13 +41,13 @@ export function Header() {
               </span>
               <Link
                 href="/input"
-                className="bg-brand text-white px-4 py-1.5 rounded-lg text-sm hover:bg-brand-light transition"
+                className="bg-brand text-white px-5 py-2 rounded-xl text-sm font-medium hover:bg-brand-light transition shadow-elevation-1"
               >
                 사주 분석
               </Link>
             </div>
           ) : (
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-4">
               <Link
                 href="/auth/login"
                 className="text-text-secondary hover:text-text-primary transition"
@@ -56,7 +56,7 @@ export function Header() {
               </Link>
               <Link
                 href="/input"
-                className="bg-brand text-white px-4 py-1.5 rounded-lg text-sm hover:bg-brand-light transition"
+                className="bg-brand text-white px-5 py-2 rounded-xl text-sm font-medium hover:bg-brand-light transition shadow-elevation-1"
               >
                 무료로 시작
               </Link>
@@ -82,7 +82,7 @@ export function Header() {
 
       {/* Mobile menu */}
       {menuOpen && (
-        <div className="sm:hidden bg-bg-base border-b border-border-subtle px-4 py-4 space-y-3">
+        <div className="sm:hidden bg-bg-base/95 backdrop-blur-xl border-b border-border-subtle px-4 py-4 space-y-3">
           <Link
             href="/pricing"
             onClick={() => setMenuOpen(false)}
@@ -102,7 +102,7 @@ export function Header() {
           <Link
             href="/input"
             onClick={() => setMenuOpen(false)}
-            className="block text-center bg-brand text-white py-2.5 rounded-lg text-sm"
+            className="block text-center bg-brand text-white py-2.5 rounded-xl text-sm font-medium"
           >
             {user ? "사주 분석" : "무료로 시작"}
           </Link>

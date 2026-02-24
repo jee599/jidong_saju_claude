@@ -21,8 +21,8 @@ export function OhengChart({ oheng }: OhengChartProps) {
   const maxPercentage = Math.max(...elements.map((e) => oheng.distribution[e].percentage));
 
   return (
-    <div className="bg-bg-elevated rounded-2xl p-4 sm:p-6 border border-border">
-      <h3 className="text-sm font-bold text-text-primary mb-4">오행(五行) 분포</h3>
+    <div className="bg-bg-elevated rounded-2xl p-5 sm:p-6 border border-border shadow-elevation-1">
+      <h3 className="text-sm font-bold text-text-primary mb-5">오행(五行) 분포</h3>
 
       <div className="space-y-3">
         {elements.map((element, i) => {
@@ -59,17 +59,17 @@ export function OhengChart({ oheng }: OhengChartProps) {
               </span>
 
               {isStrongest && (
-                <span className="text-[9px] px-1.5 py-0.5 rounded bg-success/20 text-success shrink-0">
+                <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-success/15 text-success font-medium shrink-0">
                   최강
                 </span>
               )}
               {isWeakest && !isMissing && (
-                <span className="text-[9px] px-1.5 py-0.5 rounded bg-danger/20 text-danger shrink-0">
+                <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-danger/15 text-danger font-medium shrink-0">
                   최약
                 </span>
               )}
               {isMissing && (
-                <span className="text-[9px] px-1.5 py-0.5 rounded bg-danger/20 text-danger shrink-0">
+                <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-danger/15 text-danger font-medium shrink-0">
                   없음
                 </span>
               )}
@@ -78,7 +78,7 @@ export function OhengChart({ oheng }: OhengChartProps) {
         })}
       </div>
 
-      <p className="text-xs text-text-secondary mt-4 text-center">
+      <p className="text-xs text-text-secondary mt-5 text-center">
         {oheng.balance}
       </p>
     </div>

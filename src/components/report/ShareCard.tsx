@@ -82,7 +82,7 @@ export function ShareCard({ sajuResult, reportUrl }: ShareCardProps) {
   };
 
   return (
-    <div className="bg-bg-elevated rounded-2xl p-4 sm:p-5 border border-border">
+    <div className="bg-bg-elevated rounded-2xl p-4 sm:p-5 border border-border shadow-elevation-1">
       <h3 className="text-sm font-bold text-text-primary mb-3">공유하기</h3>
       <div className="flex gap-2">
         {/* KakaoTalk Share */}

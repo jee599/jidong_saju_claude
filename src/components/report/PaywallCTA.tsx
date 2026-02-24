@@ -12,7 +12,7 @@ export function PaywallCTA({ onPurchase, loading }: PaywallCTAProps) {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-gradient-to-b from-bg-elevated to-bg-base rounded-2xl p-6 sm:p-8 border border-accent/30 text-center"
+      className="bg-gradient-to-b from-bg-elevated to-bg-base rounded-2xl p-6 sm:p-8 border border-accent/20 text-center shadow-elevation-2"
     >
       <div className="w-14 h-14 rounded-full bg-accent-muted flex items-center justify-center mx-auto mb-4">
         <svg className="w-7 h-7 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -38,7 +38,7 @@ export function PaywallCTA({ onPurchase, loading }: PaywallCTAProps) {
       <button
         onClick={onPurchase}
         disabled={loading}
-        className="w-full bg-accent text-text-inverse font-semibold py-4 rounded-xl hover:bg-accent-hover hover:scale-[1.02] transition-all disabled:opacity-50 disabled:hover:scale-100"
+        className="w-full bg-accent text-text-inverse font-semibold py-4 rounded-xl hover:bg-accent-hover hover:scale-[1.02] transition-all disabled:opacity-50 disabled:hover:scale-100 shadow-elevation-1"
       >
         {loading ? "결제 준비 중..." : "풀 리포트 구매하기"}
       </button>

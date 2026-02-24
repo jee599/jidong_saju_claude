@@ -68,10 +68,10 @@ export default function CompatibilityResultPage() {
           <h1 className="text-2xl font-bold text-text-primary mb-4">궁합 분석 결과</h1>
           <div className="relative w-32 h-32 mx-auto mb-4">
             <svg className="w-full h-full -rotate-90" viewBox="0 0 120 120">
-              <circle cx="60" cy="60" r="50" fill="none" stroke="#151928" strokeWidth="8" />
+              <circle cx="60" cy="60" r="50" fill="none" className="stroke-bg-elevated" strokeWidth="8" />
               <motion.circle
                 cx="60" cy="60" r="50" fill="none"
-                stroke={score >= 70 ? "#34D399" : score >= 50 ? "#E8990C" : "#F87171"}
+                stroke={score >= 70 ? "#34D399" : score >= 50 ? "#C9973B" : "#F87171"}
                 strokeWidth="8"
                 strokeLinecap="round"
                 strokeDasharray={`${(score / 100) * 314} 314`}
@@ -128,7 +128,7 @@ export default function CompatibilityResultPage() {
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-bg-elevated rounded-2xl p-5 border border-border mb-6"
+          className="bg-bg-elevated rounded-2xl p-5 border border-border mb-6 shadow-elevation-1"
         >
           <h3 className="text-sm font-bold text-text-primary mb-3">기본 궁합 분석</h3>
           <div className="space-y-2 text-sm">
@@ -154,7 +154,7 @@ export default function CompatibilityResultPage() {
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-bg-elevated rounded-2xl p-5 border border-border mb-6"
+            className="bg-bg-elevated rounded-2xl p-5 border border-border mb-6 shadow-elevation-1"
           >
             <h3 className="text-sm font-bold text-text-primary mb-3">{llmAnalysis.title}</h3>
             {llmAnalysis.keywords?.length > 0 && (

@@ -12,7 +12,7 @@ export function DaeunTimeline({ daeun }: DaeunTimelineProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   return (
-    <div className="bg-bg-elevated rounded-2xl p-4 sm:p-6 border border-border">
+    <div className="bg-bg-elevated rounded-2xl p-4 sm:p-6 border border-border shadow-elevation-1">
       <h3 className="text-sm font-bold text-text-primary mb-4">대운(大運) 타임라인</h3>
 
       <div

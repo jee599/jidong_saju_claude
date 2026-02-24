@@ -12,10 +12,10 @@ interface SectionCardProps {
 export function SectionCard({ section, isLocked, index = 0 }: SectionCardProps) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.1 * index, duration: 0.5 }}
-      className="bg-bg-elevated rounded-2xl p-5 sm:p-6 border border-border relative overflow-hidden"
+      transition={{ delay: 0.1 * index, duration: 0.4 }}
+      className="bg-bg-elevated rounded-2xl p-5 sm:p-6 border border-border relative overflow-hidden shadow-elevation-1"
     >
       <h3 className="text-base sm:text-lg font-bold text-text-primary mb-3">
         {section.title}
@@ -27,7 +27,7 @@ export function SectionCard({ section, isLocked, index = 0 }: SectionCardProps) 
           {section.keywords.map((kw, i) => (
             <span
               key={i}
-              className="text-[10px] px-2 py-0.5 rounded-full bg-brand-muted text-brand-light"
+              className="text-[10px] px-2 py-0.5 rounded-full bg-brand-muted text-brand-light font-medium"
             >
               {kw}
             </span>
@@ -50,7 +50,7 @@ export function SectionCard({ section, isLocked, index = 0 }: SectionCardProps) 
       {!isLocked && section.highlights.length > 0 && (
         <div className="mt-4 pt-3 border-t border-border-subtle">
           {section.highlights.map((h, i) => (
-            <p key={i} className="text-xs text-accent flex items-start gap-2 mt-1">
+            <p key={i} className="text-xs text-accent flex items-start gap-2 mt-1.5">
               <span className="shrink-0">&#9733;</span>
               {h}
             </p>

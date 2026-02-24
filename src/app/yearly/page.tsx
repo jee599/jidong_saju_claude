@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Header } from "@/components/common/Header";
 import { Footer } from "@/components/common/Footer";
 import { Button } from "@/components/ui/Button";
+import { DateInput } from "@/components/input/DateInput";
 
 export default function YearlyPage() {
   const router = useRouter();
@@ -74,11 +75,10 @@ export default function YearlyPage() {
           />
           <div>
             <label className="text-xs text-text-secondary block mb-1">생년월일</label>
-            <input
-              type="date"
+            <DateInput
               value={birthDate}
-              onChange={(e) => setBirthDate(e.target.value)}
-              className="w-full bg-bg-sunken border border-border rounded-lg px-3 py-2.5 text-sm text-text-primary focus:border-brand focus:outline-none"
+              onChange={setBirthDate}
+              className="w-full text-sm !bg-bg-sunken !rounded-lg !px-3 !py-2.5"
             />
           </div>
           <div>

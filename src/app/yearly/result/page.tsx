@@ -76,7 +76,7 @@ export default function YearlyResultPage() {
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-bg-elevated rounded-2xl p-5 border border-border mb-6"
+          className="bg-bg-elevated rounded-2xl p-5 border border-border mb-6 shadow-elevation-1"
         >
           <h3 className="text-sm font-bold text-text-primary mb-3">연간 요약</h3>
           <p className="text-sm text-text-primary/85 leading-relaxed">{basicYearly.summary}</p>
@@ -88,7 +88,7 @@ export default function YearlyResultPage() {
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-bg-elevated rounded-2xl p-5 border border-border mb-6"
+            className="bg-bg-elevated rounded-2xl p-5 border border-border mb-6 shadow-elevation-1"
           >
             <h3 className="text-sm font-bold text-text-primary mb-4">월별 운세</h3>
             <div className="space-y-3">
@@ -135,7 +135,7 @@ export default function YearlyResultPage() {
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-bg-elevated rounded-2xl p-5 border border-border mb-6"
+            className="bg-bg-elevated rounded-2xl p-5 border border-border mb-6 shadow-elevation-1"
           >
             <h3 className="text-sm font-bold text-text-primary mb-3">주요 전환점</h3>
             {yearlyAnalysis.turningPoints.map((tp, i) => (
@@ -151,7 +151,7 @@ export default function YearlyResultPage() {
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-bg-elevated rounded-2xl p-5 border border-border mb-6"
+            className="bg-bg-elevated rounded-2xl p-5 border border-border mb-6 shadow-elevation-1"
           >
             <h3 className="text-sm font-bold text-text-primary mb-3">상세 분석</h3>
             <p className="text-sm text-text-primary/85 leading-relaxed whitespace-pre-line">

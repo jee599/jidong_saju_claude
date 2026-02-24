@@ -1,36 +1,40 @@
 @import "tailwindcss";
 
+/* ============================================
+   운명사주 Design Tokens — Dark-first, auto light mode
+   ============================================ */
+
 :root {
   /* Brand */
-  --color-brand: #3B5BDB;
-  --color-brand-light: #5C7CFA;
-  --color-brand-muted: rgba(59, 91, 219, 0.15);
+  --color-brand: #4361EE;
+  --color-brand-light: #6380F5;
+  --color-brand-muted: rgba(67, 97, 238, 0.12);
 
-  /* Accent */
-  --color-accent: #E8990C;
-  --color-accent-hover: #D4880A;
-  --color-accent-muted: rgba(232, 153, 12, 0.15);
+  /* Accent — refined warm gold */
+  --color-accent: #C9973B;
+  --color-accent-hover: #B8882E;
+  --color-accent-muted: rgba(201, 151, 59, 0.12);
 
-  /* Backgrounds */
-  --color-bg-base: #0C0F1A;
-  --color-bg-elevated: #151928;
-  --color-bg-sunken: #0A0D16;
+  /* Backgrounds — dark, near-neutral */
+  --color-bg-base: #0A0A0F;
+  --color-bg-elevated: #141418;
+  --color-bg-sunken: #07070B;
 
   /* Borders */
   --color-border: rgba(255, 255, 255, 0.08);
   --color-border-subtle: rgba(255, 255, 255, 0.04);
-  --color-border-focus: #3B5BDB;
+  --color-border-focus: #4361EE;
 
   /* Text */
-  --color-text-primary: #E8ECF4;
-  --color-text-secondary: #8B95A9;
-  --color-text-tertiary: #5C6478;
-  --color-text-inverse: #0C0F1A;
+  --color-text-primary: #EDEDF0;
+  --color-text-secondary: #8A8D9B;
+  --color-text-tertiary: #55575F;
+  --color-text-inverse: #0A0A0F;
 
   /* Semantic */
   --color-success: #34D399;
   --color-warn: #FBBF24;
-  --color-danger: #F87171;
+  --color-danger: #EF4444;
   --color-info: #60A5FA;
 
   /* 오행 */
@@ -39,8 +43,60 @@
   --color-earth: #FBBF24;
   --color-metal: #A1A1AA;
   --color-water: #60A5FA;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.25);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.3);
+  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.35);
+  --shadow-brand: 0 4px 20px rgba(67, 97, 238, 0.2);
+  --shadow-accent: 0 4px 20px rgba(201, 151, 59, 0.15);
+
+  /* Typography */
+  --text-base-size: 15px;
+  --leading-body: 1.65;
+  --leading-heading: 1.25;
+
+  /* Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
 }
 
+/* ============================================
+   Light mode overrides (auto via system pref)
+   ============================================ */
+@media (prefers-color-scheme: light) {
+  :root {
+    --color-bg-base: #FAFAFA;
+    --color-bg-elevated: #FFFFFF;
+    --color-bg-sunken: #F4F4F5;
+
+    --color-border: rgba(0, 0, 0, 0.08);
+    --color-border-subtle: rgba(0, 0, 0, 0.04);
+
+    --color-text-primary: #18181B;
+    --color-text-secondary: #71717A;
+    --color-text-tertiary: #A1A1AA;
+    --color-text-inverse: #FAFAFA;
+
+    --color-brand-muted: rgba(67, 97, 238, 0.08);
+    --color-accent-muted: rgba(201, 151, 59, 0.08);
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.12);
+    --shadow-brand: 0 4px 20px rgba(67, 97, 238, 0.12);
+    --shadow-accent: 0 4px 20px rgba(201, 151, 59, 0.1);
+  }
+}
+
+/* ============================================
+   Tailwind v4 @theme mapping
+   ============================================ */
 @theme inline {
   --color-brand: var(--color-brand);
   --color-brand-light: var(--color-brand-light);
@@ -66,11 +122,18 @@
   --font-serif: var(--font-noto-serif-kr);
 }
 
+/* ============================================
+   Base body styles
+   ============================================ */
 body {
   background: var(--color-bg-base);
   color: var(--color-text-primary);
   font-family: var(--font-pretendard), system-ui, -apple-system, sans-serif;
+  font-size: var(--text-base-size);
+  line-height: var(--leading-body);
   min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* 한자 전용 서체 */
@@ -78,20 +141,63 @@ body {
   font-family: var(--font-noto-serif-kr), "Noto Serif KR", serif;
 }
 
-/* 스크롤바 스타일 */
+/* ============================================
+   Scrollbar — subtle
+   ============================================ */
 ::-webkit-scrollbar {
   width: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--color-bg-base);
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--color-brand);
+  background: var(--color-text-tertiary);
   border-radius: 3px;
 }
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-secondary);
+}
 
-/* 선택 영역 */
+/* Selection */
 ::selection {
-  background: rgba(59, 91, 219, 0.3);
+  background: rgba(67, 97, 238, 0.25);
   color: var(--color-text-primary);
+}
+
+/* ============================================
+   Utility classes for shadows & elevation
+   ============================================ */
+.shadow-elevation-1 {
+  box-shadow: var(--shadow-sm);
+}
+.shadow-elevation-2 {
+  box-shadow: var(--shadow-md);
+}
+.shadow-elevation-3 {
+  box-shadow: var(--shadow-lg);
+}
+.shadow-elevation-4 {
+  box-shadow: var(--shadow-xl);
+}
+
+/* ============================================
+   Form input dark/light compat for native pickers
+   ============================================ */
+input[type="time"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.6);
+}
+@media (prefers-color-scheme: light) {
+  input[type="time"]::-webkit-calendar-picker-indicator {
+    filter: none;
+  }
+}
+
+/* ============================================
+   Light mode specific overrides for elements
+   that use hardcoded opacity on white
+   ============================================ */
+@media (prefers-color-scheme: light) {
+  .bg-white\/5 {
+    background-color: rgba(0, 0, 0, 0.03);
+  }
 }

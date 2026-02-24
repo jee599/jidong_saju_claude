@@ -65,7 +65,7 @@ export function LoadingScreen({ sajuResult, phase, sectionsCompleted = 0, totalS
   return (
     <div className="min-h-screen bg-bg-base flex flex-col items-center justify-center px-4">
       <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
+        initial={{ opacity: 0, scale: 0.97 }}
         animate={{ opacity: 1, scale: 1 }}
         className="w-full max-w-md"
       >
@@ -73,9 +73,9 @@ export function LoadingScreen({ sajuResult, phase, sectionsCompleted = 0, totalS
         <AnimatePresence mode="wait">
           <motion.p
             key={phase === "calculating" ? stepIndex : "gen"}
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
+            exit={{ opacity: 0, y: -8 }}
             className="text-center text-text-primary text-sm mb-8"
           >
             {phase === "calculating"
@@ -97,7 +97,7 @@ export function LoadingScreen({ sajuResult, phase, sectionsCompleted = 0, totalS
         )}
 
         {/* Progress bar */}
-        <div className="w-full h-2 bg-bg-elevated rounded-full overflow-hidden mb-4">
+        <div className="w-full h-1.5 bg-bg-elevated rounded-full overflow-hidden mb-4">
           <motion.div
             className="h-full bg-gradient-to-r from-brand to-brand-light rounded-full"
             initial={{ width: 0 }}
@@ -117,7 +117,7 @@ export function LoadingScreen({ sajuResult, phase, sectionsCompleted = 0, totalS
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="text-center text-xs text-text-secondary bg-bg-elevated rounded-xl px-4 py-3 border border-border"
+            className="text-center text-xs text-text-secondary bg-bg-elevated rounded-xl px-4 py-3 border border-border shadow-elevation-1"
           >
             {TIPS[tipIndex]}
           </motion.p>

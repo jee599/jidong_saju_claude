@@ -22,15 +22,15 @@ export function PillarCard({ pillar, label, isDayMaster, delay = 0, sipseong, un
       initial={{ rotateY: 180, opacity: 0 }}
       animate={{ rotateY: 0, opacity: 1 }}
       transition={{ delay, duration: 0.6, ease: "easeOut" }}
-      className={`relative flex flex-col items-center p-3 sm:p-4 rounded-2xl border ${
+      className={`relative flex flex-col items-center p-3 sm:p-4 rounded-2xl border shadow-elevation-1 ${
         isDayMaster
-          ? "border-accent bg-gradient-to-b from-accent-muted to-transparent shadow-lg shadow-accent/10"
+          ? "border-accent/40 bg-gradient-to-b from-accent-muted to-transparent"
           : "border-border bg-bg-elevated"
       }`}
       style={{ perspective: "1000px" }}
     >
       {/* Label */}
-      <span className={`text-[10px] sm:text-xs mb-2 ${isDayMaster ? "text-accent font-bold" : "text-text-secondary"}`}>
+      <span className={`text-[10px] sm:text-xs mb-2 font-medium ${isDayMaster ? "text-accent" : "text-text-secondary"}`}>
         {label}
         {isDayMaster && <span className="ml-1">(나)</span>}
       </span>
@@ -67,7 +67,7 @@ export function PillarCard({ pillar, label, isDayMaster, delay = 0, sipseong, un
       {/* Sipseong + Unseong badges */}
       <div className="mt-3 flex flex-col items-center gap-1">
         {sipseong && (
-          <span className="text-[9px] sm:text-[10px] px-2 py-0.5 rounded-full bg-brand-muted text-brand-light">
+          <span className="text-[9px] sm:text-[10px] px-2 py-0.5 rounded-full bg-brand-muted text-brand-light font-medium">
             {sipseong}
           </span>
         )}
@@ -80,7 +80,7 @@ export function PillarCard({ pillar, label, isDayMaster, delay = 0, sipseong, un
 
       {/* Element badge */}
       <div
-        className="absolute -top-2 -right-2 w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold text-white"
+        className="absolute -top-2 -right-2 w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold text-white shadow-elevation-1"
         style={{ backgroundColor: ganColor }}
       >
         {pillar.ganInfo.element}

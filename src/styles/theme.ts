@@ -1,47 +1,70 @@
-// src/styles/theme.ts — 운명사주 디자인 시스템
+// src/styles/theme.ts — 운명사주 디자인 시스템 v2
+// Premium, global SaaS-ready token system with light/dark support.
 
 export const colors = {
-  // Brand
+  // Brand — refined indigo
   brand: {
-    primary: "#3B5BDB",   // Calm Indigo — trustworthy, premium
-    secondary: "#5C7CFA", // Lighter indigo for hover / secondary
+    primary: "#4361EE",   // Vibrant yet sophisticated indigo
+    secondary: "#6380F5", // Lighter indigo for hover states
   },
 
-  // Accent — warm amber, used sparingly for highlights & CTAs
-  accent: "#E8990C",       // Amber gold — restrained, not tacky
-  accentMuted: "#D4880A",  // Darker amber for hover
+  // Accent — warm, refined gold (used sparingly)
+  accent: "#C9973B",       // Sophisticated muted gold
+  accentMuted: "#B8882E",  // Hover state
 
-  // Backgrounds (dark mode)
+  // Dark mode backgrounds — desaturated, near-neutral
   bg: {
-    base: "#0C0F1A",       // Near-black blue-grey
-    elevated: "#151928",   // Cards, surfaces
-    sunken: "#0A0D16",     // Inset areas, inputs
+    base: "#0A0A0F",       // Deep neutral (minimal blue tint)
+    elevated: "#141418",   // Cards, surfaces (subtle lift)
+    sunken: "#07070B",     // Inputs, inset areas
   },
 
-  // Borders
+  // Light mode backgrounds
+  bgLight: {
+    base: "#FAFAFA",       // Clean off-white
+    elevated: "#FFFFFF",   // Cards — pure white
+    sunken: "#F4F4F5",    // Inputs, inset areas
+  },
+
+  // Borders — dark mode
   border: {
     default: "rgba(255, 255, 255, 0.08)",
     subtle: "rgba(255, 255, 255, 0.04)",
-    focus: "#3B5BDB",
+    focus: "#4361EE",
   },
 
-  // Text
+  // Borders — light mode
+  borderLight: {
+    default: "rgba(0, 0, 0, 0.08)",
+    subtle: "rgba(0, 0, 0, 0.04)",
+    focus: "#4361EE",
+  },
+
+  // Text — dark mode
   text: {
-    primary: "#E8ECF4",    // High contrast on dark
-    secondary: "#8B95A9",  // Muted / labels
-    tertiary: "#5C6478",   // Disabled / hints
-    inverse: "#0C0F1A",    // Text on light backgrounds
+    primary: "#EDEDF0",    // Slightly warm white
+    secondary: "#8A8D9B",  // Desaturated muted
+    tertiary: "#55575F",   // Hints / disabled
+    inverse: "#0A0A0F",    // Text on light surfaces
+  },
+
+  // Text — light mode
+  textLight: {
+    primary: "#18181B",    // Near-black
+    secondary: "#71717A",  // Zinc-600
+    tertiary: "#A1A1AA",   // Zinc-400
+    inverse: "#FAFAFA",    // Text on dark surfaces
   },
 
   // Semantic
   semantic: {
-    success: "#34D399",    // Emerald green
+    success: "#34D399",    // Emerald
     warn: "#FBBF24",       // Amber
-    danger: "#F87171",     // Soft red
+    danger: "#EF4444",     // Red
     info: "#60A5FA",       // Sky blue
   },
 
-  // 오행 컬러 — softer, cohesive with dark bg
+  // 오행 컬러 — softer, cohesive
   oheng: {
     木: "#34D399",  // Emerald
     火: "#F87171",  // Soft red
@@ -49,6 +72,16 @@ export const colors = {
     金: "#A1A1AA",  // Zinc
     水: "#60A5FA",  // Sky blue
   } as Record<string, string>,
+
+  // Shadows (used inline or via CSS vars)
+  shadow: {
+    sm: "0 1px 2px rgba(0, 0, 0, 0.3)",
+    md: "0 4px 12px rgba(0, 0, 0, 0.25)",
+    lg: "0 8px 24px rgba(0, 0, 0, 0.3)",
+    xl: "0 16px 48px rgba(0, 0, 0, 0.35)",
+    brand: "0 4px 20px rgba(67, 97, 238, 0.2)",
+    accent: "0 4px 20px rgba(201, 151, 59, 0.15)",
+  },
 } as const;
 
 export type OhengElement = "木" | "火" | "土" | "金" | "水";

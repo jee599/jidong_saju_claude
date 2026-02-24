@@ -5,11 +5,11 @@ import { motion } from "framer-motion";
 import { Header } from "@/components/common/Header";
 
 const fadeUp = {
-  hidden: { opacity: 0, y: 30 },
+  hidden: { opacity: 0, y: 24 },
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { delay: i * 0.15, duration: 0.6, ease: "easeOut" as const },
+    transition: { delay: i * 0.12, duration: 0.5, ease: "easeOut" as const },
   }),
 };
 
@@ -19,14 +19,14 @@ export default function LandingPage() {
       <Header />
 
       {/* Hero Section */}
-      <section className="pt-28 sm:pt-36 pb-20 px-4">
+      <section className="pt-32 sm:pt-40 pb-24 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <motion.p
             initial="hidden"
             animate="visible"
             custom={0}
             variants={fadeUp}
-            className="text-brand-light text-xs tracking-widest uppercase mb-4"
+            className="text-brand-light text-xs tracking-[0.2em] uppercase mb-5 font-medium"
           >
             AI x 명리학
           </motion.p>
@@ -35,7 +35,7 @@ export default function LandingPage() {
             animate="visible"
             custom={1}
             variants={fadeUp}
-            className="text-3xl sm:text-4xl md:text-6xl font-bold text-text-primary leading-tight mb-6"
+            className="text-4xl sm:text-5xl md:text-6xl font-bold text-text-primary leading-[1.15] mb-7 tracking-tight"
           >
             AI가 명리학으로 풀어내는
             <br />
@@ -46,7 +46,7 @@ export default function LandingPage() {
             animate="visible"
             custom={2}
             variants={fadeUp}
-            className="text-base sm:text-lg text-text-secondary max-w-2xl mx-auto mb-10"
+            className="text-base sm:text-lg text-text-secondary max-w-2xl mx-auto mb-12 leading-relaxed"
           >
             생년월일시만 입력하면, 만세력 엔진이 정확히 계산하고
             <br className="hidden md:block" />
@@ -60,11 +60,11 @@ export default function LandingPage() {
           >
             <Link
               href="/input"
-              className="inline-block bg-brand text-white text-base sm:text-lg font-semibold px-8 py-4 rounded-xl hover:bg-brand-light hover:scale-105 transition-all shadow-lg shadow-brand/20"
+              className="inline-block bg-brand text-white text-base sm:text-lg font-semibold px-10 py-4 rounded-xl hover:bg-brand-light hover:scale-[1.03] transition-all shadow-elevation-3"
             >
               무료 사주 보기 &rarr;
             </Link>
-            <p className="text-text-secondary text-xs sm:text-sm mt-4">
+            <p className="text-text-secondary text-sm mt-5">
               30초면 완료 &middot; 회원가입 불필요
             </p>
           </motion.div>
@@ -72,35 +72,38 @@ export default function LandingPage() {
       </section>
 
       {/* Social Proof */}
-      <section className="py-8 px-4 border-t border-border-subtle">
-        <div className="max-w-4xl mx-auto flex flex-wrap justify-center gap-6 sm:gap-10 text-center">
+      <section className="py-10 px-4 border-t border-border-subtle">
+        <div className="max-w-4xl mx-auto flex flex-wrap justify-center gap-8 sm:gap-14 text-center">
           {[
             { value: "15,000+", label: "분석 완료" },
             { value: "4.8", label: "평균 만족도" },
             { value: "만세력", label: "코드 기반 정밀 계산" },
           ].map((stat) => (
             <div key={stat.label}>
-              <p className="text-lg sm:text-xl font-bold text-accent">{stat.value}</p>
-              <p className="text-[10px] sm:text-xs text-text-secondary">{stat.label}</p>
+              <p className="text-xl sm:text-2xl font-bold text-accent">{stat.value}</p>
+              <p className="text-xs text-text-secondary mt-0.5">{stat.label}</p>
             </div>
           ))}
         </div>
       </section>
 
       {/* How It Works */}
-      <section className="py-16 sm:py-20 px-4 border-t border-border-subtle">
+      <section className="py-20 sm:py-24 px-4 border-t border-border-subtle">
         <div className="max-w-5xl mx-auto">
-          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-center text-text-primary mb-12 sm:mb-16">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center text-text-primary mb-4 tracking-tight">
             어떻게 작동하나요?
           </h2>
-          <div className="grid md:grid-cols-3 gap-6 sm:gap-8">
+          <p className="text-text-secondary text-center text-sm mb-14 max-w-md mx-auto">
+            3단계로 정밀한 사주 분석을 받아보세요.
+          </p>
+          <div className="grid md:grid-cols-3 gap-5 sm:gap-6">
             {[
               {
                 step: "01",
                 title: "생년월일시 입력",
                 desc: "양력 또는 음력, 태어난 시간까지 정확하게 입력합니다.",
                 icon: (
-                  <svg className="w-6 h-6 text-brand-light" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg className="w-5 h-5 text-brand-light" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
                 ),
@@ -110,7 +113,7 @@ export default function LandingPage() {
                 title: "만세력 엔진 계산",
                 desc: "사주팔자, 십성, 12운성, 대운, 신살을 코드로 정밀 계산합니다.",
                 icon: (
-                  <svg className="w-6 h-6 text-brand-light" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg className="w-5 h-5 text-brand-light" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                   </svg>
                 ),
@@ -120,7 +123,7 @@ export default function LandingPage() {
                 title: "AI 전문 해석",
                 desc: "계산 결과를 Claude AI가 명리학 전문가 수준으로 해석합니다.",
                 icon: (
-                  <svg className="w-6 h-6 text-brand-light" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg className="w-5 h-5 text-brand-light" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
                   </svg>
                 ),
@@ -133,13 +136,13 @@ export default function LandingPage() {
                 viewport={{ once: true }}
                 custom={i}
                 variants={fadeUp}
-                className="bg-bg-elevated rounded-2xl p-6 sm:p-8 border border-border hover:border-brand/20 transition"
+                className="bg-bg-elevated rounded-2xl p-6 sm:p-8 border border-border hover:border-brand/20 transition shadow-elevation-1"
               >
-                <div className="flex items-center gap-3 mb-4">
+                <div className="flex items-center gap-3 mb-5">
                   <div className="w-10 h-10 rounded-xl bg-brand-muted flex items-center justify-center">
                     {item.icon}
                   </div>
-                  <span className="text-accent text-xs font-mono">
+                  <span className="text-accent text-xs font-mono font-medium">
                     {item.step}
                   </span>
                 </div>
@@ -156,12 +159,12 @@ export default function LandingPage() {
       </section>
 
       {/* What You Get */}
-      <section className="py-16 sm:py-20 px-4 border-t border-border-subtle">
+      <section className="py-20 sm:py-24 px-4 border-t border-border-subtle">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-text-primary mb-4">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-text-primary mb-4 tracking-tight">
             무엇을 알 수 있나요?
           </h2>
-          <p className="text-text-secondary text-sm mb-10">무료 분석만으로도 핵심을 파악할 수 있습니다.</p>
+          <p className="text-text-secondary text-sm mb-12">무료 분석만으로도 핵심을 파악할 수 있습니다.</p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
             {[
               { title: "성격·기질", desc: "타고난 성향", free: true },
@@ -175,7 +178,7 @@ export default function LandingPage() {
             ].map((item) => (
               <div
                 key={item.title}
-                className={`rounded-xl p-4 border text-left ${
+                className={`rounded-xl p-4 border text-left transition shadow-elevation-1 ${
                   item.free
                     ? "bg-bg-elevated border-success/20"
                     : "bg-bg-elevated/50 border-border"
@@ -184,10 +187,10 @@ export default function LandingPage() {
                 <div className="flex items-center gap-1.5 mb-1">
                   <h4 className="text-sm font-bold text-text-primary">{item.title}</h4>
                   {item.free && (
-                    <span className="text-[8px] px-1 py-0.5 rounded bg-success/15 text-success">무료</span>
+                    <span className="text-[8px] px-1.5 py-0.5 rounded-full bg-success/15 text-success font-medium">무료</span>
                   )}
                 </div>
-                <p className="text-[10px] text-text-secondary">{item.desc}</p>
+                <p className="text-xs text-text-secondary">{item.desc}</p>
               </div>
             ))}
           </div>
@@ -195,20 +198,20 @@ export default function LandingPage() {
       </section>
 
       {/* Pricing */}
-      <section className="py-16 sm:py-20 px-4 border-t border-border-subtle" id="pricing">
+      <section className="py-20 sm:py-24 px-4 border-t border-border-subtle" id="pricing">
         <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-text-primary mb-4">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-text-primary mb-4 tracking-tight">
             합리적인 가격
           </h2>
-          <p className="text-text-secondary text-sm mb-10">
+          <p className="text-text-secondary text-sm mb-12">
             무료 요약으로 시작하고, 원하면 풀 리포트를 받아보세요.
           </p>
           <div className="grid sm:grid-cols-2 gap-4 sm:gap-6 max-w-xl mx-auto">
             {/* Free */}
-            <div className="rounded-2xl p-6 border border-border bg-bg-elevated">
+            <div className="rounded-2xl p-6 sm:p-7 border border-border bg-bg-elevated shadow-elevation-1">
               <h3 className="text-base font-bold text-text-primary mb-1">무료 요약</h3>
-              <p className="text-2xl font-bold text-accent mb-4">&#8361;0</p>
-              <ul className="text-xs text-text-secondary space-y-2 mb-6 text-left">
+              <p className="text-3xl font-bold text-accent mb-5">&#8361;0</p>
+              <ul className="text-sm text-text-secondary space-y-2.5 mb-7 text-left">
                 {["사주팔자 계산", "오행 밸런스 차트", "성격 요약 3~4문장", "올해 키워드 1줄", "행운의 색/방위/숫자"].map((f) => (
                   <li key={f} className="flex items-start gap-2">
                     <span className="text-success mt-0.5">&#10003;</span>{f}
@@ -217,20 +220,20 @@ export default function LandingPage() {
               </ul>
               <Link
                 href="/input"
-                className="block text-center py-2.5 rounded-lg text-sm font-medium bg-brand-muted text-brand-light hover:bg-brand/20 transition"
+                className="block text-center py-3 rounded-xl text-sm font-medium bg-brand-muted text-brand-light hover:bg-brand/20 transition"
               >
                 무료로 시작
               </Link>
             </div>
 
             {/* Premium */}
-            <div className="rounded-2xl p-6 border border-accent bg-gradient-to-b from-bg-elevated to-bg-base relative">
+            <div className="rounded-2xl p-6 sm:p-7 border border-accent/50 bg-gradient-to-b from-bg-elevated to-bg-base relative shadow-elevation-2">
               <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-accent text-text-inverse text-[10px] font-bold px-3 py-1 rounded-full">
                 BEST
               </span>
               <h3 className="text-base font-bold text-text-primary mb-1">풀 리포트</h3>
-              <p className="text-2xl font-bold text-accent mb-4">&#8361;5,900</p>
-              <ul className="text-xs text-text-secondary space-y-2 mb-6 text-left">
+              <p className="text-3xl font-bold text-accent mb-5">&#8361;5,900</p>
+              <ul className="text-sm text-text-secondary space-y-2.5 mb-7 text-left">
                 {["무료 요약 전체 포함", "10개 섹션 상세 AI 분석", "성격·직업·연애·재물·건강", "대운 타임라인 해석", "맞춤 실행 팁"].map((f) => (
                   <li key={f} className="flex items-start gap-2">
                     <span className="text-accent mt-0.5">&#10003;</span>{f}
@@ -239,7 +242,7 @@ export default function LandingPage() {
               </ul>
               <Link
                 href="/input"
-                className="block text-center py-2.5 rounded-lg text-sm font-medium bg-accent text-text-inverse hover:bg-accent-hover transition"
+                className="block text-center py-3 rounded-xl text-sm font-semibold bg-accent text-text-inverse hover:bg-accent-hover transition shadow-elevation-1"
               >
                 풀 리포트 받기
               </Link>
@@ -249,9 +252,9 @@ export default function LandingPage() {
       </section>
 
       {/* FAQ */}
-      <section className="py-16 sm:py-20 px-4 border-t border-border-subtle">
+      <section className="py-20 sm:py-24 px-4 border-t border-border-subtle">
         <div className="max-w-2xl mx-auto">
-          <h2 className="text-xl sm:text-2xl font-bold text-center text-text-primary mb-10">
+          <h2 className="text-2xl sm:text-3xl font-bold text-center text-text-primary mb-12 tracking-tight">
             자주 묻는 질문
           </h2>
           <div className="space-y-4">
@@ -261,9 +264,9 @@ export default function LandingPage() {
               { q: "태어난 시간을 모르면 어떻게 하나요?", a: "태어난 시간은 시주(時柱) 계산에 필요합니다. 정확한 시간을 모르면 대략적인 시간대를 입력해주세요." },
               { q: "결제는 안전한가요?", a: "토스페이먼츠를 통한 안전한 결제를 제공합니다. 카카오페이, 토스, 신용카드 등 다양한 결제 수단을 지원합니다." },
             ].map((item) => (
-              <div key={item.q} className="bg-bg-elevated rounded-xl p-4 sm:p-5 border border-border">
+              <div key={item.q} className="bg-bg-elevated rounded-2xl p-5 sm:p-6 border border-border shadow-elevation-1">
                 <h4 className="text-sm font-bold text-text-primary mb-2">{item.q}</h4>
-                <p className="text-xs text-text-secondary leading-relaxed">{item.a}</p>
+                <p className="text-sm text-text-secondary leading-relaxed">{item.a}</p>
               </div>
             ))}
           </div>
@@ -271,17 +274,17 @@ export default function LandingPage() {
       </section>
 
       {/* Final CTA */}
-      <section className="py-16 sm:py-20 px-4 border-t border-border-subtle">
+      <section className="py-20 sm:py-24 px-4 border-t border-border-subtle">
         <div className="max-w-md mx-auto text-center">
-          <h2 className="text-xl sm:text-2xl font-bold text-text-primary mb-4">
+          <h2 className="text-2xl sm:text-3xl font-bold text-text-primary mb-5 tracking-tight">
             지금 바로 시작하세요
           </h2>
-          <p className="text-sm text-text-secondary mb-8">
+          <p className="text-sm text-text-secondary mb-10">
             30초 만에 AI가 분석한 사주 리포트를 받아보세요.
           </p>
           <Link
             href="/input"
-            className="inline-block bg-brand text-white font-semibold px-8 py-4 rounded-xl hover:bg-brand-light hover:scale-105 transition-all shadow-lg shadow-brand/20"
+            className="inline-block bg-brand text-white font-semibold px-10 py-4 rounded-xl hover:bg-brand-light hover:scale-[1.03] transition-all shadow-elevation-3"
           >
             무료 사주 보기 &rarr;
           </Link>
@@ -289,13 +292,13 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="py-10 px-4 border-t border-border-subtle">
-        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-text-secondary">
+      <footer className="py-12 px-4 border-t border-border-subtle">
+        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-text-secondary">
           <div className="flex items-center gap-4">
-            <span className="text-accent font-bold text-sm">운명사주</span>
-            <span>AI가 명리학으로 풀어내는 당신의 운명</span>
+            <span className="text-accent font-bold">운명사주</span>
+            <span className="text-xs">AI가 명리학으로 풀어내는 당신의 운명</span>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-5 text-xs">
             <Link href="/auth/login" className="hover:text-text-primary transition">로그인</Link>
             <Link href="/pricing" className="hover:text-text-primary transition">가격</Link>
             <span>&copy; 2026 FateSaju</span>

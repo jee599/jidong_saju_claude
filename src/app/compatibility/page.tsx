@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Header } from "@/components/common/Header";
 import { Footer } from "@/components/common/Footer";
 import { Button } from "@/components/ui/Button";
+import { DateInput } from "@/components/input/DateInput";
 
 interface PersonInput {
   name: string;
@@ -82,11 +83,10 @@ export default function CompatibilityPage() {
           onChange={(e) => setPerson({ ...person, name: e.target.value })}
           className="w-full bg-bg-sunken border border-border rounded-lg px-3 py-2.5 text-sm text-text-primary placeholder-text-tertiary focus:border-brand focus:outline-none"
         />
-        <input
-          type="date"
+        <DateInput
           value={person.birthDate}
-          onChange={(e) => setPerson({ ...person, birthDate: e.target.value })}
-          className="w-full bg-bg-sunken border border-border rounded-lg px-3 py-2.5 text-sm text-text-primary focus:border-brand focus:outline-none"
+          onChange={(v) => setPerson({ ...person, birthDate: v })}
+          className="w-full text-sm !bg-bg-sunken !rounded-lg !px-3 !py-2.5"
         />
         <input
           type="time"

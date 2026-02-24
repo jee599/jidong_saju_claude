@@ -99,7 +99,7 @@ export function TermPopover({ text }: TermPopoverProps) {
       {/* Popover */}
       {activeTerm && TERM_DICTIONARY[activeTerm] && (
         <div
-          className="absolute z-50 w-64 bg-bg-elevated border border-brand/30 rounded-xl p-3 shadow-xl"
+          className="absolute z-50 w-64 bg-bg-elevated border border-brand/20 rounded-xl p-3 shadow-elevation-3"
           style={{ left: `${position.x}px`, top: `${position.y}px`, transform: "translateX(-50%)" }}
         >
           <div className="flex items-center gap-2 mb-1.5">

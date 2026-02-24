@@ -198,7 +198,7 @@ export default function ReportPage({ params }: { params: Promise<{ id: string }>
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="mb-8 bg-bg-elevated rounded-2xl p-4 sm:p-5 border border-border"
+          className="mb-8 bg-bg-elevated rounded-2xl p-4 sm:p-5 border border-border shadow-elevation-1"
         >
           <h3 className="text-sm font-bold text-text-primary mb-3">일간(日干) 정보</h3>
           <div className="grid grid-cols-2 gap-3 text-sm">
@@ -241,7 +241,7 @@ export default function ReportPage({ params }: { params: Promise<{ id: string }>
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
-          className="mb-8 bg-bg-elevated rounded-2xl p-4 sm:p-5 border border-border"
+          className="mb-8 bg-bg-elevated rounded-2xl p-4 sm:p-5 border border-border shadow-elevation-1"
         >
           <h3 className="text-sm font-bold text-text-primary mb-3">성격 요약</h3>
           <p className="text-sm text-text-primary/85 leading-relaxed">
@@ -257,7 +257,7 @@ export default function ReportPage({ params }: { params: Promise<{ id: string }>
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.7 }}
-          className="mb-8 bg-bg-elevated rounded-2xl p-4 sm:p-5 border border-border"
+          className="mb-8 bg-bg-elevated rounded-2xl p-4 sm:p-5 border border-border shadow-elevation-1"
         >
           <h3 className="text-sm font-bold text-text-primary mb-3">행운의 정보</h3>
           <div className="grid grid-cols-3 gap-3 text-center">
@@ -282,7 +282,7 @@ export default function ReportPage({ params }: { params: Promise<{ id: string }>
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8 }}
-            className="mb-8 bg-bg-elevated rounded-2xl p-4 sm:p-5 border border-border"
+            className="mb-8 bg-bg-elevated rounded-2xl p-4 sm:p-5 border border-border shadow-elevation-1"
           >
             <h3 className="text-sm font-bold text-text-primary mb-3">신살(神煞)</h3>
             <div className="space-y-2">
@@ -384,7 +384,7 @@ export default function ReportPage({ params }: { params: Promise<{ id: string }>
           <motion.section
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-8 bg-bg-elevated rounded-2xl p-4 sm:p-5 border border-border"
+            className="mb-8 bg-bg-elevated rounded-2xl p-4 sm:p-5 border border-border shadow-elevation-1"
           >
             <h3 className="text-sm font-bold text-text-primary mb-3">합충형파해</h3>
             <div className="space-y-2 text-xs">
