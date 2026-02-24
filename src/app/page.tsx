@@ -1,308 +1,599 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "framer-motion";
-import { Header } from "@/components/common/Header";
-import { useTranslations } from "@/lib/i18n/context";
+import { useEffect, useRef, useState } from "react";
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 24 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: { delay: i * 0.12, duration: 0.5, ease: "easeOut" as const },
-  }),
-};
+/* ══════════════════════════════════════════════════
+   Constants
+   ══════════════════════════════════════════════════ */
+const ROTATING_WORDS = ["성격", "직업", "연애", "올해 운세", "타이밍"];
+const MARQUEE_CHARS = "甲 乙 丙 丁 戊 己 庚 辛 壬 癸 · 子 丑 寅 卯 辰 巳 午 未 申 酉 戌 亥";
+const TRUST_ITEMS = ["만세력 정밀 계산", "절기 경계 보정", "139개 검증 벡터", "초자시 처리"];
 
-export default function LandingPage() {
-  const t = useTranslations();
-  const l = t.landing;
+const OHENG_BARS = [
+  { label: "木", color: "linear-gradient(to top,#2D8B4E,#3EBF68)", labelColor: "#3EBF68", h: 72, p: 32 },
+  { label: "火", color: "linear-gradient(to top,#C44040,#E85A5A)", labelColor: "#E85A5A", h: 50, p: 22 },
+  { label: "土", color: "linear-gradient(to top,#B8960C,#D4AF37)", labelColor: "#D4AF37", h: 38, p: 18 },
+  { label: "金", color: "linear-gradient(to top,#888,#C0C0C0)", labelColor: "#C0C0C0", h: 28, p: 13 },
+  { label: "水", color: "linear-gradient(to top,#2F6DB5,#4A90D9)", labelColor: "#4A90D9", h: 34, p: 15 },
+];
+
+const COMPARISON_ITEMS = [
+  { label: "MBTI", count: "16가지", width: "12%" },
+  { label: "별자리", count: "12가지", width: "9%" },
+  { label: "혈액형", count: "4가지", width: "3%" },
+];
+
+/* ══════════════════════════════════════════════════
+   Small SVG helpers
+   ══════════════════════════════════════════════════ */
+const ArrowSvg = () => (
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="inline transition-transform group-hover:translate-x-[3px]">
+    <path d="M3 8h10m0 0L9 4m4 4L9 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+const CheckSvg = () => (
+  <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
+    <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+/* ══════════════════════════════════════════════════
+   Sparkle particles (client-only to avoid hydration)
+   ══════════════════════════════════════════════════ */
+function SparkleField({ count }: { count: number }) {
+  const [particles, setParticles] = useState<
+    Array<{ left: string; top: string; size: string; dur: string; delay: string }>
+  >([]);
+
+  useEffect(() => {
+    setParticles(
+      Array.from({ length: count }, () => ({
+        left: `${Math.random() * 100}%`,
+        top: `${Math.random() * 100}%`,
+        size: `${2 + Math.random() * 2.5}px`,
+        dur: `${3 + Math.random() * 4}s`,
+        delay: `${Math.random() * 5}s`,
+      }))
+    );
+  }, [count]);
 
   return (
-    <main className="min-h-screen bg-bg-base">
-      <Header />
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {particles.map((p, i) => (
+        <div
+          key={i}
+          className="sparkle"
+          style={{
+            left: p.left,
+            top: p.top,
+            width: p.size,
+            height: p.size,
+            animation: `sparkle-float ${p.dur} ease-in-out infinite`,
+            animationDelay: p.delay,
+          }}
+        />
+      ))}
+    </div>
+  );
+}
 
-      {/* Hero Section */}
-      <section className="pt-32 sm:pt-40 pb-24 px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <motion.p
-            initial="hidden"
-            animate="visible"
-            custom={0}
-            variants={fadeUp}
-            className="text-brand-light text-xs tracking-[0.2em] uppercase mb-5 font-medium"
+/* ══════════════════════════════════════════════════
+   Rotating Words in Hero h1
+   ══════════════════════════════════════════════════ */
+function RotatingWord() {
+  const [idx, setIdx] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => setIdx((i) => (i + 1) % ROTATING_WORDS.length), 2500);
+    return () => clearInterval(timer);
+  }, []);
+
+  return (
+    <span className="inline-block relative align-bottom">
+      {ROTATING_WORDS.map((w, i) => (
+        <span
+          key={w}
+          className="lav-text absolute left-0 bottom-0 whitespace-nowrap transition-all duration-500 ease-out"
+          style={{
+            opacity: i === idx ? 1 : 0,
+            transform: i === idx ? "translateY(0)" : i === (idx - 1 + ROTATING_WORDS.length) % ROTATING_WORDS.length ? "translateY(-110%)" : "translateY(110%)",
+          }}
+        >
+          {w}
+        </span>
+      ))}
+      {/* invisible placeholder for width stability */}
+      <span className="invisible whitespace-nowrap">올해 운세</span>
+    </span>
+  );
+}
+
+/* ══════════════════════════════════════════════════
+   Stats Strip with countup
+   ══════════════════════════════════════════════════ */
+function StatsStrip() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const stat1Ref = useRef<HTMLSpanElement>(null);
+  const stat2Ref = useRef<HTMLSpanElement>(null);
+  const stat3Ref = useRef<HTMLDivElement>(null);
+  const started = useRef(false);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !started.current) {
+          started.current = true;
+          if (stat3Ref.current) stat3Ref.current.style.opacity = "1";
+
+          const start = performance.now();
+          const animate = (now: number) => {
+            const elapsed = now - start;
+            // 518,400 → 2s easeOutExpo
+            const p1 = Math.min(elapsed / 2000, 1);
+            const e1 = p1 === 1 ? 1 : 1 - Math.pow(2, -10 * p1);
+            if (stat1Ref.current) {
+              stat1Ref.current.textContent = Math.floor(e1 * 518400).toLocaleString() + "+";
+            }
+            // 139 → 1.5s
+            const p2 = Math.min(elapsed / 1500, 1);
+            const e2 = p2 === 1 ? 1 : 1 - Math.pow(2, -10 * p2);
+            if (stat2Ref.current) {
+              stat2Ref.current.textContent = Math.floor(e2 * 139) + "개";
+            }
+            if (p1 < 1 || p2 < 1) requestAnimationFrame(animate);
+          };
+          requestAnimationFrame(animate);
+          observer.unobserve(el);
+        }
+      },
+      { threshold: 0.3 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  const numStyle: React.CSSProperties = { fontSize: "clamp(32px, 4vw, 44px)", fontWeight: 900 };
+
+  return (
+    <section ref={containerRef} className="px-6 pb-4">
+      <div className="max-w-[680px] mx-auto grid grid-cols-3 text-center">
+        <div style={{ borderRight: "1px solid var(--bdr)" }}>
+          <span ref={stat1Ref} className="lav-text block" style={numStyle}>0+</span>
+          <div className="text-[13px] font-medium mt-1" style={{ color: "var(--t2)" }}>사주 조합 수</div>
+        </div>
+        <div style={{ borderRight: "1px solid var(--bdr)" }}>
+          <span ref={stat2Ref} className="lav-text block" style={numStyle}>0개</span>
+          <div className="text-[13px] font-medium mt-1" style={{ color: "var(--t2)" }}>검증 테스트</div>
+        </div>
+        <div>
+          <div ref={stat3Ref} className="lav-text transition-opacity duration-1000" style={{ ...numStyle, opacity: 0 }}>&lt;1초</div>
+          <div className="text-[13px] font-medium mt-1" style={{ color: "var(--t2)" }}>계산 속도</div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ══════════════════════════════════════════════════
+   Marquee — flowing Chinese characters
+   ══════════════════════════════════════════════════ */
+function Marquee() {
+  const text = `${MARQUEE_CHARS}    ${MARQUEE_CHARS}    `;
+  return (
+    <div className="overflow-hidden py-6 select-none" style={{ opacity: 0.08 }}>
+      <div
+        className="marquee-track whitespace-nowrap font-hanja"
+        style={{
+          fontSize: "clamp(20px, 3vw, 32px)",
+          fontWeight: 400,
+          letterSpacing: "0.15em",
+          animation: "marquee-scroll 60s linear infinite",
+          width: "max-content",
+        }}
+      >
+        {text}
+      </div>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════════
+   Main Landing Page
+   ══════════════════════════════════════════════════ */
+export default function LandingPage() {
+  /* IntersectionObserver for .reveal elements */
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => entries.forEach((entry) => {
+        if (entry.isIntersecting) entry.target.classList.add("visible");
+      }),
+      { threshold: 0.12, rootMargin: "0px 0px -30px 0px" }
+    );
+    document.querySelectorAll(".reveal").forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
+
+  /* Oheng bar chart animation */
+  const ohengRef = useRef<HTMLDivElement>(null);
+  const ohengDone = useRef(false);
+  useEffect(() => {
+    const el = ohengRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !ohengDone.current) {
+          ohengDone.current = true;
+          el.querySelectorAll<HTMLElement>("[data-h]").forEach((bar, i) => {
+            setTimeout(() => { bar.style.height = bar.dataset.h + "%"; }, i * 120);
+          });
+          el.querySelectorAll<HTMLElement>("[data-p]").forEach((pct, i) => {
+            const target = parseInt(pct.dataset.p || "0");
+            setTimeout(() => {
+              let c = 0;
+              const iv = setInterval(() => { pct.textContent = ++c + "%"; if (c >= target) clearInterval(iv); }, 30);
+            }, i * 120);
+          });
+          observer.unobserve(el);
+        }
+      },
+      { threshold: 0.3 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <main>
+      {/* ════════ Nav ════════ */}
+      <nav
+        className="fixed top-0 left-0 right-0 z-[100] flex items-center justify-between h-[60px] px-8 max-md:px-[18px]"
+        style={{ background: "rgba(10,8,16,0.8)", backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)", borderBottom: "1px solid var(--bdr)" }}
+      >
+        <Link href="/" className="flex items-center gap-2 text-[17px] font-bold no-underline" style={{ color: "var(--t1)" }}>
+          <div
+            className="w-[26px] h-[26px] rounded-[10px] flex items-center justify-center text-[13px] font-black"
+            style={{ background: "linear-gradient(135deg, var(--lav-d), var(--lav-l))", color: "#0A0A0F" }}
           >
-            {l.heroLabel}
-          </motion.p>
-          <motion.h1
-            initial="hidden"
-            animate="visible"
-            custom={1}
-            variants={fadeUp}
-            className="text-4xl sm:text-5xl md:text-6xl font-bold text-text-primary leading-[1.15] mb-7 tracking-tight"
-          >
-            {l.heroTitle1}
-            <br />
-            <span className="text-accent">{l.heroTitle2}</span>
-          </motion.h1>
-          <motion.p
-            initial="hidden"
-            animate="visible"
-            custom={2}
-            variants={fadeUp}
-            className="text-base sm:text-lg text-text-secondary max-w-2xl mx-auto mb-12 leading-relaxed"
-          >
-            {l.heroDesc1}
-            <br className="hidden md:block" />
-            {l.heroDesc2}
-          </motion.p>
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            custom={3}
-            variants={fadeUp}
-          >
-            <Link
-              href="/input"
-              className="inline-block bg-brand text-white text-base sm:text-lg font-semibold px-10 py-4 rounded-xl hover:bg-brand-light hover:scale-[1.03] transition-all shadow-elevation-3"
-            >
-              {l.heroCta} &rarr;
-            </Link>
-            <p className="text-text-secondary text-sm mt-5">
-              {l.heroSub}
-            </p>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Social Proof */}
-      <section className="py-10 px-4 border-t border-border-subtle">
-        <div className="max-w-4xl mx-auto flex flex-wrap justify-center gap-8 sm:gap-14 text-center">
-          {[
-            { value: l.statAnalysesValue, label: l.statAnalyses },
-            { value: l.statRatingValue, label: l.statRating },
-            { value: l.statEngineValue, label: l.statEngine },
-          ].map((stat) => (
-            <div key={stat.label}>
-              <p className="text-xl sm:text-2xl font-bold text-accent">{stat.value}</p>
-              <p className="text-xs text-text-secondary mt-0.5">{stat.label}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* How It Works */}
-      <section className="py-20 sm:py-24 px-4 border-t border-border-subtle">
-        <div className="max-w-5xl mx-auto">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center text-text-primary mb-4 tracking-tight">
-            {l.howTitle}
-          </h2>
-          <p className="text-text-secondary text-center text-sm mb-14 max-w-md mx-auto">
-            {l.howSub}
-          </p>
-          <div className="grid md:grid-cols-3 gap-5 sm:gap-6">
-            {[
-              {
-                step: "01",
-                title: l.step1Title,
-                desc: l.step1Desc,
-                icon: (
-                  <svg className="w-5 h-5 text-brand-light" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                ),
-              },
-              {
-                step: "02",
-                title: l.step2Title,
-                desc: l.step2Desc,
-                icon: (
-                  <svg className="w-5 h-5 text-brand-light" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                  </svg>
-                ),
-              },
-              {
-                step: "03",
-                title: l.step3Title,
-                desc: l.step3Desc,
-                icon: (
-                  <svg className="w-5 h-5 text-brand-light" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                  </svg>
-                ),
-              },
-            ].map((item, i) => (
-              <motion.div
-                key={item.step}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                custom={i}
-                variants={fadeUp}
-                className="bg-bg-elevated rounded-2xl p-6 sm:p-8 border border-border hover:border-brand/20 transition shadow-elevation-1"
-              >
-                <div className="flex items-center gap-3 mb-5">
-                  <div className="w-10 h-10 rounded-xl bg-brand-muted flex items-center justify-center">
-                    {item.icon}
-                  </div>
-                  <span className="text-accent text-xs font-mono font-medium">
-                    {item.step}
-                  </span>
-                </div>
-                <h3 className="text-lg font-bold text-text-primary mb-2">
-                  {item.title}
-                </h3>
-                <p className="text-text-secondary text-sm leading-relaxed">
-                  {item.desc}
-                </p>
-              </motion.div>
-            ))}
+            命
           </div>
+          운명사주
+        </Link>
+        <div className="flex items-center gap-[6px]">
+          <a href="#pricing" className="hidden md:inline-block text-[13px] font-medium px-[14px] py-[7px] rounded-[10px] no-underline transition-all hover:bg-white/5" style={{ color: "var(--t2)" }}>가격</a>
+          <Link href="/auth/login" className="hidden md:inline-block text-[13px] font-medium px-[14px] py-[7px] rounded-[10px] no-underline transition-all hover:bg-white/5" style={{ color: "var(--t2)" }}>로그인</Link>
+          <Link href="/input" className="text-[13px] font-semibold px-[18px] py-[7px] rounded-full no-underline transition-all hover:brightness-110 hover:-translate-y-px" style={{ background: "var(--lav)", color: "#0A0810" }}>
+            무료로 시작
+          </Link>
         </div>
-      </section>
+      </nav>
 
-      {/* What You Get */}
-      <section className="py-20 sm:py-24 px-4 border-t border-border-subtle">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-text-primary mb-4 tracking-tight">
-            {l.whatTitle}
-          </h2>
-          <p className="text-text-secondary text-sm mb-12">{l.whatSub}</p>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
-            {[
-              { title: l.personality, desc: l.personalityDesc, free: true },
-              { title: l.balance, desc: l.balanceDesc, free: true },
-              { title: l.yearly, desc: l.yearlyDesc, free: true },
-              { title: l.lucky, desc: l.luckyDesc, free: true },
-              { title: l.career, desc: l.careerDesc },
-              { title: l.love, desc: l.loveDesc },
-              { title: l.wealth, desc: l.wealthDesc },
-              { title: l.daeun, desc: l.daeunDesc },
-            ].map((item) => (
-              <div
-                key={item.title}
-                className={`rounded-xl p-4 border text-left transition shadow-elevation-1 ${
-                  item.free
-                    ? "bg-bg-elevated border-success/20"
-                    : "bg-bg-elevated/50 border-border"
-                }`}
-              >
-                <div className="flex items-center gap-1.5 mb-1">
-                  <h4 className="text-sm font-bold text-text-primary">{item.title}</h4>
-                  {item.free && (
-                    <span className="text-[8px] px-1.5 py-0.5 rounded-full bg-success/15 text-success font-medium">{l.free}</span>
-                  )}
-                </div>
-                <p className="text-xs text-text-secondary">{item.desc}</p>
-              </div>
-            ))}
-          </div>
+      {/* ════════ Hero ════════ */}
+      <section className="relative min-h-screen flex flex-col items-center justify-center text-center overflow-hidden pt-[110px] pb-20 px-6 max-md:pt-24 max-md:pb-14 max-md:px-[18px]">
+        {/* Glow */}
+        <div className="absolute pointer-events-none" style={{ top: "-250px", left: "50%", transform: "translateX(-50%)", width: "800px", height: "800px", background: "radial-gradient(circle, var(--lav-glow) 0%, rgba(155,127,230,0.06) 40%, transparent 70%)" }} />
+        <SparkleField count={22} />
+
+        {/* Badge */}
+        <div
+          className="inline-flex items-center gap-[7px] pl-2 pr-[14px] py-[5px] rounded-full text-[12.5px] font-medium relative z-[1] mb-7"
+          style={{ background: "var(--lav-dim)", border: "1px solid rgba(155,127,230,0.18)", color: "var(--lav-l)", animation: "float-up 0.7s ease-out" }}
+        >
+          <div className="w-[7px] h-[7px] rounded-full" style={{ background: "var(--lav-l)", animation: "pulse-dot 2s infinite", boxShadow: "0 0 8px var(--lav-l)" }} />
+          Beta — 무료로 체험해 보세요
         </div>
-      </section>
 
-      {/* Pricing */}
-      <section className="py-20 sm:py-24 px-4 border-t border-border-subtle" id="pricing">
-        <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-text-primary mb-4 tracking-tight">
-            {l.pricingTitle}
-          </h2>
-          <p className="text-text-secondary text-sm mb-12">
-            {l.pricingSub}
-          </p>
-          <div className="grid sm:grid-cols-2 gap-4 sm:gap-6 max-w-xl mx-auto">
-            {/* Free */}
-            <div className="rounded-2xl p-6 sm:p-7 border border-border bg-bg-elevated shadow-elevation-1">
-              <h3 className="text-base font-bold text-text-primary mb-1">{l.freePlanName}</h3>
-              <p className="text-3xl font-bold text-accent mb-5">{l.freePlanPrice}</p>
-              <ul className="text-sm text-text-secondary space-y-2.5 mb-7 text-left">
-                {l.freePlanFeatures.map((f) => (
-                  <li key={f} className="flex items-start gap-2">
-                    <span className="text-success mt-0.5">&#10003;</span>{f}
-                  </li>
-                ))}
-              </ul>
-              <Link
-                href="/input"
-                className="block text-center py-3 rounded-xl text-sm font-medium bg-brand-muted text-brand-light hover:bg-brand/20 transition"
-              >
-                {l.freePlanCta}
-              </Link>
-            </div>
+        {/* h1 with rotating words */}
+        <h1
+          className="relative z-[1] max-sm:!text-[30px]"
+          style={{ fontSize: "clamp(34px, 5.5vw, 58px)", fontWeight: 900, lineHeight: 1.25, letterSpacing: "-0.02em", marginBottom: "22px", animation: "float-up 0.7s ease-out 0.1s both" }}
+        >
+          사주가 알려주는<br />
+          나의 <RotatingWord /> 이야기
+        </h1>
 
-            {/* Premium */}
-            <div className="rounded-2xl p-6 sm:p-7 border border-accent/50 bg-gradient-to-b from-bg-elevated to-bg-base relative shadow-elevation-2">
-              <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-accent text-text-inverse text-[10px] font-bold px-3 py-1 rounded-full">
-                {l.premiumBadge}
-              </span>
-              <h3 className="text-base font-bold text-text-primary mb-1">{l.premiumPlanName}</h3>
-              <p className="text-3xl font-bold text-accent mb-5">{l.premiumPlanPrice}</p>
-              <ul className="text-sm text-text-secondary space-y-2.5 mb-7 text-left">
-                {l.premiumPlanFeatures.map((f) => (
-                  <li key={f} className="flex items-start gap-2">
-                    <span className="text-accent mt-0.5">&#10003;</span>{f}
-                  </li>
-                ))}
-              </ul>
-              <Link
-                href="/input"
-                className="block text-center py-3 rounded-xl text-sm font-semibold bg-accent text-text-inverse hover:bg-accent-hover transition shadow-elevation-1"
-              >
-                {l.premiumPlanCta}
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
+        {/* Description */}
+        <p
+          className="relative z-[1]"
+          style={{ fontSize: "clamp(15px, 2vw, 18px)", color: "var(--t2)", maxWidth: "440px", lineHeight: 1.8, marginBottom: "44px", animation: "float-up 0.7s ease-out 0.2s both" }}
+        >
+          생년월일시를 입력하면 만세력 엔진이 정밀하게 계산하고,<br />
+          AI가 따뜻한 언어로 당신의 운명을 풀어드려요.
+        </p>
 
-      {/* FAQ */}
-      <section className="py-20 sm:py-24 px-4 border-t border-border-subtle">
-        <div className="max-w-2xl mx-auto">
-          <h2 className="text-2xl sm:text-3xl font-bold text-center text-text-primary mb-12 tracking-tight">
-            {l.faqTitle}
-          </h2>
-          <div className="space-y-4">
-            {l.faq.map((item) => (
-              <div key={item.q} className="bg-bg-elevated rounded-2xl p-5 sm:p-6 border border-border shadow-elevation-1">
-                <h4 className="text-sm font-bold text-text-primary mb-2">{item.q}</h4>
-                <p className="text-sm text-text-secondary leading-relaxed">{item.a}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Final CTA */}
-      <section className="py-20 sm:py-24 px-4 border-t border-border-subtle">
-        <div className="max-w-md mx-auto text-center">
-          <h2 className="text-2xl sm:text-3xl font-bold text-text-primary mb-5 tracking-tight">
-            {l.ctaTitle}
-          </h2>
-          <p className="text-sm text-text-secondary mb-10">
-            {l.ctaSub}
-          </p>
+        {/* CTA */}
+        <div className="relative z-[1] flex flex-col items-center gap-[14px]" style={{ animation: "float-up 0.7s ease-out 0.3s both" }}>
           <Link
             href="/input"
-            className="inline-block bg-brand text-white font-semibold px-10 py-4 rounded-xl hover:bg-brand-light hover:scale-[1.03] transition-all shadow-elevation-3"
+            className="group btn-primary inline-flex items-center gap-2 px-[34px] py-[15px] rounded-full text-[15px] font-bold no-underline transition-all hover:-translate-y-[2px]"
+            style={{ background: "linear-gradient(135deg, var(--lav-d), var(--lav), var(--lav-l))", color: "#0A0810", boxShadow: "0 4px 28px rgba(155,127,230,0.35), 0 0 70px rgba(155,127,230,0.1)" }}
           >
-            {l.heroCta} &rarr;
+            무료 사주 보기 <ArrowSvg />
+          </Link>
+          <span className="text-[12.5px]" style={{ color: "var(--t3)" }}>30초면 완료 · 회원가입 불필요</span>
+        </div>
+
+        {/* Scroll indicator */}
+        <div className="absolute bottom-9 left-1/2 -translate-x-1/2 z-[1]" style={{ animation: "float-up 0.7s ease-out 0.5s both" }}>
+          <div className="w-px h-9" style={{ background: "linear-gradient(to bottom, var(--lav-l), transparent)", animation: "scroll-line 2s infinite" }} />
+        </div>
+      </section>
+
+      {/* ════════ Stats Strip ════════ */}
+      <StatsStrip />
+
+      {/* ════════ Marquee ════════ */}
+      <Marquee />
+
+      {/* ════════ How It Works ════════ */}
+      <section className="min-h-screen flex items-center justify-center py-[110px] px-6 relative max-md:py-20 max-md:px-[18px] max-md:min-h-0">
+        <div className="max-w-[1040px] w-full mx-auto">
+          <div className="reveal">
+            <div className="text-[12.5px] font-bold uppercase tracking-[0.1em] mb-[18px]" style={{ color: "var(--lav)" }}>How it works</div>
+            <div className="mb-[18px] max-sm:!text-[24px]" style={{ fontSize: "clamp(26px, 4.2vw, 44px)", fontWeight: 900, lineHeight: 1.35, letterSpacing: "-0.02em" }}>
+              3단계로 만나는<br /><span className="lav-text">나의 사주 리포트</span>
+            </div>
+          </div>
+
+          {/* Step cards */}
+          <div className="grid grid-cols-3 gap-4 mt-14 max-md:grid-cols-1 max-md:gap-3">
+            {[
+              { num: "01", title: "생년월일시 입력", desc: "양력 또는 음력, 태어난 시간까지 입력하면 준비 완료.", icon: <><path d="M12 8v4l3 3" stroke="#9B7FE6" strokeWidth="2" strokeLinecap="round" /><circle cx="12" cy="12" r="9" stroke="#9B7FE6" strokeWidth="2" /></> },
+              { num: "02", title: "만세력 엔진 계산", desc: "사주팔자, 십성, 12운성, 대운, 신살을 정밀 계산해요.", icon: <><rect x="3" y="3" width="18" height="18" rx="3" stroke="#9B7FE6" strokeWidth="2" /><path d="M8 12h8M12 8v8" stroke="#9B7FE6" strokeWidth="2" strokeLinecap="round" /></> },
+              { num: "03", title: "AI가 풀어주는 해석", desc: "명리학 전문가 수준의 AI가 따뜻하고 상세한 리포트를 만들어요.", icon: <path d="M12 3C7 8 4 12 4 15a8 8 0 0016 0c0-3-3-7-8-12z" stroke="#9B7FE6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /> },
+            ].map((step, i) => (
+              <div
+                key={step.num}
+                className={`reveal ${i === 1 ? "reveal-d1" : i === 2 ? "reveal-d2" : ""} relative overflow-hidden p-9 max-sm:p-[26px_22px] rounded-[var(--r)] transition-all duration-300 hover:-translate-y-[3px]`}
+                style={{ background: "var(--bg-card)", border: "1px solid var(--bdr)" }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = "var(--bg-card-h)"; e.currentTarget.style.borderColor = "rgba(155,127,230,0.16)"; e.currentTarget.style.boxShadow = "0 8px 28px rgba(155,127,230,0.05)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = "var(--bg-card)"; e.currentTarget.style.borderColor = "var(--bdr)"; e.currentTarget.style.boxShadow = "none"; }}
+              >
+                <div className="absolute top-[14px] right-5 text-[56px] font-black leading-none" style={{ background: "linear-gradient(180deg, rgba(155,127,230,0.1), rgba(155,127,230,0.02))", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>{step.num}</div>
+                <div className="w-11 h-11 rounded-[14px] flex items-center justify-center mb-[22px]" style={{ background: "var(--lav-dim)", border: "1px solid rgba(155,127,230,0.08)" }}>
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none">{step.icon}</svg>
+                </div>
+                <h3 className="text-[16px] font-bold mb-[10px]">{step.title}</h3>
+                <p className="text-[13.5px] leading-[1.75]" style={{ color: "var(--t2)" }}>{step.desc}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Engine Trust Bar */}
+          <div className="reveal mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[13px] font-medium" style={{ color: "var(--t3)" }}>
+            {TRUST_ITEMS.map((item) => (
+              <span key={item} className="flex items-center gap-1.5">
+                <span style={{ color: "var(--lav)" }}>✓</span> {item}
+              </span>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ════════ Divider ════════ */}
+      <div className="max-w-[1040px] mx-auto px-6"><div className="shimmer-line" /></div>
+
+      {/* ════════ Features ════════ */}
+      <section className="min-h-screen flex items-center justify-center py-[110px] px-6 relative max-md:py-20 max-md:px-[18px] max-md:min-h-0" style={{ background: "var(--bg-s)" }}>
+        <div className="max-w-[1040px] w-full mx-auto">
+          <div className="reveal">
+            <div className="text-[12.5px] font-bold uppercase tracking-[0.1em] mb-[18px]" style={{ color: "var(--lav)" }}>Features</div>
+            <div className="mb-[18px] max-sm:!text-[24px]" style={{ fontSize: "clamp(26px, 4.2vw, 44px)", fontWeight: 900, lineHeight: 1.35, letterSpacing: "-0.02em" }}>
+              무료 분석만으로도<br />충분히 의미 있어요
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4 mt-14 max-md:grid-cols-1">
+            {/* Precision Comparison — span 2 */}
+            <div className="reveal col-span-2 max-md:col-span-1 grid grid-cols-2 max-md:grid-cols-1 gap-9 items-center p-9 max-sm:p-[26px_22px] rounded-[var(--r)]" style={{ background: "var(--bg-card)", border: "1px solid var(--bdr)" }}>
+              <div>
+                <span className="inline-block px-[10px] py-[3px] rounded-lg text-[11.5px] font-semibold mb-[14px]" style={{ background: "var(--g-dim)", color: "var(--g)" }}>무료</span>
+                <h3 className="text-[18px] font-bold mb-2">당신을 설명하는 다른 방법들</h3>
+                <p className="text-[13.5px] leading-[1.75]" style={{ color: "var(--t2)" }}>
+                  MBTI, 별자리, 혈액형은 몇 가지 유형으로 사람을 분류하지만,
+                  사주는 518,400가지 조합으로 당신만의 이야기를 풀어냅니다.
+                </p>
+              </div>
+              <div className="flex flex-col gap-3">
+                {COMPARISON_ITEMS.map((item) => (
+                  <div key={item.label} className="flex items-center gap-3">
+                    <span className="w-16 text-[13px] font-medium shrink-0" style={{ color: "var(--t3)" }}>{item.label}</span>
+                    <div className="flex-1 h-[6px] rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.04)" }}>
+                      <div className="h-full rounded-full" style={{ width: item.width, background: "var(--t3)" }} />
+                    </div>
+                    <span className="text-[12px] w-14 text-right" style={{ color: "var(--t3)" }}>{item.count}</span>
+                  </div>
+                ))}
+                {/* Saju highlight */}
+                <div className="mt-1 pt-3" style={{ borderTop: "1px solid var(--bdr)" }}>
+                  <div className="flex items-center gap-3">
+                    <span className="w-16 text-[13px] font-bold shrink-0 lav-text">사주팔자</span>
+                    <div className="flex-1 h-[8px] rounded-full overflow-hidden" style={{ background: "rgba(155,127,230,0.1)" }}>
+                      <div className="h-full rounded-full" style={{ width: "100%", background: "linear-gradient(90deg, var(--lav-d), var(--lav), var(--lav-l))" }} />
+                    </div>
+                    <span className="text-[12px] w-14 text-right font-bold" style={{ color: "var(--lav-l)" }}>518,400+</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Oheng bar chart — span 2 */}
+            <div className="reveal col-span-2 max-md:col-span-1 grid grid-cols-2 max-md:grid-cols-1 gap-9 items-center p-9 max-sm:p-[26px_22px] rounded-[var(--r)]" style={{ background: "var(--bg-card)", border: "1px solid var(--bdr)" }}>
+              <div>
+                <span className="inline-block px-[10px] py-[3px] rounded-lg text-[11.5px] font-semibold mb-[14px]" style={{ background: "var(--g-dim)", color: "var(--g)" }}>무료</span>
+                <h3 className="text-[18px] font-bold mb-2">오행 에너지 밸런스</h3>
+                <p className="text-[13.5px] leading-[1.75]" style={{ color: "var(--t2)" }}>
+                  목·화·토·금·수의 비율로 나의 에너지 분포를 한눈에 파악하고, 어떤 부분을 보완하면 좋을지 알 수 있어요.
+                </p>
+              </div>
+              <div ref={ohengRef} className="flex items-end gap-[14px] h-[150px] pt-4">
+                {OHENG_BARS.map((bar) => (
+                  <div key={bar.label} className="flex-1 flex flex-col items-center justify-end gap-[6px]">
+                    <div
+                      className="w-full rounded-[10px_10px_4px_4px] transition-[height] duration-1000"
+                      style={{ height: "0%", background: bar.color, transitionTimingFunction: "cubic-bezier(0.22,1,0.36,1)" }}
+                      data-h={bar.h}
+                    />
+                    <div className="text-[13px] font-bold mt-[6px]" style={{ color: bar.labelColor }}>{bar.label}</div>
+                    <div className="text-[11px]" style={{ color: "var(--t3)" }} data-p={bar.p}>0%</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Small feature cards */}
+            {[
+              { tag: "무료", tagStyle: "free", title: "성격·기질 요약", desc: "타고난 성향과 강점을 따뜻한 언어로 정리해 드려요.", delay: "reveal-d1" },
+              { tag: "무료", tagStyle: "free", title: "올해 키워드", desc: "2026년 나에게 가장 중요한 흐름을 한 줄로 요약해요.", delay: "reveal-d2" },
+              { tag: "프리미엄 ✦", tagStyle: "premium", title: "직업 적성 · 재물운", desc: "나에게 맞는 일의 방향과 금전 흐름을 상세 분석해요.", delay: "reveal-d1" },
+              { tag: "프리미엄 ✦", tagStyle: "premium", title: "대운 타임라인", desc: "10년 단위 인생 로드맵. 어디서 기회가 오는지 알려드려요.", delay: "reveal-d2" },
+            ].map((card) => (
+              <div
+                key={card.title}
+                className={`reveal ${card.delay} p-9 max-sm:p-[26px_22px] rounded-[var(--r)] transition-all duration-300`}
+                style={{ background: "var(--bg-card)", border: "1px solid var(--bdr)" }}
+                onMouseEnter={(e) => { e.currentTarget.style.borderColor = "rgba(155,127,230,0.14)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.borderColor = "var(--bdr)"; }}
+              >
+                <span
+                  className="inline-block px-[10px] py-[3px] rounded-lg text-[11.5px] font-semibold mb-[14px]"
+                  style={card.tagStyle === "free"
+                    ? { background: "var(--g-dim)", color: "var(--g)" }
+                    : { background: "var(--lav-dim)", color: "var(--lav-l)", border: "1px solid rgba(155,127,230,0.12)" }}
+                >
+                  {card.tag}
+                </span>
+                <h3 className="text-[18px] font-bold mb-2">{card.title}</h3>
+                <p className="text-[13.5px] leading-[1.75]" style={{ color: "var(--t2)" }}>{card.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ════════ Divider ════════ */}
+      <div className="max-w-[1040px] mx-auto px-6"><div className="shimmer-line" /></div>
+
+      {/* ════════ Pricing ════════ */}
+      <section id="pricing" className="min-h-screen flex items-center justify-center py-[110px] px-6 relative max-md:py-20 max-md:px-[18px] max-md:min-h-0">
+        <div className="max-w-[1040px] w-full mx-auto">
+          <div className="reveal">
+            <div className="text-[12.5px] font-bold uppercase tracking-[0.1em] mb-[18px]" style={{ color: "var(--lav)" }}>Pricing</div>
+            <div className="mb-[18px] max-sm:!text-[24px]" style={{ fontSize: "clamp(26px, 4.2vw, 44px)", fontWeight: 900, lineHeight: 1.35, letterSpacing: "-0.02em" }}>
+              부담 없이 시작하고,<br />마음에 들면 <span className="lav-text">더 깊이</span>
+            </div>
+            <p className="max-w-[480px]" style={{ fontSize: "clamp(14px, 1.8vw, 17px)", color: "var(--t2)", lineHeight: 1.8 }}>
+              무료 요약만으로도 충분히 유용해요.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4 mt-14 max-w-[720px] max-md:grid-cols-1">
+            {/* Free plan */}
+            <div className="reveal reveal-d1 p-9 max-sm:p-[26px_22px] rounded-[var(--r)] relative transition-all duration-300" style={{ background: "var(--bg-card)", border: "1px solid var(--bdr)" }}>
+              <h3 className="text-[16px] font-bold mb-[6px]">무료 요약</h3>
+              <div className="text-[34px] font-black mb-[6px]">₩0</div>
+              <div className="text-[12.5px] mb-7" style={{ color: "var(--t3)" }}>영구 무료</div>
+              <ul className="flex flex-col gap-3 mb-7 list-none p-0">
+                {["사주팔자 계산", "오행 밸런스 차트", "성격 요약", "올해 키워드", "행운의 색·방위·숫자"].map((f) => (
+                  <li key={f} className="flex items-center gap-2 text-[13.5px]" style={{ color: "var(--t2)" }}>
+                    <span className="w-[18px] h-[18px] rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--g-dim)", color: "var(--g)" }}><CheckSvg /></span>
+                    {f}
+                  </li>
+                ))}
+              </ul>
+              <Link href="/input" className="block w-full py-[13px] text-center rounded-[14px] text-[14px] font-semibold no-underline transition-all hover:bg-white/[0.07]" style={{ background: "rgba(255,255,255,0.04)", color: "var(--t1)", border: "1px solid var(--bdr)" }}>
+                무료로 시작
+              </Link>
+            </div>
+
+            {/* Premium plan */}
+            <div className="reveal reveal-d2 premium-card p-9 max-sm:p-[26px_22px] rounded-[var(--r)] relative transition-all duration-300">
+              <div className="absolute -top-[11px] left-1/2 -translate-x-1/2 px-[14px] py-1 rounded-full text-[11.5px] font-bold z-[1]" style={{ background: "linear-gradient(135deg, var(--lav), var(--lav-l))", color: "#0A0810", boxShadow: "0 2px 12px rgba(155,127,230,0.3)" }}>
+                ✦ BEST
+              </div>
+              <h3 className="text-[16px] font-bold mb-[6px]">풀 리포트</h3>
+              <div className="text-[34px] font-black mb-[6px] lav-text">₩5,900</div>
+              <div className="text-[12.5px] mb-7" style={{ color: "var(--t3)" }}>1회 결제 · 영구 보관</div>
+              <ul className="flex flex-col gap-3 mb-7 list-none p-0">
+                {["무료 요약 전체 포함", "10개 섹션 상세 AI 분석", "성격·직업·연애·재물·건강", "대운 타임라인 해석", "맞춤 실행 팁"].map((f) => (
+                  <li key={f} className="flex items-center gap-2 text-[13.5px]" style={{ color: "var(--t2)" }}>
+                    <span className="w-[18px] h-[18px] rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--lav-dim)", color: "var(--lav-l)" }}><CheckSvg /></span>
+                    {f}
+                  </li>
+                ))}
+              </ul>
+              <Link
+                href="/input"
+                className="btn-lav block w-full py-[13px] text-center rounded-[14px] text-[14px] font-semibold no-underline transition-all hover:-translate-y-[2px]"
+                style={{ background: "linear-gradient(135deg, var(--lav-d), var(--lav), var(--lav-l))", color: "#0A0810", boxShadow: "0 4px 18px rgba(155,127,230,0.2)" }}
+              >
+                풀 리포트 받기
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ════════ Beta Feedback ════════ */}
+      <section className="min-h-screen flex items-center justify-center py-[110px] px-6 relative max-md:py-20 max-md:px-[18px] max-md:min-h-0" style={{ background: "var(--bg-s)" }}>
+        <div className="max-w-[1040px] w-full mx-auto">
+          <div className="reveal">
+            <div className="text-[12.5px] font-bold uppercase tracking-[0.1em] mb-[18px]" style={{ color: "var(--lav)" }}>Beta Feedback</div>
+            <div className="mb-[18px] max-sm:!text-[24px]" style={{ fontSize: "clamp(26px, 4.2vw, 44px)", fontWeight: 900, lineHeight: 1.35, letterSpacing: "-0.02em" }}>
+              여러분의 이야기를 들려주세요
+            </div>
+            <p className="max-w-[480px]" style={{ fontSize: "clamp(14px, 1.8vw, 17px)", color: "var(--t2)", lineHeight: 1.8 }}>
+              피드백을 보내주시면 이곳에 소개됩니다.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-3 gap-4 mt-14 max-md:grid-cols-1 max-md:gap-3">
+            {[
+              "첫 번째 리뷰의\n주인공이 되어주세요",
+              "사주 분석을 받고\n후기를 남겨주세요",
+              "여러분의 피드백이\n서비스를 만들어요",
+            ].map((text, i) => (
+              <div
+                key={i}
+                className={`reveal ${i === 1 ? "reveal-d1" : i === 2 ? "reveal-d2" : ""} min-h-[170px] flex flex-col items-center justify-center text-center p-7 rounded-[var(--r)]`}
+                style={{ border: "1px dashed rgba(255,255,255,0.07)" }}
+              >
+                <div className="text-[26px] mb-[10px] opacity-[0.22]">💬</div>
+                <p className="text-[13.5px] leading-[1.6] whitespace-pre-line" style={{ color: "var(--t3)" }}>{text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ════════ Final CTA ════════ */}
+      <section className="relative min-h-[70vh] flex items-center justify-center text-center py-[110px] px-6 overflow-hidden max-md:py-20 max-md:px-[18px]">
+        {/* Glow */}
+        <div className="absolute pointer-events-none" style={{ bottom: "-120px", left: "50%", transform: "translateX(-50%)", width: "600px", height: "600px", background: "radial-gradient(circle, var(--lav-glow) 0%, transparent 60%)" }} />
+        <SparkleField count={14} />
+
+        <div className="reveal relative z-[1]">
+          <h2 className="max-sm:!text-[28px]" style={{ fontSize: "clamp(28px, 4.5vw, 48px)", fontWeight: 900, lineHeight: 1.3, letterSpacing: "-0.02em", marginBottom: "18px" }}>
+            지금, <span className="lav-text">나의 사주</span>를<br />만나보세요
+          </h2>
+          <p className="text-[17px] mb-9" style={{ color: "var(--t2)" }}>30초면 완료돼요.</p>
+          <Link
+            href="/input"
+            className="group btn-primary inline-flex items-center gap-2 px-[34px] py-[15px] rounded-full text-[15px] font-bold no-underline transition-all hover:-translate-y-[2px]"
+            style={{ background: "linear-gradient(135deg, var(--lav-d), var(--lav), var(--lav-l))", color: "#0A0810", boxShadow: "0 4px 28px rgba(155,127,230,0.35), 0 0 70px rgba(155,127,230,0.1)" }}
+          >
+            무료 사주 보기 <ArrowSvg />
           </Link>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="py-12 px-4 border-t border-border-subtle">
-        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-text-secondary">
-          <div className="flex items-center gap-4">
-            <span className="text-accent font-bold">{t.brand}</span>
-            <span className="text-xs">{t.tagline}</span>
-          </div>
-          <div className="flex items-center gap-5 text-xs">
-            <Link href="/auth/login" className="hover:text-text-primary transition">{l.footerLogin}</Link>
-            <Link href="/pricing" className="hover:text-text-primary transition">{l.footerPricing}</Link>
-            <span>&copy; 2026 FateSaju</span>
-          </div>
-        </div>
+      {/* ════════ Footer ════════ */}
+      <footer className="py-9 px-6 text-center" style={{ borderTop: "1px solid var(--bdr)" }}>
+        <p className="text-[12.5px]" style={{ color: "var(--t3)" }}>© 2026 운명사주 · AI가 명리학으로 풀어내는 당신의 운명</p>
       </footer>
     </main>
   );

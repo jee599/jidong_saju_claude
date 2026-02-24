@@ -1,63 +1,70 @@
 @import "tailwindcss";
 
 /* ============================================
-   운명사주 Design Tokens v3 — Modern Violet + Amber
+   운명사주 — Soft Lavender Dark Theme
    ============================================ */
 
 :root {
-  /* Brand — violet */
-  --color-brand: #6366F1;
-  --color-brand-light: #818CF8;
-  --color-brand-muted: rgba(99, 102, 241, 0.12);
+  /* ── New Soft Lavender tokens ── */
+  --bg: #0A0810;
+  --bg-s: #0E0C18;
+  --bg-card: #141220;
+  --bg-card-h: #1A1730;
+  --t1: #EEEAF8;
+  --t2: #9E96B8;
+  --t3: #6A6284;
+  --lav: #9B7FE6;
+  --lav-l: #BCA8F5;
+  --lav-p: #D8CCF9;
+  --lav-d: #7558CC;
+  --lav-dim: rgba(155,127,230,0.11);
+  --lav-glow: rgba(155,127,230,0.22);
+  --g: #5CC98A;
+  --g-dim: rgba(92,201,138,0.11);
+  --bdr: rgba(255,255,255,0.06);
+  --r: 20px;
 
-  /* Accent — warm amber */
-  --color-accent: #F59E0B;
-  --color-accent-hover: #D97706;
-  --color-accent-muted: rgba(245, 158, 11, 0.12);
-
-  /* Backgrounds — dark, zinc-based */
-  --color-bg-base: #09090B;
-  --color-bg-elevated: #18181B;
-  --color-bg-sunken: #0A0A0C;
-
-  /* Borders */
-  --color-border: rgba(255, 255, 255, 0.08);
-  --color-border-subtle: rgba(255, 255, 255, 0.04);
-  --color-border-focus: #6366F1;
-
-  /* Text */
-  --color-text-primary: #FAFAFA;
-  --color-text-secondary: #A1A1AA;
-  --color-text-tertiary: #52525B;
-  --color-text-inverse: #09090B;
-
-  /* Semantic */
-  --color-success: #34D399;
+  /* ── Backward-compat Tailwind tokens ── */
+  --color-brand: #9B7FE6;
+  --color-brand-light: #BCA8F5;
+  --color-brand-muted: rgba(155,127,230,0.11);
+  --color-accent: #9B7FE6;
+  --color-accent-hover: #BCA8F5;
+  --color-accent-muted: rgba(155,127,230,0.11);
+  --color-bg-base: #0A0810;
+  --color-bg-elevated: #141220;
+  --color-bg-sunken: #0E0C18;
+  --color-border: rgba(255,255,255,0.06);
+  --color-border-subtle: rgba(255,255,255,0.04);
+  --color-border-focus: #9B7FE6;
+  --color-text-primary: #EEEAF8;
+  --color-text-secondary: #9E96B8;
+  --color-text-tertiary: #6A6284;
+  --color-text-inverse: #0A0810;
+  --color-success: #5CC98A;
   --color-warn: #FBBF24;
   --color-danger: #F87171;
   --color-info: #60A5FA;
 
   /* 오행 */
-  --color-wood: #34D399;
-  --color-fire: #F87171;
-  --color-earth: #FBBF24;
-  --color-metal: #A1A1AA;
-  --color-water: #60A5FA;
+  --color-wood: #3EBF68;
+  --color-fire: #E85A5A;
+  --color-earth: #D4AF37;
+  --color-metal: #C0C0C0;
+  --color-water: #4A90D9;
 
   /* Shadows */
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.2);
   --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.25);
   --shadow-xl: 0 20px 48px rgba(0, 0, 0, 0.3);
-  --shadow-brand: 0 4px 24px rgba(99, 102, 241, 0.25);
-  --shadow-accent: 0 4px 20px rgba(245, 158, 11, 0.2);
+  --shadow-brand: 0 4px 24px rgba(155,127,230,0.25);
+  --shadow-accent: 0 4px 20px rgba(155,127,230,0.2);
 
   /* Typography */
   --text-base-size: 15px;
-  --leading-body: 1.65;
-  --leading-heading: 1.2;
-
-  /* Radius */
+  --leading-body: 1.7;
+  --leading-heading: 1.25;
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
@@ -65,38 +72,7 @@
   --radius-full: 9999px;
 }
 
-/* ============================================
-   Light mode overrides
-   ============================================ */
-@media (prefers-color-scheme: light) {
-  :root {
-    --color-bg-base: #FAFAFA;
-    --color-bg-elevated: #FFFFFF;
-    --color-bg-sunken: #F4F4F5;
-
-    --color-border: rgba(0, 0, 0, 0.08);
-    --color-border-subtle: rgba(0, 0, 0, 0.04);
-
-    --color-text-primary: #18181B;
-    --color-text-secondary: #71717A;
-    --color-text-tertiary: #A1A1AA;
-    --color-text-inverse: #FAFAFA;
-
-    --color-brand-muted: rgba(99, 102, 241, 0.08);
-    --color-accent-muted: rgba(245, 158, 11, 0.08);
-
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06);
-    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.08);
-    --shadow-xl: 0 20px 48px rgba(0, 0, 0, 0.1);
-    --shadow-brand: 0 4px 24px rgba(99, 102, 241, 0.15);
-    --shadow-accent: 0 4px 20px rgba(245, 158, 11, 0.12);
-  }
-}
-
-/* ============================================
-   Tailwind v4 @theme mapping
-   ============================================ */
+/* ── Tailwind v4 @theme ── */
 @theme inline {
   --color-brand: var(--color-brand);
   --color-brand-light: var(--color-brand-light);
@@ -118,86 +94,210 @@
   --color-warn: var(--color-warn);
   --color-danger: var(--color-danger);
   --color-info: var(--color-info);
-  --font-sans: var(--font-pretendard);
+  --font-sans: var(--font-noto-sans-kr), var(--font-pretendard);
   --font-serif: var(--font-noto-serif-kr);
 }
 
-/* ============================================
-   Base body styles
-   ============================================ */
+/* ── Base ── */
+html {
+  scroll-behavior: smooth;
+}
+
 body {
-  background: var(--color-bg-base);
-  color: var(--color-text-primary);
-  font-family: var(--font-pretendard), system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--t1);
+  font-family: var(--font-noto-sans-kr), var(--font-pretendard), 'Noto Sans KR', -apple-system, system-ui, sans-serif;
   font-size: var(--text-base-size);
   line-height: var(--leading-body);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
 
-/* 한자 전용 서체 */
 .font-hanja {
   font-family: var(--font-noto-serif-kr), "Noto Serif KR", serif;
 }
 
-/* ============================================
-   Scrollbar — subtle
-   ============================================ */
-::-webkit-scrollbar {
-  width: 6px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: var(--color-text-tertiary);
-  border-radius: 3px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: var(--color-text-secondary);
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--t3); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--t2); }
+::selection { background: rgba(155,127,230,0.25); color: var(--t1); }
+
+/* ── Keyframes ── */
+@keyframes shimmer {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
-/* Selection */
-::selection {
-  background: rgba(99, 102, 241, 0.25);
-  color: var(--color-text-primary);
+@keyframes shimmer-line {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
 }
 
-/* ============================================
-   Utility classes for shadows & elevation
-   ============================================ */
-.shadow-elevation-1 {
-  box-shadow: var(--shadow-sm);
-}
-.shadow-elevation-2 {
-  box-shadow: var(--shadow-md);
-}
-.shadow-elevation-3 {
-  box-shadow: var(--shadow-lg);
-}
-.shadow-elevation-4 {
-  box-shadow: var(--shadow-xl);
+@keyframes float-up {
+  from { opacity: 0; transform: translateY(22px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* ============================================
-   Form input dark/light compat for native pickers
-   ============================================ */
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+@keyframes sparkle-float {
+  0%, 100% { opacity: 0; transform: translateY(0) scale(0.5); }
+  20% { opacity: 0.7; transform: translateY(-20px) scale(1); }
+  80% { opacity: 0.2; transform: translateY(-60px) scale(0.6); }
+}
+
+@keyframes scroll-line {
+  0% { opacity: 0; transform: scaleY(0); transform-origin: top; }
+  50% { opacity: 1; transform: scaleY(1); transform-origin: top; }
+  100% { opacity: 0; transform: scaleY(1); transform-origin: top; }
+}
+
+@keyframes border-glow {
+  0% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+@keyframes marquee-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* ── Lavender gradient text ── */
+.lav-text {
+  background: linear-gradient(135deg, #7558CC, #9B7FE6, #D8CCF9, #BCA8F5, #9B7FE6);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 5s ease-in-out infinite;
+}
+
+/* ── Shimmer divider line ── */
+.shimmer-line {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #BCA8F5, #D8CCF9, #BCA8F5, transparent);
+  background-size: 200% 100%;
+  animation: shimmer-line 3s ease-in-out infinite;
+  opacity: 0.35;
+}
+
+/* ── Scroll reveal ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(36px);
+  transition: opacity 0.6s cubic-bezier(0.22,1,0.36,1), transform 0.6s cubic-bezier(0.22,1,0.36,1);
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-d1 { transition-delay: 0.08s; }
+.reveal-d2 { transition-delay: 0.16s; }
+.reveal-d3 { transition-delay: 0.24s; }
+
+/* ── Sparkle particle ── */
+.sparkle {
+  position: absolute;
+  border-radius: 50%;
+  background: var(--lav-p);
+  box-shadow: 0 0 6px 1px var(--lav-l);
+  opacity: 0;
+}
+
+/* ── Button: primary CTA ── */
+.btn-primary {
+  position: relative;
+  overflow: hidden;
+}
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent);
+  transition: left 0.6s;
+}
+.btn-primary:hover::before {
+  left: 120%;
+}
+
+/* ── Button: lavender fill ── */
+.btn-lav {
+  position: relative;
+  overflow: hidden;
+}
+.btn-lav::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.6s;
+}
+.btn-lav:hover::before {
+  left: 120%;
+}
+
+/* ── Premium card animated border ── */
+.premium-card {
+  position: relative;
+  border-color: transparent;
+  background: linear-gradient(180deg, rgba(155,127,230,0.07) 0%, var(--bg-card) 100%);
+}
+.premium-card::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: var(--r);
+  padding: 1px;
+  background: linear-gradient(180deg, var(--lav-l) 0%, var(--lav) 40%, transparent 75%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  animation: border-glow 3s ease-in-out infinite alternate;
+}
+
+/* ── Reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .lav-text,
+  .shimmer-line,
+  .sparkle,
+  .btn-primary::before,
+  .btn-lav::before,
+  .premium-card::before {
+    animation: none !important;
+  }
+  .sparkle { opacity: 0 !important; }
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .marquee-track {
+    animation-play-state: paused !important;
+  }
+}
+
+/* ── Shadow utilities ── */
+.shadow-elevation-1 { box-shadow: var(--shadow-sm); }
+.shadow-elevation-2 { box-shadow: var(--shadow-md); }
+.shadow-elevation-3 { box-shadow: var(--shadow-lg); }
+.shadow-elevation-4 { box-shadow: var(--shadow-xl); }
+
+/* ── Form compat ── */
 input[type="time"]::-webkit-calendar-picker-indicator {
   filter: invert(0.6);
-}
-@media (prefers-color-scheme: light) {
-  input[type="time"]::-webkit-calendar-picker-indicator {
-    filter: none;
-  }
-}
-
-/* ============================================
-   Light mode specific overrides for elements
-   that use hardcoded opacity on white
-   ============================================ */
-@media (prefers-color-scheme: light) {
-  .bg-white\/5 {
-    background-color: rgba(0, 0, 0, 0.03);
-  }
 }

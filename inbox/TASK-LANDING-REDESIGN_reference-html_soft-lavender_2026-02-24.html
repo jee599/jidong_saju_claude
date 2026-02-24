@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>운명사주 — Soft Lavender</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0A0810;
+  --bg-s: #0E0C18;
+  --bg-card: #141220;
+  --bg-card-h: #1A1730;
+  --t1: #EEEAF8;
+  --t2: #9E96B8;
+  --t3: #6A6284;
+  --lav: #9B7FE6;
+  --lav-l: #BCA8F5;
+  --lav-p: #D8CCF9;
+  --lav-d: #7558CC;
+  --lav-dim: rgba(155,127,230,0.11);
+  --lav-glow: rgba(155,127,230,0.22);
+  --g: #5CC98A;
+  --g-dim: rgba(92,201,138,0.11);
+  --bdr: rgba(255,255,255,0.06);
+  --r: 20px;
+  --f: 'Noto Sans KR', -apple-system, sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
+body{font-family:var(--f);background:var(--bg);color:var(--t1);overflow-x:hidden;line-height:1.7}
+.lav-t{background:linear-gradient(135deg,var(–lav-d),var(–lav),var(–lav-p),var(–lav-l),var(–lav));background-size:300% 100%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:sh 5s ease-in-out infinite}
+.sh-line{height:1px;background:linear-gradient(90deg,transparent,var(–lav-l),var(–lav-p),var(–lav-l),transparent);background-size:200% 100%;animation:shl 3s ease-in-out infinite;opacity:0.35}
+@keyframes sh{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+@keyframes shl{0%{background-position:-200% 0}100%{background-position:200% 0}}
+.sp-c{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.sp{position:absolute;border-radius:50%;background:var(–lav-p);box-shadow:0 0 6px 1px var(–lav-l);animation:spf var(–d,4s) ease-in-out infinite;animation-delay:var(–dl,0s);opacity:0}
+@keyframes spf{0%,100%{opacity:0;transform:translateY(0) scale(.5)}20%{opacity:.7;transform:translateY(-20px) scale(1)}80%{opacity:.2;transform:translateY(-60px) scale(.6)}}
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:0 32px;height:60px;display:flex;align-items:center;justify-content:space-between;background:rgba(10,8,16,0.8);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid var(–bdr)}
+.n-logo{font-weight:700;font-size:17px;color:var(–t1);text-decoration:none;display:flex;align-items:center;gap:8px}
+.n-ico{width:26px;height:26px;border-radius:10px;background:linear-gradient(135deg,var(–lav-d),var(–lav-l));display:flex;align-items:center;justify-content:center;font-size:13px;color:#0A0A0F;font-weight:900}
+.n-r{display:flex;align-items:center;gap:6px}
+.n-link{color:var(–t2);text-decoration:none;font-size:13px;font-weight:500;padding:7px 14px;border-radius:10px;transition:all .2s}
+.n-link:hover{color:var(–t1);background:rgba(255,255,255,.05)}
+.n-cta{background:var(–lav);color:#0A0810;font-weight:600;font-size:13px;padding:7px 18px;border-radius:99px;text-decoration:none;transition:all .2s}
+.n-cta:hover{filter:brightness(1.1);transform:translateY(-1px)}
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:110px 24px 80px;position:relative;overflow:hidden}
+.hero::before{content:’’;position:absolute;top:-250px;left:50%;transform:translateX(-50%);width:800px;height:800px;background:radial-gradient(circle,var(–lav-glow) 0%,rgba(155,127,230,.06) 40%,transparent 70%);pointer-events:none}
+.h-badge{display:inline-flex;align-items:center;gap:7px;padding:5px 14px 5px 8px;background:var(–lav-dim);border:1px solid rgba(155,127,230,.18);border-radius:99px;font-size:12.5px;font-weight:500;color:var(–lav-l);margin-bottom:28px;animation:fu .7s ease-out;position:relative;z-index:1}
+.h-dot{width:7px;height:7px;background:var(–lav-l);border-radius:50%;animation:pd 2s infinite;box-shadow:0 0 8px var(–lav-l)}
+.hero h1{font-size:clamp(34px,5.5vw,58px);font-weight:900;line-height:1.25;letter-spacing:-.02em;margin-bottom:22px;animation:fu .7s ease-out .1s both;position:relative;z-index:1}
+.hero-d{font-size:clamp(15px,2vw,18px);color:var(–t2);max-width:440px;line-height:1.8;margin-bottom:44px;animation:fu .7s ease-out .2s both;position:relative;z-index:1}
+.hero-cta{display:flex;flex-direction:column;align-items:center;gap:14px;animation:fu .7s ease-out .3s both;position:relative;z-index:1}
+.btn-p{display:inline-flex;align-items:center;gap:8px;padding:15px 34px;background:linear-gradient(135deg,var(–lav-d),var(–lav),var(–lav-l));color:#0A0810;font-family:var(–f);font-size:15px;font-weight:700;border:none;border-radius:99px;cursor:pointer;transition:all .25s;text-decoration:none;box-shadow:0 4px 28px rgba(155,127,230,.35),0 0 70px rgba(155,127,230,.1);position:relative;overflow:hidden}
+.btn-p::before{content:’’;position:absolute;top:0;left:-100%;width:60%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.22),transparent);transition:left .6s}
+.btn-p:hover::before{left:120%}
+.btn-p:hover{transform:translateY(-2px);box-shadow:0 8px 36px rgba(155,127,230,.45),0 0 90px rgba(155,127,230,.15)}
+.btn-p svg{transition:transform .2s}.btn-p:hover svg{transform:translateX(3px)}
+.h-sub{font-size:12.5px;color:var(–t3)}
+.sc-ind{position:absolute;bottom:36px;left:50%;transform:translateX(-50%);animation:fu .7s ease-out .5s both;z-index:1}
+.sc-line{width:1px;height:36px;background:linear-gradient(to bottom,var(–lav-l),transparent);animation:sp2 2s infinite}
+/* SECTIONS */
+.sec{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:110px 24px;position:relative}
+.sec-in{max-width:1040px;width:100%;margin:0 auto}
+.sec-lb{font-size:12.5px;font-weight:700;color:var(–lav);text-transform:uppercase;letter-spacing:.1em;margin-bottom:18px}
+.sec-t{font-size:clamp(26px,4.2vw,44px);font-weight:900;line-height:1.35;letter-spacing:-.02em;margin-bottom:18px}
+.sec-d{font-size:clamp(14px,1.8vw,17px);color:var(–t2);line-height:1.8;max-width:480px}
+/* STEPS */
+.st-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:56px}
+.st-card{background:var(–bg-card);border:1px solid var(–bdr);border-radius:var(–r);padding:36px 28px;position:relative;overflow:hidden;transition:all .3s}
+.st-card:hover{background:var(–bg-card-h);border-color:rgba(155,127,230,.16);transform:translateY(-3px);box-shadow:0 8px 28px rgba(155,127,230,.05)}
+.st-num{font-size:56px;font-weight:900;background:linear-gradient(180deg,rgba(155,127,230,.1),rgba(155,127,230,.02));-webkit-background-clip:text;-webkit-text-fill-color:transparent;position:absolute;top:14px;right:20px;line-height:1}
+.st-ico{width:44px;height:44px;border-radius:14px;background:var(–lav-dim);border:1px solid rgba(155,127,230,.08);display:flex;align-items:center;justify-content:center;margin-bottom:22px}
+.st-card h3{font-size:16px;font-weight:700;margin-bottom:10px}
+.st-card p{font-size:13.5px;color:var(–t2);line-height:1.75}
+/* FEATURES */
+.feat-sec{background:var(–bg-s)}
+.feat-grid{margin-top:56px;display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.f-card{background:var(–bg-card);border:1px solid var(–bdr);border-radius:var(–r);padding:36px;transition:all .3s;position:relative;overflow:hidden}
+.f-card:hover{border-color:rgba(155,127,230,.14)}
+.f-card.lg{grid-column:span 2;display:grid;grid-template-columns:1fr 1fr;gap:36px;align-items:center}
+.f-tag{display:inline-block;padding:3px 10px;border-radius:8px;font-size:11.5px;font-weight:600;margin-bottom:14px}
+.tag-f{background:var(–g-dim);color:var(–g)}
+.tag-pr{background:var(–lav-dim);color:var(–lav-l);border:1px solid rgba(155,127,230,.12)}
+.f-card h3{font-size:18px;font-weight:700;margin-bottom:8px}
+.f-card p{font-size:13.5px;color:var(–t2);line-height:1.75}
+.oh-ch{display:flex;align-items:flex-end;gap:14px;height:150px;padding-top:16px}
+.oh-bar{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:6px}
+.oh-fill{width:100%;border-radius:10px 10px 4px 4px;transition:height 1s cubic-bezier(.22,1,.36,1)}
+.oh-lb{font-size:13px;font-weight:700;margin-top:6px}
+.oh-pct{font-size:11px;color:var(–t3)}
+/* PRICING */
+.pr-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:56px;max-width:720px}
+.pr-card{background:var(–bg-card);border:1px solid var(–bdr);border-radius:var(–r);padding:36px;position:relative;transition:all .3s}
+.pr-card.ft{border-color:transparent;background:linear-gradient(180deg,rgba(155,127,230,.07) 0%,var(–bg-card) 100%)}
+.pr-card.ft::before{content:’’;position:absolute;inset:-1px;border-radius:var(–r);padding:1px;background:linear-gradient(180deg,var(–lav-l) 0%,var(–lav) 40%,transparent 75%);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;animation:bg 3s ease-in-out infinite alternate}
+@keyframes bg{0%{opacity:.5}100%{opacity:1}}
+.pr-badge{position:absolute;top:-11px;left:50%;transform:translateX(-50%);padding:4px 14px;background:linear-gradient(135deg,var(–lav),var(–lav-l));color:#0A0810;font-size:11.5px;font-weight:700;border-radius:99px;box-shadow:0 2px 12px rgba(155,127,230,.3)}
+.pr-card h3{font-size:16px;font-weight:700;margin-bottom:6px}
+.pr-card .price{font-size:34px;font-weight:900;margin-bottom:6px}
+.pr-card.ft .price{background:linear-gradient(135deg,var(–lav-l),var(–lav-p));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.pr-card .pr-sub{font-size:12.5px;color:var(–t3);margin-bottom:28px}
+.pr-feat{list-style:none;display:flex;flex-direction:column;gap:12px;margin-bottom:28px}
+.pr-feat li{display:flex;align-items:center;gap:8px;font-size:13.5px;color:var(–t2)}
+.ck{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ck-f{background:var(–g-dim);color:var(–g)}.ck-l{background:var(–lav-dim);color:var(–lav-l)}
+.btn-s{display:block;width:100%;padding:13px;text-align:center;border-radius:14px;font-family:var(–f);font-size:14px;font-weight:600;text-decoration:none;transition:all .2s;cursor:pointer;border:none}
+.btn-o{background:rgba(255,255,255,.04);color:var(–t1);border:1px solid var(–bdr)}
+.btn-o:hover{background:rgba(255,255,255,.07)}
+.btn-lav{background:linear-gradient(135deg,var(–lav-d),var(–lav),var(–lav-l));color:#0A0810;box-shadow:0 4px 18px rgba(155,127,230,.2);position:relative;overflow:hidden}
+.btn-lav::before{content:’’;position:absolute;top:0;left:-100%;width:60%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);transition:left .6s}
+.btn-lav:hover::before{left:120%}
+.btn-lav:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(155,127,230,.3)}
+/* REVIEWS */
+.soc-sec{background:var(–bg-s)}
+.rv-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:56px}
+.rv-empty{border:1px dashed rgba(255,255,255,.07);border-radius:var(–r);padding:28px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:170px}
+.rv-empty .ico{font-size:26px;margin-bottom:10px;opacity:.22}
+.rv-empty p{color:var(–t3);font-size:13.5px;line-height:1.6}
+/* FINAL CTA */
+.f-cta{min-height:70vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:110px 24px;position:relative;overflow:hidden}
+.f-cta::before{content:’’;position:absolute;bottom:-120px;left:50%;transform:translateX(-50%);width:600px;height:600px;background:radial-gradient(circle,var(–lav-glow) 0%,transparent 60%);pointer-events:none}
+.f-cta h2{font-size:clamp(28px,4.5vw,48px);font-weight:900;line-height:1.3;letter-spacing:-.02em;margin-bottom:18px}
+.f-cta p{font-size:17px;color:var(–t2);margin-bottom:36px}
+.sec-div{max-width:1040px;margin:0 auto;padding:0 24px}
+footer{padding:36px 24px;border-top:1px solid var(–bdr);text-align:center}
+footer p{font-size:12.5px;color:var(–t3)}
+.vtag{position:fixed;bottom:18px;right:18px;z-index:200;padding:7px 14px;border-radius:99px;background:var(–lav);color:#0A0810;font-size:12px;font-weight:700;box-shadow:0 4px 14px rgba(155,127,230,.3)}
+@keyframes fu{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pd{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes sp2{0%{opacity:0;transform:scaleY(0);transform-origin:top}50%{opacity:1;transform:scaleY(1);transform-origin:top}100%{opacity:0;transform:scaleY(1);transform-origin:top}}
+.rv{opacity:0;transform:translateY(36px);transition:opacity .6s cubic-bezier(.22,1,.36,1),transform .6s cubic-bezier(.22,1,.36,1)}
+.rv.vis{opacity:1;transform:translateY(0)}
+.rd1{transition-delay:.08s}.rd2{transition-delay:.16s}.rd3{transition-delay:.24s}
+@media(max-width:768px){nav{padding:0 18px}.n-link{display:none}.st-grid,.rv-grid{grid-template-columns:1fr;gap:12px}.feat-grid,.pr-grid{grid-template-columns:1fr}.f-card.lg{grid-column:span 1;grid-template-columns:1fr}.sec{padding:80px 18px;min-height:auto}.hero{padding:96px 18px 56px}}
+@media(max-width:480px){.hero h1{font-size:30px}.sec-t{font-size:24px}.st-card,.f-card,.pr-card{padding:26px 22px}}
+</style>
+</head>
+<body>
+<div class="vtag">G. Soft Lavender</div>
+<nav><a href="#" class="n-logo"><div class="n-ico">命</div>운명사주</a><div class="n-r"><a href="#pricing" class="n-link">가격</a><a href="#" class="n-link">로그인</a><a href="#" class="n-cta">무료로 시작</a></div></nav>
+<section class="hero">
+  <div class="sp-c" id="hsp"></div>
+  <div class="h-badge"><div class="h-dot"></div>Beta — 무료로 체험해 보세요</div>
+  <h1>사주가 알려주는<br><span class="lav-t">나만의 이야기</span></h1>
+  <p class="hero-d">생년월일시를 입력하면 만세력 엔진이 정밀하게 계산하고,<br>AI가 따뜻한 언어로 당신의 운명을 풀어드려요.</p>
+  <div class="hero-cta">
+    <a href="#" class="btn-p">무료 사주 보기 <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10m0 0L9 4m4 4L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+    <span class="h-sub">30초면 완료 · 회원가입 불필요</span>
+  </div>
+  <div class="sc-ind"><div class="sc-line"></div></div>
+</section>
+<section class="sec"><div class="sec-in">
+  <div class="rv"><div class="sec-lb">How it works</div><div class="sec-t">3단계로 만나는<br><span class="lav-t">나의 사주 리포트</span></div></div>
+  <div class="st-grid">
+    <div class="st-card rv rd1"><div class="st-num">01</div><div class="st-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 8v4l3 3" stroke="#9B7FE6" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="9" stroke="#9B7FE6" stroke-width="2"/></svg></div><h3>생년월일시 입력</h3><p>양력 또는 음력, 태어난 시간까지 입력하면 준비 완료.</p></div>
+    <div class="st-card rv rd2"><div class="st-num">02</div><div class="st-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="3" stroke="#9B7FE6" stroke-width="2"/><path d="M8 12h8M12 8v8" stroke="#9B7FE6" stroke-width="2" stroke-linecap="round"/></svg></div><h3>만세력 엔진 계산</h3><p>사주팔자, 십성, 12운성, 대운, 신살을 정밀 계산해요.</p></div>
+    <div class="st-card rv rd3"><div class="st-num">03</div><div class="st-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3C7 8 4 12 4 15a8 8 0 0016 0c0-3-3-7-8-12z" stroke="#9B7FE6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h3>AI가 풀어주는 해석</h3><p>명리학 전문가 수준의 AI가 따뜻하고 상세한 리포트를 만들어요.</p></div>
+  </div>
+</div></section>
+<div class="sec-div"><div class="sh-line"></div></div>
+<section class="sec feat-sec"><div class="sec-in">
+  <div class="rv"><div class="sec-lb">Features</div><div class="sec-t">무료 분석만으로도<br>충분히 의미 있어요</div></div>
+  <div class="feat-grid">
+    <div class="f-card lg rv"><div><div class="f-tag tag-f">무료</div><h3>오행 에너지 밸런스</h3><p>목·화·토·금·수의 비율로 나의 에너지 분포를 한눈에 파악하고, 어떤 부분을 보완하면 좋을지 알 수 있어요.</p></div>
+      <div class="oh-ch" id="ohc">
+        <div class="oh-bar"><div class="oh-fill" style="height:0%;background:linear-gradient(to top,#2D8B4E,#3EBF68)" data-h="72"></div><div class="oh-lb" style="color:#3EBF68">木</div><div class="oh-pct" data-p="32">0%</div></div>
+        <div class="oh-bar"><div class="oh-fill" style="height:0%;background:linear-gradient(to top,#C44040,#E85A5A)" data-h="50"></div><div class="oh-lb" style="color:#E85A5A">火</div><div class="oh-pct" data-p="22">0%</div></div>
+        <div class="oh-bar"><div class="oh-fill" style="height:0%;background:linear-gradient(to top,#B8960C,#D4AF37)" data-h="38"></div><div class="oh-lb" style="color:#D4AF37">土</div><div class="oh-pct" data-p="18">0%</div></div>
+        <div class="oh-bar"><div class="oh-fill" style="height:0%;background:linear-gradient(to top,#888,#C0C0C0)" data-h="28"></div><div class="oh-lb" style="color:#C0C0C0">金</div><div class="oh-pct" data-p="13">0%</div></div>
+        <div class="oh-bar"><div class="oh-fill" style="height:0%;background:linear-gradient(to top,#2F6DB5,#4A90D9)" data-h="34"></div><div class="oh-lb" style="color:#4A90D9">水</div><div class="oh-pct" data-p="15">0%</div></div>
+      </div>
+    </div>
+    <div class="f-card rv rd1"><div class="f-tag tag-f">무료</div><h3>성격·기질 요약</h3><p>타고난 성향과 강점을 따뜻한 언어로 정리해 드려요.</p></div>
+    <div class="f-card rv rd2"><div class="f-tag tag-f">무료</div><h3>올해 키워드</h3><p>2026년 나에게 가장 중요한 흐름을 한 줄로 요약해요.</p></div>
+    <div class="f-card rv rd1"><div class="f-tag tag-pr">프리미엄 ✦</div><h3>직업 적성 · 재물운</h3><p>나에게 맞는 일의 방향과 금전 흐름을 상세 분석해요.</p></div>
+    <div class="f-card rv rd2"><div class="f-tag tag-pr">프리미엄 ✦</div><h3>대운 타임라인</h3><p>10년 단위 인생 로드맵. 어디서 기회가 오는지 알려드려요.</p></div>
+  </div>
+</div></section>
+<div class="sec-div"><div class="sh-line"></div></div>
+<section class="sec" id="pricing"><div class="sec-in">
+  <div class="rv"><div class="sec-lb">Pricing</div><div class="sec-t">부담 없이 시작하고,<br>마음에 들면 <span class="lav-t">더 깊이</span></div><p class="sec-d">무료 요약만으로도 충분히 유용해요.</p></div>
+  <div class="pr-grid">
+    <div class="pr-card rv rd1"><h3>무료 요약</h3><div class="price">₩0</div><div class="pr-sub">영구 무료</div>
+      <ul class="pr-feat">
+        <li><span class="ck ck-f"><svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>사주팔자 계산</li>
+        <li><span class="ck ck-f"><svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>오행 밸런스 차트</li>
+        <li><span class="ck ck-f"><svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>성격 요약</li>
+        <li><span class="ck ck-f"><svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>올해 키워드</li>
+        <li><span class="ck ck-f"><svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>행운의 색·방위·숫자</li>
+      </ul>
+      <a href="#" class="btn-s btn-o">무료로 시작</a>
+    </div>
+    <div class="pr-card ft rv rd2"><div class="pr-badge">✦ BEST</div><h3>풀 리포트</h3><div class="price">₩5,900</div><div class="pr-sub">1회 결제 · 영구 보관</div>
+      <ul class="pr-feat">
+        <li><span class="ck ck-l"><svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>무료 요약 전체 포함</li>
+        <li><span class="ck ck-l"><svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>10개 섹션 상세 AI 분석</li>
+        <li><span class="ck ck-l"><svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>성격·직업·연애·재물·건강</li>
+        <li><span class="ck ck-l"><svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>대운 타임라인 해석</li>
+        <li><span class="ck ck-l"><svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>맞춤 실행 팁</li>
+      </ul>
+      <a href="#" class="btn-s btn-lav">풀 리포트 받기</a>
+    </div>
+  </div>
+</div></section>
+<section class="sec soc-sec"><div class="sec-in">
+  <div class="rv"><div class="sec-lb">Beta Feedback</div><div class="sec-t">여러분의 이야기를 들려주세요</div><p class="sec-d">피드백을 보내주시면 이곳에 소개됩니다.</p></div>
+  <div class="rv-grid">
+    <div class="rv-empty rv rd1"><div class="ico">💬</div><p>첫 번째 리뷰의<br>주인공이 되어주세요</p></div>
+    <div class="rv-empty rv rd2"><div class="ico">💬</div><p>사주 분석을 받고<br>후기를 남겨주세요</p></div>
+    <div class="rv-empty rv rd3"><div class="ico">💬</div><p>여러분의 피드백이<br>서비스를 만들어요</p></div>
+  </div>
+</div></section>
+<section class="f-cta">
+  <div class="sp-c" id="csp"></div>
+  <div class="rv" style="position:relative;z-index:1">
+    <h2>지금, <span class="lav-t">나의 사주</span>를<br>만나보세요</h2>
+    <p>30초면 완료돼요.</p>
+    <a href="#" class="btn-p">무료 사주 보기 <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10m0 0L9 4m4 4L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+  </div>
+</section>
+<footer><p>© 2026 운명사주 · AI가 명리학으로 풀어내는 당신의 운명</p></footer>
+<script>
+const o=new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('vis')}),{threshold:.12,rootMargin:'0px 0px -30px 0px'});
+document.querySelectorAll('.rv').forEach(e=>o.observe(e));
+const co=new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting){x.target.querySelectorAll('.oh-fill').forEach((b,i)=>{setTimeout(()=>{b.style.height=b.dataset.h+'%'},i*120)});x.target.querySelectorAll('.oh-pct').forEach((p,i)=>{const t=parseInt(p.dataset.p);setTimeout(()=>{let c=0;const iv=setInterval(()=>{p.textContent=++c+'%';if(c>=t)clearInterval(iv)},30)},i*120)});co.unobserve(x.target)}}),{threshold:.3});
+const ch=document.getElementById('ohc');if(ch)co.observe(ch);
+function mk(id,n){const c=document.getElementById(id);if(!c)return;for(let i=0;i<n;i++){const s=document.createElement('div');s.className='sp';s.style.left=Math.random()*100+'%';s.style.top=Math.random()*100+'%';s.style.setProperty('--d',(3+Math.random()*4)+'s');s.style.setProperty('--dl',(Math.random()*5)+'s');const z=(2+Math.random()*2.5)+'px';s.style.width=z;s.style.height=z;c.appendChild(s)}}
+mk('hsp',22);mk('csp',14);
+</script>
+</body>
+</html>

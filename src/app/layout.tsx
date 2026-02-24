@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import { Noto_Serif_KR } from "next/font/google";
+import { Noto_Sans_KR, Noto_Serif_KR } from "next/font/google";
 import { cookies } from "next/headers";
 import { LocaleProvider } from "@/lib/i18n/context";
 import { GoogleAnalytics } from "@/components/common/GoogleAnalytics";
@@ -17,6 +17,13 @@ const pretendard = localFont({
   variable: "--font-pretendard",
   display: "swap",
   fallback: ["system-ui", "-apple-system", "sans-serif"],
+});
+
+const notoSansKR = Noto_Sans_KR({
+  subsets: ["latin"],
+  weight: ["400", "500", "700", "900"],
+  variable: "--font-noto-sans-kr",
+  display: "swap",
 });
 
 const notoSerifKR = Noto_Serif_KR({
@@ -62,7 +69,7 @@ export default async function RootLayout({
   return (
     <html lang={locale === "ko" ? "ko" : "en"}>
       <body
-        className={`${pretendard.variable} ${notoSerifKR.variable} antialiased`}
+        className={`${notoSansKR.variable} ${pretendard.variable} ${notoSerifKR.variable} antialiased`}
       >
         <GoogleAnalytics />
         <LocaleProvider locale={locale}>{children}</LocaleProvider>
