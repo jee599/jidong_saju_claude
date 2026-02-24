@@ -3,7 +3,7 @@
 > **최종 갱신:** 2026-02-24
 > **갱신자:** Claude Opus 4.6
 > **브랜치:** main
-> **최신 커밋:** `17a6a9f` docs: AI 작업 핸드오프 문서 (WORK_LOG.md) 생성
+> **최신 커밋:** `51301af` docs: WORK_LOG.md에 멀티 AI 작업 규칙 추가
 > **빌드 상태:** PASS (Next.js 16.1.6, Turbopack)
 > **테스트:** 392/392 통과 (16 suites, ~500ms)
 > **배포:** https://fatesaju.vercel.app (Vercel 프로덕션)
@@ -22,14 +22,28 @@
 4. `git log --oneline -5` — 최근 작업 내역 확인
 
 ### 작업 완료 후 (가장 중요!!)
-1. `npx vitest run` — 전체 테스트 통과 확인
-2. `npx next build` — 빌드 통과 확인
-3. **이 파일(`WORK_LOG.md`) 갱신** — 아래 항목 반드시 업데이트:
+1. **QA 필수 실행:**
+   - `npx vitest run` — 전체 테스트 통과 확인 (현재 392개)
+   - `npx next build` — TypeScript 타입 체크 + 빌드 통과 확인
+   - 테스트/빌드 실패 시 반드시 수정 후 커밋할 것. 깨진 상태로 푸시 금지.
+2. **이 파일(`WORK_LOG.md`) 갱신** — 아래 항목 반드시 업데이트:
    - 상단 메타정보 (최신 커밋, 갱신자, 테스트 수, 빌드 상태)
    - 섹션 2: 새로 구현한 항목 체크
    - 섹션 3: 해결한 TODO 제거, 새로 발견한 이슈 추가
    - 섹션 6: 커밋 히스토리에 새 커밋 추가
-4. 커밋 + 푸시 (`git push origin main`)
+   - **섹션 9(작업 이력): 반드시 새 항목 추가** (아래 양식 참조)
+3. **커밋 메시지는 자세하게** — 뭘 왜 바꿨는지 다른 AI/사람이 읽고 바로 이해할 수 있도록
+4. `git push origin main` — 완료 즉시 푸시
+
+### 작업 이력 기록 양식 (섹션 9에 추가)
+```
+### YYYY-MM-DD | {AI 이름} (예: Claude Opus 4.6, Gemini 2.5 Pro)
+**작업 내용:** (무엇을 했는지)
+**변경 파일:** (어떤 파일을 건드렸는지)
+**커밋:** `해시` 커밋 메시지
+**QA 결과:** 테스트 OOO/OOO 통과, 빌드 PASS/FAIL
+**다음 AI에게:** (이어서 해야 할 것, 주의할 점 등)
+```
 
 ### 충돌 방지 원칙
 - **같은 파일을 여러 AI가 동시에 수정하지 않는다** — 영역(백엔드/프론트 등)을 나눠서 작업
@@ -325,3 +339,63 @@ NEXT_PUBLIC_SITE_URL=https://fatesaju.com
 OPS_IP_SALT=fatesaju-default-salt
 OPS_PASSWORD=...
 ```
+
+---
+
+## 9. 작업 이력 (AI별 작업 로그)
+
+> 각 AI는 작업 완료 후 반드시 여기에 새 항목을 추가해 주세요.
+> 최신 작업이 맨 위에 오도록 역순으로 기록합니다.
+
+---
+
+### 2026-02-24 | Claude Opus 4.6 (세션 3)
+**작업 내용:** WORK_LOG.md 생성 및 멀티 AI 작업 규칙 추가
+**변경 파일:** `WORK_LOG.md` (신규 생성 + 규칙 추가)
+**커밋:**
+- `51301af` docs: WORK_LOG.md에 멀티 AI 작업 규칙 추가
+- `17a6a9f` docs: AI 작업 핸드오프 문서 (WORK_LOG.md) 생성
+**QA 결과:** 테스트 392/392 통과, 빌드 PASS
+**다음 AI에게:** 문서만 추가한 세션임. 코드 변경 없음. 미구현 항목은 섹션 3 참고.
+
+---
+
+### 2026-02-24 | Claude Opus 4.6 (세션 2)
+**작업 내용:** Vercel 배포 + TypeScript 타입 에러 수정
+**변경 파일:** `src/app/compatibility/result/page.tsx` (PillarCard 타입 캐스팅 수정)
+**커밋:** `4c44453` fix: compatibility result page TypeScript 타입 에러 수정
+**QA 결과:** 테스트 392/392 통과, 빌드 PASS, Vercel 프로덕션 배포 성공
+**다음 AI에게:** Vercel 배포 완료. 환경변수(Anthropic, Supabase, Toss) 미설정 상태. 사용자가 직접 설정 필요.
+
+---
+
+### 2026-02-24 | Claude Opus 4.6 (세션 1)
+**작업 내용:** Step 1~8 전체 구현 (프로젝트 초기화 → 만세력 엔진 → LLM → 프론트 → 결제 → 궁합/연간운세)
+**변경 파일:** 프로젝트 전체 (82+ 파일)
+**커밋:**
+- `2893c36` ~ `90948d2` (총 20개 커밋 — 섹션 6 참조)
+**QA 결과:** 테스트 392/392 통과, 빌드 PASS
+**다음 AI에게:**
+- 만세력 엔진 139개 골든 테스트로 검증 완료
+- `types.ts`에 최근 추가 필드 많음 (StrengthScoring, GeokGuk, 등) — 엔진 코드와 동기화 확인 필요
+- `PillarCard.tsx`는 `@/styles/theme`에서 colors import하는 방식으로 변경됨
+- `interactions`에 `pas`, `haes`, `cheonganHaps`, `cheonganChungs` 추가됨
+
+---
+
+### 2026-02-24 | Gemini (다른 세션에서 작업)
+**작업 내용:** 사주 엔진 고도화, 디자인 토큰 리팩토링, 랜딩 리디자인 등
+**변경 파일:** `src/lib/saju/`, `src/styles/theme.ts`, `src/app/page.tsx` 등 다수
+**커밋:**
+- `90948d2` feat: landing page redesign — Soft Lavender dark theme
+- `2272b5b` feat: ops dashboard at /log
+- `e3a7878` feat: LLM cost optimization
+- `3741f52` feat: P0 panel review
+- `688b2d1` feat: saju engine 고도화
+- `9faa775` refactor: design token system
+- (기타 다수)
+**QA 결과:** 테스트 392/392 통과, 빌드 PASS
+**다음 AI에게:**
+- `theme.ts`에 디자인 토큰 시스템 도입됨 — 새 컴포넌트는 하드코딩 색상 대신 `colors` 객체 사용
+- 엔진에 격국(geokguk), 천간합충, 파해, 용신 rationale, 신강 점수 추가됨
+- 랜딩 페이지가 Soft Lavender 테마로 전면 리디자인됨
