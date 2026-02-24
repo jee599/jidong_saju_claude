@@ -89,8 +89,9 @@ function NewReportContent() {
       if (data.reportId) {
         router.replace(`/report/${data.reportId}`);
       } else {
-        // DB unavailable — show error instead of silent fallback
-        throw new Error("리포트를 저장하지 못했습니다. 잠시 후 다시 시도해주세요.");
+        // DB unavailable — store in sessionStorage and use local viewer
+        sessionStorage.setItem("fatesaju_local_report", JSON.stringify(data));
+        router.replace("/report/local");
       }
     } catch (err) {
       console.error(err);

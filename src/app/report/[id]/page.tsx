@@ -43,6 +43,18 @@ export default function ReportPage({ params }: { params: Promise<{ id: string }>
   useEffect(() => {
     async function fetchReport() {
       try {
+        // Local mode: read from sessionStorage when DB was unavailable
+        if (id === "local") {
+          const stored = sessionStorage.getItem("fatesaju_local_report");
+          if (stored) {
+            setData(JSON.parse(stored));
+          } else {
+            setError("저장된 리포트가 없습니다. 다시 분석해주세요.");
+            setErrorCode("REPORT_NOT_FOUND");
+          }
+          return;
+        }
+
         const res = await fetch(`/api/saju/report/${id}`);
         if (res.status === 404) {
           setError("리포트를 찾을 수 없습니다.");
