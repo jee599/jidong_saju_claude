@@ -61,17 +61,49 @@ const HAE: [string, string][] = [
   ["卯", "辰"], ["申", "亥"], ["酉", "戌"],
 ];
 
+// ─── 천간합 (5쌍) ───
+const CHEONGAN_HAP: [string, string, string][] = [
+  ["甲", "己", "토(土)로 합화"],
+  ["乙", "庚", "금(金)으로 합화"],
+  ["丙", "辛", "수(水)로 합화"],
+  ["丁", "壬", "목(木)으로 합화"],
+  ["戊", "癸", "화(火)로 합화"],
+];
+
+// ─── 천간충 (4쌍) ───
+const CHEONGAN_CHUNG: [string, string, string][] = [
+  ["甲", "庚", "갑경충(목금 충돌)"],
+  ["乙", "辛", "을신충(목금 충돌)"],
+  ["丙", "壬", "병임충(화수 충돌)"],
+  ["丁", "癸", "정계충(화수 충돌)"],
+];
+
 type PillarPosition = "년지" | "월지" | "일지" | "시지";
+type GanPosition = "년간" | "월간" | "일간" | "시간";
+
+export interface InteractionResult {
+  haps: Interaction[];
+  chungs: Interaction[];
+  hyeongs: Interaction[];
+  pas: Interaction[];
+  haes: Interaction[];
+  cheonganHaps: Interaction[];
+  cheonganChungs: Interaction[];
+}
 
 /**
- * 사주 4기둥의 지지 간 상호작용(합충형파해)을 모두 찾기
+ * 사주 4기둥의 지지 간 상호작용(합충형파해) + 천간합충을 모두 찾기
  */
 export function findInteractions(
   yearJi: string,
   monthJi: string,
   dayJi: string,
-  hourJi: string
-): { haps: Interaction[]; chungs: Interaction[]; hyeongs: Interaction[] } {
+  hourJi: string,
+  yearGan?: string,
+  monthGan?: string,
+  dayGan?: string,
+  hourGan?: string
+): InteractionResult {
   const jiList: { ji: string; pos: PillarPosition }[] = [
     { ji: yearJi, pos: "년지" },
     { ji: monthJi, pos: "월지" },
@@ -82,8 +114,12 @@ export function findInteractions(
   const haps: Interaction[] = [];
   const chungs: Interaction[] = [];
   const hyeongs: Interaction[] = [];
+  const pas: Interaction[] = [];
+  const haes: Interaction[] = [];
+  const cheonganHaps: Interaction[] = [];
+  const cheonganChungs: Interaction[] = [];
 
-  // 모든 2개 쌍 조합 검사
+  // 모든 2개 쌍 조합 검사 (지지)
   for (let i = 0; i < jiList.length; i++) {
     for (let j = i + 1; j < jiList.length; j++) {
       const a = jiList[i];
@@ -121,6 +157,28 @@ export function findInteractions(
               description: `${a.pos}(${a.ji})와 ${b.pos}(${b.ji})의 ${desc}`,
             });
           }
+        }
+      }
+
+      // 파(破) 검사
+      for (const [x, y] of PA) {
+        if ((a.ji === x && b.ji === y) || (a.ji === y && b.ji === x)) {
+          pas.push({
+            type: "파",
+            elements: [a.ji, b.ji],
+            description: `${a.pos}(${a.ji})와 ${b.pos}(${b.ji})의 파(破) — 깨뜨리는 관계`,
+          });
+        }
+      }
+
+      // 해(害) 검사
+      for (const [x, y] of HAE) {
+        if ((a.ji === x && b.ji === y) || (a.ji === y && b.ji === x)) {
+          haes.push({
+            type: "해",
+            elements: [a.ji, b.ji],
+            description: `${a.pos}(${a.ji})와 ${b.pos}(${b.ji})의 해(害) — 해치는 관계`,
+          });
         }
       }
     }
@@ -176,5 +234,44 @@ export function findInteractions(
     }
   }
 
-  return { haps, chungs, hyeongs };
+  // ─── 천간합/충 검사 ───
+  if (yearGan && monthGan && dayGan && hourGan) {
+    const ganList: { gan: string; pos: GanPosition }[] = [
+      { gan: yearGan, pos: "년간" },
+      { gan: monthGan, pos: "월간" },
+      { gan: dayGan, pos: "일간" },
+      { gan: hourGan, pos: "시간" },
+    ];
+
+    for (let i = 0; i < ganList.length; i++) {
+      for (let j = i + 1; j < ganList.length; j++) {
+        const a = ganList[i];
+        const b = ganList[j];
+
+        // 천간합
+        for (const [x, y, desc] of CHEONGAN_HAP) {
+          if ((a.gan === x && b.gan === y) || (a.gan === y && b.gan === x)) {
+            cheonganHaps.push({
+              type: "천간합",
+              elements: [a.gan, b.gan],
+              description: `${a.pos}(${a.gan})와 ${b.pos}(${b.gan})의 천간합 — ${desc}`,
+            });
+          }
+        }
+
+        // 천간충
+        for (const [x, y, desc] of CHEONGAN_CHUNG) {
+          if ((a.gan === x && b.gan === y) || (a.gan === y && b.gan === x)) {
+            cheonganChungs.push({
+              type: "천간충",
+              elements: [a.gan, b.gan],
+              description: `${a.pos}(${a.gan})와 ${b.pos}(${b.gan})의 ${desc}`,
+            });
+          }
+        }
+      }
+    }
+  }
+
+  return { haps, chungs, hyeongs, pas, haes, cheonganHaps, cheonganChungs };
 }

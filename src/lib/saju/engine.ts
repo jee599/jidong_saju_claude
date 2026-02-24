@@ -10,6 +10,7 @@ import { findInteractions } from "./interactions";
 import { findSinsals } from "./sinsal";
 import { calculateDaeun, calculateSeun } from "./daeun";
 import { calculateYongsin, isDayMasterStrong } from "./yongsin";
+import { determineGeokGuk } from "./geokguk";
 
 /**
  * 만세력 엔진 메인 함수
@@ -83,12 +84,16 @@ export function calculateSaju(input: SajuInput): SajuResult {
   // ─── [5] 오행 분포 ───
   const oheng = calculateOheng(pillars, jijanggan);
 
-  // ─── [6] 합충형파해 ───
+  // ─── [6] 합충형파해 + 천간합충 ───
   const interactions = findInteractions(
     pillars.year.ji,
     pillars.month.ji,
     pillars.day.ji,
-    pillars.hour.ji
+    pillars.hour.ji,
+    pillars.year.gan,
+    pillars.month.gan,
+    pillars.day.gan,
+    pillars.hour.gan
   );
 
   // ─── [7] 신살 ───
@@ -101,7 +106,7 @@ export function calculateSaju(input: SajuInput): SajuResult {
   );
 
   // ─── [8] 일간 강약 + 용신/기신 ───
-  const { isStrong, reason } = isDayMasterStrong(dayGan, pillars, pillars.month.ji);
+  const { isStrong, reason, scoring } = isDayMasterStrong(dayGan, pillars, pillars.month.ji);
 
   const dayMasterInfo = getCheonganByHanja(dayGan)!;
   const dayMaster = {
@@ -111,9 +116,13 @@ export function calculateSaju(input: SajuInput): SajuResult {
     nature: dayMasterInfo.nature,
     isStrong,
     strengthReason: reason,
+    strengthScoring: scoring,
   };
 
   const yongsin = calculateYongsin(dayGan, pillars, oheng);
+
+  // ─── [8.5] 격국 판별 ───
+  const geokguk = determineGeokGuk(dayGan, pillars.month);
 
   // ─── [9] 대운 ───
   const solarYear = calendar.solar.year;
@@ -134,7 +143,8 @@ export function calculateSaju(input: SajuInput): SajuResult {
   );
 
   // ─── [10] 세운 ───
-  const seun = calculateSeun(2026, dayGan);
+  const natalJiList = [pillars.year.ji, pillars.month.ji, pillars.day.ji, pillars.hour.ji];
+  const seun = calculateSeun(2026, dayGan, natalJiList);
 
   // ─── 최종 결과 조립 ───
   return {
@@ -147,6 +157,7 @@ export function calculateSaju(input: SajuInput): SajuResult {
     unseong,
     oheng,
     yongsin,
+    geokguk,
     interactions,
     sinsals,
     daeun,

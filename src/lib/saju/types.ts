@@ -31,6 +31,15 @@ export interface Pillar {
   jiInfo: Jiji;
 }
 
+export interface StrengthScoring {
+  supportScore: number;
+  drainScore: number;
+  monthSupport: boolean;   // 월지 득령 여부
+  dayJiSupport: boolean;   // 일지 근기 여부
+  seasonElement: Element;  // 월지 본기 오행
+  factors: string[];       // 점수 산출 근거 리스트
+}
+
 export interface DayMaster {
   gan: string;
   element: Element;
@@ -38,6 +47,7 @@ export interface DayMaster {
   nature: string;
   isStrong: boolean;
   strengthReason: string;
+  strengthScoring: StrengthScoring;
 }
 
 export interface SipseongResult {
@@ -75,6 +85,8 @@ export interface YongsinResult {
   luckyColors: string[];
   luckyDirections: string[];
   luckyNumbers: number[];
+  rationale: string;          // 용신 선정 이유
+  method: "억부" | "조후" | "통관"; // 용신 선정 방법론
 }
 
 export interface Interaction {
@@ -97,6 +109,9 @@ export interface DaeunEntry {
   sipseong: string;
   unseong: string;
   isCurrentDaeun: boolean;
+  element: Element | "";     // 대운 천간의 오행
+  ganElement: Element | "";  // 천간 오행
+  jiElement: Element | "";   // 지지 오행
 }
 
 export interface SeunResult {
@@ -105,6 +120,8 @@ export interface SeunResult {
   element: Element;
   sipseong: string;
   keywords: string[];
+  jiSipseong: string;           // 세운 지지의 십성
+  natalInteractions: string[];  // 세운 지지와 사주 지지의 합충 관계
 }
 
 export interface SajuInput {
@@ -114,6 +131,21 @@ export interface SajuInput {
   gender: "male" | "female";
   calendarType: "solar" | "lunar";
   isLeapMonth?: boolean;
+}
+
+// 격국 (格局) — 월지 정기 기반 사주 구조 분류
+export type GeokGukName =
+  | "정관격" | "편관격"
+  | "정인격" | "편인격"
+  | "식신격" | "상관격"
+  | "정재격" | "편재격"
+  | "건록격" | "양인격";
+
+export interface GeokGuk {
+  name: GeokGukName;
+  basis: string;        // 판별 근거 (예: "월지 寅의 정기 甲 → 비견이나 건록격")
+  monthMainGan: string; // 월지 정기 천간
+  monthMainSipseong: string; // 월지 정기의 십성
 }
 
 export interface SajuResult {
@@ -140,10 +172,15 @@ export interface SajuResult {
   unseong: UnseongResult;
   oheng: OhengResult;
   yongsin: YongsinResult;
+  geokguk: GeokGuk;
   interactions: {
     haps: Interaction[];
     chungs: Interaction[];
     hyeongs: Interaction[];
+    pas: Interaction[];          // 파(破)
+    haes: Interaction[];         // 해(害)
+    cheonganHaps: Interaction[]; // 천간합
+    cheonganChungs: Interaction[]; // 천간충
   };
   sinsals: Sinsal[];
   daeun: DaeunEntry[];

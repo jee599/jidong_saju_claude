@@ -1,14 +1,15 @@
 // src/lib/saju/daeun.ts — 대운 계산
 
 import type { DaeunEntry, SeunResult, Element } from "./types";
-import { getCalendarInfo, getYun } from "./calendar";
-import { getSipseong } from "./sipseong";
+import { getYun } from "./calendar";
+import { getSipseong, getSipseongForJiji } from "./sipseong";
 import { getUnseong } from "./unseong";
 import {
   CHEONGAN_LIST,
   JIJI_LIST,
   getCheonganByHanja,
   getCheonganElement,
+  getJijiByHanja,
 } from "./constants";
 
 /**
@@ -73,6 +74,20 @@ export function calculateDaeun(
       unseong = "";
     }
 
+    // 대운 천간/지지 오행
+    let ganElement: Element | "" = "";
+    let jiElement: Element | "" = "";
+    try {
+      if (i > 0) {
+        const ganInfo = getCheonganByHanja(gan);
+        if (ganInfo) ganElement = ganInfo.element;
+        const jiInfo = getJijiByHanja(ji);
+        if (jiInfo) jiElement = jiInfo.element;
+      }
+    } catch {
+      // skip
+    }
+
     // 현재 대운 여부
     const isCurrentDaeun = currentYear >= startYear && currentYear <= endYear;
 
@@ -83,6 +98,9 @@ export function calculateDaeun(
       sipseong,
       unseong,
       isCurrentDaeun,
+      element: ganElement,
+      ganElement,
+      jiElement,
     });
   }
 
@@ -91,10 +109,13 @@ export function calculateDaeun(
 
 /**
  * 세운(歲運) 계산 — 특정 연도의 간지와 사주 상호작용
+ *
+ * @param natalJiList - 사주 4기둥 지지 배열 (세운 지지와의 합충 분석용)
  */
 export function calculateSeun(
   year: number,
-  dayGan: string
+  dayGan: string,
+  natalJiList?: string[]
 ): SeunResult {
   // 연도의 간지 계산 (갑자 순환)
   const ganIndex = (year - 4) % 10;
@@ -110,6 +131,37 @@ export function calculateSeun(
   // 세운 천간과 일간의 십성 관계
   const sipseong = getSipseong(dayGan, gan);
 
+  // 세운 지지와 일간의 십성 관계
+  const jiSipseong = getSipseongForJiji(dayGan, ji);
+
+  // 세운 지지와 사주 지지의 합충 분석
+  const natalInteractions: string[] = [];
+  if (natalJiList) {
+    // 육합/충 조견표
+    const YUKHAP_MAP: Record<string, string> = {
+      "子丑": "토합", "丑子": "토합", "寅亥": "목합", "亥寅": "목합",
+      "卯戌": "화합", "戌卯": "화합", "辰酉": "금합", "酉辰": "금합",
+      "巳申": "수합", "申巳": "수합", "午未": "토합", "未午": "토합",
+    };
+    const CHUNG_MAP: Record<string, string> = {
+      "子午": "자오충", "午子": "자오충", "丑未": "축미충", "未丑": "축미충",
+      "寅申": "인신충", "申寅": "인신충", "卯酉": "묘유충", "酉卯": "묘유충",
+      "辰戌": "진술충", "戌辰": "진술충", "巳亥": "사해충", "亥巳": "사해충",
+    };
+    const posNames = ["년지", "월지", "일지", "시지"];
+
+    for (let i = 0; i < natalJiList.length; i++) {
+      const natalJi = natalJiList[i];
+      const pair = `${ji}${natalJi}`;
+      if (YUKHAP_MAP[pair]) {
+        natalInteractions.push(`세운 ${ji}와 ${posNames[i]}(${natalJi}) 육합(${YUKHAP_MAP[pair]})`);
+      }
+      if (CHUNG_MAP[pair]) {
+        natalInteractions.push(`세운 ${ji}와 ${posNames[i]}(${natalJi}) 충(${CHUNG_MAP[pair]})`);
+      }
+    }
+  }
+
   // 세운 키워드 생성
   const keywords = generateSeunKeywords(sipseong, element, dayGan);
 
@@ -119,6 +171,8 @@ export function calculateSeun(
     element,
     sipseong,
     keywords,
+    jiSipseong,
+    natalInteractions,
   };
 }
 

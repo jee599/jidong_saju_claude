@@ -25,7 +25,7 @@ const mockSajuResult = {
     day: { gan: "甲", ji: "辰", ganInfo: {} as never, jiInfo: {} as never },
     hour: { gan: "己", ji: "巳", ganInfo: {} as never, jiInfo: {} as never },
   },
-  dayMaster: { gan: "甲", element: "木" as const, yinYang: "양" as const, nature: "큰 나무", isStrong: true, strengthReason: "test" },
+  dayMaster: { gan: "甲", element: "木" as const, yinYang: "양" as const, nature: "큰 나무", isStrong: true, strengthReason: "test", strengthScoring: { supportScore: 5, drainScore: 3, monthSupport: true, dayJiSupport: true, seasonElement: "木" as const, factors: ["test"] } },
   sipseong: { distribution: {}, dominant: "비견", missing: [], details: {} },
   unseong: { yearJi: "장생", monthJi: "관대", dayJi: "건록", hourJi: "장생", dominantStage: "장생" },
   oheng: {
@@ -41,11 +41,12 @@ const mockSajuResult = {
     missing: [],
     balance: "균형",
   },
-  yongsin: { yongsin: "金" as const, gisin: "木" as const, heesin: "土" as const, luckyColors: ["흰색"], luckyDirections: ["서"], luckyNumbers: [4] },
-  interactions: { haps: [], chungs: [], hyeongs: [] },
+  yongsin: { yongsin: "金" as const, gisin: "木" as const, heesin: "土" as const, luckyColors: ["흰색"], luckyDirections: ["서"], luckyNumbers: [4], rationale: "test", method: "억부" as const },
+  geokguk: { name: "편재격" as const, basis: "test", monthMainGan: "己", monthMainSipseong: "편재" },
+  interactions: { haps: [], chungs: [], hyeongs: [], pas: [], haes: [], cheonganHaps: [], cheonganChungs: [] },
   sinsals: [],
   daeun: [],
-  seun: { year: 2026, ganJi: "丙午", element: "火" as const, sipseong: "식신", keywords: ["변화"] },
+  seun: { year: 2026, ganJi: "丙午", element: "火" as const, sipseong: "식신", keywords: ["변화"], jiSipseong: "편재", natalInteractions: [] },
   jijanggan: { yearJi: ["丙"], monthJi: ["己"], dayJi: ["乙"], hourJi: ["丙"] },
 } as SajuResult;
 
