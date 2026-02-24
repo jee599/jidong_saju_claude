@@ -1,7 +1,7 @@
 // src/lib/llm/client.ts — Claude API 클라이언트 (Prompt Caching 지원)
 
 const ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
-const DEFAULT_MODEL = "claude-sonnet-4-5-20250514";
+const DEFAULT_MODEL = "claude-sonnet-4-5-20250929";
 
 // ─── Content Block 타입 (Anthropic Prompt Caching) ───
 
@@ -48,11 +48,8 @@ export async function callClaude(req: LLMRequest): Promise<LLMResponse> {
       ? [{ type: "text", text: req.system }]
       : req.system;
 
-  // prompt: string → ContentBlock[] 변환
-  const userContent: string | TextContentBlock[] =
-    typeof req.prompt === "string"
-      ? req.prompt
-      : req.prompt;
+  // prompt: string 또는 ContentBlock[] 그대로 전달
+  const userContent = req.prompt;
 
   const response = await fetch(ANTHROPIC_API_URL, {
     method: "POST",

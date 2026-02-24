@@ -102,7 +102,10 @@ export function calculateSaju(input: SajuInput): SajuResult {
     pillars.year.ji,
     pillars.month.ji,
     pillars.day.ji,
-    pillars.hour.ji
+    pillars.hour.ji,
+    pillars.year.gan,
+    pillars.month.gan,
+    pillars.hour.gan
   );
 
   // ─── [8] 일간 강약 + 용신/기신 ───
@@ -129,6 +132,8 @@ export function calculateSaju(input: SajuInput): SajuResult {
   const solarMonth = calendar.solar.month;
   const solarDay = calendar.solar.day;
 
+  const currentYear = new Date().getFullYear();
+
   const daeun = calculateDaeun(
     solarYear,
     solarMonth,
@@ -139,12 +144,12 @@ export function calculateSaju(input: SajuInput): SajuResult {
     dayGan,
     "solar", // 대운 계산은 항상 양력 기준
     false,
-    2026
+    currentYear
   );
 
   // ─── [10] 세운 ───
   const natalJiList = [pillars.year.ji, pillars.month.ji, pillars.day.ji, pillars.hour.ji];
-  const seun = calculateSeun(2026, dayGan, natalJiList);
+  const seun = calculateSeun(currentYear, dayGan, natalJiList);
 
   // ─── 최종 결과 조립 ───
   return {

@@ -270,7 +270,7 @@ export async function generateReport(
   return {
     sections,
     generatedAt: new Date().toISOString(),
-    model: "claude-sonnet-4-5-20250514",
+    model: "claude-sonnet-4-5-20250929",
     tier,
     usage: {
       totalInputTokens,

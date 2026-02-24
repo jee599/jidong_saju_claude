@@ -159,20 +159,9 @@ body {
   50% { opacity: 0.5; }
 }
 
-@keyframes scroll-line {
-  0% { opacity: 0; transform: scaleY(0); transform-origin: top; }
-  50% { opacity: 1; transform: scaleY(1); transform-origin: top; }
-  100% { opacity: 0; transform: scaleY(1); transform-origin: top; }
-}
-
 @keyframes border-glow {
   0% { opacity: 0.5; }
   100% { opacity: 1; }
-}
-
-@keyframes marquee-scroll {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
 }
 
 /* ── Lavender gradient text ── */
@@ -294,9 +283,6 @@ body {
     opacity: 1;
     transform: none;
     transition: none;
-  }
-  .marquee-track {
-    animation-play-state: paused !important;
   }
 }
 

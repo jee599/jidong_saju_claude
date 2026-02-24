@@ -61,7 +61,7 @@ describe("generateReport", () => {
         keywords: ["테스트"],
         highlights: ["핵심"],
       }),
-      model: "claude-sonnet-4-5-20250514",
+      model: "claude-sonnet-4-5-20250929",
       usage: {
         inputTokens: 1000,
         outputTokens: 500,

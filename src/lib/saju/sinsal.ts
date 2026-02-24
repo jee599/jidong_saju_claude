@@ -39,14 +39,33 @@ const HWAGAE: Record<string, string> = {
 
 // ─── 양인살 (일간 기준) ───
 const YANGIN: Record<string, string> = {
-  甲: "卯", 乙: "寅", 丙: "午", 丁: "巳", 戊: "午",
-  己: "巳", 庚: "酉", 辛: "申", 壬: "子", 癸: "亥",
+  甲: "卯", 丙: "午", 戊: "午", 庚: "酉", 壬: "子",
 };
 
 // ─── 홍염살 (일간 기준) ───
 const HONGYEOM: Record<string, string> = {
-  甲: "午", 乙: "申", 丙: "寅", 丁: "未", 戊: "辰",
+  甲: "午", 乙: "午", 丙: "寅", 丁: "未", 戊: "辰",
   己: "辰", 庚: "戌", 辛: "酉", 壬: "子", 癸: "申",
+};
+
+// ─── 천덕귀인 (월지 기준 → 사주 천간/지지에서 찾기) ───
+const CHEONDEOK: Record<string, string> = {
+  寅: "丁", 卯: "申", 辰: "壬", 巳: "辛",
+  午: "亥", 未: "甲", 申: "癸", 酉: "寅",
+  戌: "丙", 亥: "乙", 子: "巳", 丑: "庚",
+};
+
+// ─── 월덕귀인 (월지 기준 → 사주 천간에서 찾기) ───
+const WOLDEOK: Record<string, string> = {
+  寅: "丙", 卯: "甲", 辰: "壬", 巳: "庚",
+  午: "丙", 未: "甲", 申: "壬", 酉: "庚",
+  戌: "丙", 亥: "甲", 子: "壬", 丑: "庚",
+};
+
+// ─── 금여록 (일간 기준) ───
+const GEUMYEO: Record<string, string> = {
+  甲: "辰", 乙: "巳", 丙: "未", 丁: "申", 戊: "未",
+  己: "申", 庚: "戌", 辛: "亥", 壬: "丑", 癸: "寅",
 };
 
 // ─── 겁살 (일지/연지 기준) ───
@@ -58,9 +77,9 @@ const GEOPSAL: Record<string, string> = {
 
 // ─── 망신살 (일지/연지 기준) ───
 const MANGSIN: Record<string, string> = {
-  子: "午", 丑: "卯", 寅: "子", 卯: "酉",
-  辰: "午", 巳: "卯", 午: "子", 未: "酉",
-  申: "午", 酉: "卯", 戌: "子", 亥: "酉",
+  子: "亥", 丑: "申", 寅: "巳", 卯: "寅",
+  辰: "亥", 巳: "申", 午: "巳", 未: "寅",
+  申: "亥", 酉: "申", 戌: "巳", 亥: "寅",
 };
 
 type PillarName = "년지" | "월지" | "일지" | "시지";
@@ -73,7 +92,10 @@ export function findSinsals(
   yearJi: string,
   monthJi: string,
   dayJi: string,
-  hourJi: string
+  hourJi: string,
+  yearGan?: string,
+  monthGan?: string,
+  hourGan?: string
 ): Sinsal[] {
   const sinsals: Sinsal[] = [];
 
@@ -83,6 +105,12 @@ export function findSinsals(
     { ji: dayJi, name: "일지" },
     { ji: hourJi, name: "시지" },
   ];
+
+  // 천간 목록 (천덕/월덕귀인 검사용)
+  const allGanJi = [
+    yearGan, monthGan, dayGan, hourGan,
+    yearJi, monthJi, dayJi, hourJi,
+  ].filter(Boolean) as string[];
 
   // ── 천을귀인 (일간 기준 → 사주 내 지지에서 찾기) ──
   const cheonulTargets = CHEONUL[dayGan] || [];
@@ -213,6 +241,42 @@ export function findSinsals(
           meaning: "명예 실추의 살. 구설이나 체면 손상에 주의. 공개적 망신 가능.",
         });
       }
+    }
+  }
+
+  // ── 천덕귀인 (월지 기준 → 사주 내 천간/지지에서 찾기) ──
+  const cheondeokTarget = CHEONDEOK[monthJi];
+  if (cheondeokTarget && allGanJi.includes(cheondeokTarget)) {
+    sinsals.push({
+      name: "천덕귀인",
+      type: "길신",
+      location: "월지",
+      meaning: "하늘의 덕이 깃든 귀인. 재난을 피하고 복을 받음. 성품이 온화하고 인덕이 있음.",
+    });
+  }
+
+  // ── 월덕귀인 (월지 기준 → 사주 내 천간에서 찾기) ──
+  const woldeokTarget = WOLDEOK[monthJi];
+  const allGans = [yearGan, monthGan, dayGan, hourGan].filter(Boolean) as string[];
+  if (woldeokTarget && allGans.includes(woldeokTarget)) {
+    sinsals.push({
+      name: "월덕귀인",
+      type: "길신",
+      location: "월지",
+      meaning: "달의 덕이 깃든 귀인. 재앙이 가벼워지고 복록이 따름. 자비롭고 관대한 성품.",
+    });
+  }
+
+  // ── 금여록 (일간 기준 → 사주 내 지지에서 찾기) ──
+  const geumyeoTarget = GEUMYEO[dayGan];
+  for (const { ji, name } of allJi) {
+    if (ji === geumyeoTarget) {
+      sinsals.push({
+        name: "금여록",
+        type: "길신",
+        location: name,
+        meaning: "금으로 된 수레의 록. 재물과 배우자 복이 있음. 결혼운과 재물운이 좋음.",
+      });
     }
   }
 

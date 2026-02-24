@@ -7,7 +7,6 @@ import { useEffect, useRef, useState } from "react";
    Constants
    ══════════════════════════════════════════════════ */
 const ROTATING_WORDS = ["성격", "직업", "연애", "올해 운세", "타이밍"];
-const MARQUEE_CHARS = "甲 乙 丙 丁 戊 己 庚 辛 壬 癸 · 子 丑 寅 卯 辰 巳 午 未 申 酉 戌 亥";
 const TRUST_ITEMS = ["만세력 정밀 계산", "절기 경계 보정", "139개 검증 벡터", "초자시 처리"];
 
 const OHENG_BARS = [
@@ -111,98 +110,6 @@ function RotatingWord() {
 }
 
 /* ══════════════════════════════════════════════════
-   Stats Strip with countup
-   ══════════════════════════════════════════════════ */
-function StatsStrip() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const stat1Ref = useRef<HTMLSpanElement>(null);
-  const stat2Ref = useRef<HTMLSpanElement>(null);
-  const stat3Ref = useRef<HTMLDivElement>(null);
-  const started = useRef(false);
-
-  useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && !started.current) {
-          started.current = true;
-          if (stat3Ref.current) stat3Ref.current.style.opacity = "1";
-
-          const start = performance.now();
-          const animate = (now: number) => {
-            const elapsed = now - start;
-            // 518,400 → 2s easeOutExpo
-            const p1 = Math.min(elapsed / 2000, 1);
-            const e1 = p1 === 1 ? 1 : 1 - Math.pow(2, -10 * p1);
-            if (stat1Ref.current) {
-              stat1Ref.current.textContent = Math.floor(e1 * 518400).toLocaleString() + "+";
-            }
-            // 139 → 1.5s
-            const p2 = Math.min(elapsed / 1500, 1);
-            const e2 = p2 === 1 ? 1 : 1 - Math.pow(2, -10 * p2);
-            if (stat2Ref.current) {
-              stat2Ref.current.textContent = Math.floor(e2 * 139) + "개";
-            }
-            if (p1 < 1 || p2 < 1) requestAnimationFrame(animate);
-          };
-          requestAnimationFrame(animate);
-          observer.unobserve(el);
-        }
-      },
-      { threshold: 0.3 }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
-  const numStyle: React.CSSProperties = { fontSize: "clamp(32px, 4vw, 44px)", fontWeight: 900 };
-
-  return (
-    <section ref={containerRef} className="px-6 pb-4">
-      <div className="max-w-[680px] mx-auto grid grid-cols-3 text-center">
-        <div style={{ borderRight: "1px solid var(--bdr)" }}>
-          <span ref={stat1Ref} className="lav-text block" style={numStyle}>0+</span>
-          <div className="text-[13px] font-medium mt-1" style={{ color: "var(--t2)" }}>사주 조합 수</div>
-        </div>
-        <div style={{ borderRight: "1px solid var(--bdr)" }}>
-          <span ref={stat2Ref} className="lav-text block" style={numStyle}>0개</span>
-          <div className="text-[13px] font-medium mt-1" style={{ color: "var(--t2)" }}>검증 테스트</div>
-        </div>
-        <div>
-          <div ref={stat3Ref} className="lav-text transition-opacity duration-1000" style={{ ...numStyle, opacity: 0 }}>&lt;1초</div>
-          <div className="text-[13px] font-medium mt-1" style={{ color: "var(--t2)" }}>계산 속도</div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ══════════════════════════════════════════════════
-   Marquee — flowing Chinese characters
-   ══════════════════════════════════════════════════ */
-function Marquee() {
-  const text = `${MARQUEE_CHARS}    ${MARQUEE_CHARS}    `;
-  return (
-    <div className="overflow-hidden py-6 select-none" style={{ opacity: 0.08 }}>
-      <div
-        className="marquee-track whitespace-nowrap font-hanja"
-        style={{
-          fontSize: "clamp(20px, 3vw, 32px)",
-          fontWeight: 400,
-          letterSpacing: "0.15em",
-          animation: "marquee-scroll 60s linear infinite",
-          width: "max-content",
-        }}
-      >
-        {text}
-      </div>
-    </div>
-  );
-}
-
-/* ══════════════════════════════════════════════════
    Main Landing Page
    ══════════════════════════════════════════════════ */
 export default function LandingPage() {
@@ -251,7 +158,7 @@ export default function LandingPage() {
     <main>
       {/* ════════ Nav ════════ */}
       <nav
-        className="fixed top-0 left-0 right-0 z-[100] flex items-center justify-between h-[60px] px-8 max-md:px-[18px]"
+        className="fixed top-0 left-0 right-0 z-[100] flex items-center justify-between h-[60px] px-8 max-md:px-5"
         style={{ background: "rgba(10,8,16,0.8)", backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)", borderBottom: "1px solid var(--bdr)" }}
       >
         <Link href="/" className="flex items-center gap-2 text-[17px] font-bold no-underline" style={{ color: "var(--t1)" }}>
@@ -273,7 +180,7 @@ export default function LandingPage() {
       </nav>
 
       {/* ════════ Hero ════════ */}
-      <section className="relative min-h-screen flex flex-col items-center justify-center text-center overflow-hidden pt-[110px] pb-20 px-6 max-md:pt-24 max-md:pb-14 max-md:px-[18px]">
+      <section className="relative min-h-[100svh] flex flex-col items-center justify-center text-center overflow-hidden pt-[110px] pb-24 px-6 max-md:pt-24 max-md:pb-16 max-md:px-5">
         {/* Glow */}
         <div className="absolute pointer-events-none" style={{ top: "-250px", left: "50%", transform: "translateX(-50%)", width: "800px", height: "800px", background: "radial-gradient(circle, var(--lav-glow) 0%, rgba(155,127,230,0.06) 40%, transparent 70%)" }} />
         <SparkleField count={15} />
@@ -301,7 +208,7 @@ export default function LandingPage() {
           className="relative z-[1]"
           style={{ fontSize: "clamp(15px, 2vw, 18px)", color: "var(--t2)", maxWidth: "440px", lineHeight: 1.8, marginBottom: "44px", animation: "float-up 0.7s ease-out 0.2s both" }}
         >
-          생년월일시를 입력하면 만세력 엔진이 정밀하게 계산하고,<br />
+          생년월일시를 입력하면 만세력 엔진이 정밀하게 계산하고,{" "}
           AI가 따뜻한 언어로 당신의 운명을 풀어드려요.
         </p>
 
@@ -317,21 +224,10 @@ export default function LandingPage() {
           <span className="text-xs" style={{ color: "var(--t3)" }}>30초면 완료 · 회원가입 불필요</span>
         </div>
 
-        {/* Scroll indicator */}
-        <div className="absolute bottom-9 left-1/2 -translate-x-1/2 z-[1] flex flex-col items-center gap-2" style={{ animation: "float-up 0.7s ease-out 0.5s both" }}>
-          <span className="text-xs" style={{ color: "var(--t3)" }}>스크롤해서 더 보기</span>
-          <div className="w-px h-9" style={{ background: "linear-gradient(to bottom, var(--lav-l), transparent)", animation: "scroll-line 2s infinite" }} />
-        </div>
       </section>
 
-      {/* ════════ Stats Strip ════════ */}
-      <StatsStrip />
-
-      {/* ════════ Marquee ════════ */}
-      <Marquee />
-
       {/* ════════ How It Works ════════ */}
-      <section className="min-h-screen flex items-center justify-center py-[110px] px-6 relative max-md:py-20 max-md:px-[18px] max-md:min-h-0">
+      <section className="min-h-screen flex items-center justify-center py-[110px] px-6 relative max-md:py-20 max-md:px-5 max-md:min-h-0">
         <div className="max-w-[1040px] w-full mx-auto">
           <div className="reveal">
             <div className="text-xs font-bold uppercase tracking-[0.1em] mb-[18px]" style={{ color: "var(--lav)" }}>How it works</div>
@@ -379,7 +275,7 @@ export default function LandingPage() {
       <div className="max-w-[1040px] mx-auto px-6"><div className="shimmer-line" /></div>
 
       {/* ════════ Features ════════ */}
-      <section className="min-h-screen flex items-center justify-center py-[110px] px-6 relative max-md:py-20 max-md:px-[18px] max-md:min-h-0" style={{ background: "var(--bg-s)" }}>
+      <section className="min-h-screen flex items-center justify-center py-[110px] px-6 relative max-md:py-20 max-md:px-5 max-md:min-h-0" style={{ background: "var(--bg-s)" }}>
         <div className="max-w-[1040px] w-full mx-auto">
           <div className="reveal">
             <div className="text-xs font-bold uppercase tracking-[0.1em] mb-[18px]" style={{ color: "var(--lav)" }}>Features</div>
@@ -480,7 +376,7 @@ export default function LandingPage() {
       <div className="max-w-[1040px] mx-auto px-6"><div className="shimmer-line" /></div>
 
       {/* ════════ Pricing ════════ */}
-      <section id="pricing" className="min-h-screen flex items-center justify-center py-[110px] px-6 relative max-md:py-20 max-md:px-[18px] max-md:min-h-0">
+      <section id="pricing" className="min-h-screen flex items-center justify-center py-[110px] px-6 relative max-md:py-20 max-md:px-5 max-md:min-h-0">
         <div className="max-w-[1040px] w-full mx-auto">
           <div className="reveal">
             <div className="text-xs font-bold uppercase tracking-[0.1em] mb-[18px]" style={{ color: "var(--lav)" }}>Pricing</div>
@@ -540,7 +436,7 @@ export default function LandingPage() {
       </section>
 
       {/* ════════ Beta Feedback ════════ */}
-      <section className="min-h-screen flex items-center justify-center py-[110px] px-6 relative max-md:py-20 max-md:px-[18px] max-md:min-h-0" style={{ background: "var(--bg-s)" }}>
+      <section className="min-h-screen flex items-center justify-center py-[110px] px-6 relative max-md:py-20 max-md:px-5 max-md:min-h-0" style={{ background: "var(--bg-s)" }}>
         <div className="max-w-[1040px] w-full mx-auto">
           <div className="reveal">
             <div className="text-xs font-bold uppercase tracking-[0.1em] mb-[18px]" style={{ color: "var(--lav)" }}>Beta Feedback</div>
@@ -572,7 +468,7 @@ export default function LandingPage() {
       </section>
 
       {/* ════════ Final CTA ════════ */}
-      <section className="relative min-h-[70vh] flex items-center justify-center text-center py-[110px] px-6 overflow-hidden max-md:py-20 max-md:px-[18px]">
+      <section className="relative min-h-[60svh] flex items-center justify-center text-center py-24 px-6 overflow-hidden max-md:py-20 max-md:px-5">
         {/* Glow */}
         <div className="absolute pointer-events-none" style={{ bottom: "-120px", left: "50%", transform: "translateX(-50%)", width: "600px", height: "600px", background: "radial-gradient(circle, var(--lav-glow) 0%, transparent 60%)" }} />
         <SparkleField count={8} />

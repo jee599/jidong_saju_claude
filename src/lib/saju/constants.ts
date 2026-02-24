@@ -18,18 +18,18 @@ export const CHEONGAN_LIST: Cheongan[] = [
 
 // ─── 지지 12개 ───
 export const JIJI_LIST: Jiji[] = [
-  { hanja: "子", hangul: "자", animal: "쥐", element: "水", yinYang: "양", hours: "23:00~01:00", jijanggan: ["癸"], number: 0 },
+  { hanja: "子", hangul: "자", animal: "쥐", element: "水", yinYang: "양", hours: "23:00~01:00", jijanggan: ["癸", "壬"], number: 0 },
   { hanja: "丑", hangul: "축", animal: "소", element: "土", yinYang: "음", hours: "01:00~03:00", jijanggan: ["己", "癸", "辛"], number: 1 },
   { hanja: "寅", hangul: "인", animal: "호랑이", element: "木", yinYang: "양", hours: "03:00~05:00", jijanggan: ["甲", "丙", "戊"], number: 2 },
-  { hanja: "卯", hangul: "묘", animal: "토끼", element: "木", yinYang: "음", hours: "05:00~07:00", jijanggan: ["乙"], number: 3 },
+  { hanja: "卯", hangul: "묘", animal: "토끼", element: "木", yinYang: "음", hours: "05:00~07:00", jijanggan: ["乙", "甲"], number: 3 },
   { hanja: "辰", hangul: "진", animal: "용", element: "土", yinYang: "양", hours: "07:00~09:00", jijanggan: ["戊", "乙", "癸"], number: 4 },
   { hanja: "巳", hangul: "사", animal: "뱀", element: "火", yinYang: "음", hours: "09:00~11:00", jijanggan: ["丙", "庚", "戊"], number: 5 },
-  { hanja: "午", hangul: "오", animal: "말", element: "火", yinYang: "양", hours: "11:00~13:00", jijanggan: ["丁", "己"], number: 6 },
+  { hanja: "午", hangul: "오", animal: "말", element: "火", yinYang: "양", hours: "11:00~13:00", jijanggan: ["丁", "己", "丙"], number: 6 },
   { hanja: "未", hangul: "미", animal: "양", element: "土", yinYang: "음", hours: "13:00~15:00", jijanggan: ["己", "丁", "乙"], number: 7 },
   { hanja: "申", hangul: "신", animal: "원숭이", element: "金", yinYang: "양", hours: "15:00~17:00", jijanggan: ["庚", "壬", "戊"], number: 8 },
-  { hanja: "酉", hangul: "유", animal: "닭", element: "金", yinYang: "음", hours: "17:00~19:00", jijanggan: ["辛"], number: 9 },
+  { hanja: "酉", hangul: "유", animal: "닭", element: "金", yinYang: "음", hours: "17:00~19:00", jijanggan: ["辛", "庚"], number: 9 },
   { hanja: "戌", hangul: "술", animal: "개", element: "土", yinYang: "양", hours: "19:00~21:00", jijanggan: ["戊", "辛", "丁"], number: 10 },
-  { hanja: "亥", hangul: "해", animal: "돼지", element: "水", yinYang: "음", hours: "21:00~23:00", jijanggan: ["壬", "甲"], number: 11 },
+  { hanja: "亥", hangul: "해", animal: "돼지", element: "水", yinYang: "음", hours: "21:00~23:00", jijanggan: ["壬", "甲", "戊"], number: 11 },
 ];
 
 // ─── 오행 상생상극 ───

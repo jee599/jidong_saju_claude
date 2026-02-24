@@ -4,7 +4,7 @@
 // 단, 비견/겁재인 경우 건록격/양인격으로 분류.
 
 import type { GeokGuk, GeokGukName, Pillar } from "./types";
-import { getJijiByHanja } from "./constants";
+import { getCheonganByHanja, getJijiByHanja } from "./constants";
 import { getSipseong } from "./sipseong";
 
 // 십성 → 격국명 매핑
@@ -17,8 +17,8 @@ const SIPSEONG_TO_GEOKGUK: Record<string, GeokGukName> = {
   상관: "상관격",
   정재: "정재격",
   편재: "편재격",
-  비견: "건록격", // 비견 → 건록격
-  겁재: "양인격", // 겁재 → 양인격
+  비견: "건록격",
+  겁재: "건록격", // 기본값; 양간이면 양인격으로 재지정
 };
 
 /**
@@ -26,7 +26,8 @@ const SIPSEONG_TO_GEOKGUK: Record<string, GeokGukName> = {
  *
  * 월지 정기(본기)의 천간과 일간의 십성 관계에 따라 격국 결정.
  * - 비견 → 건록격
- * - 겁재 → 양인격
+ * - 겁재 + 양간 → 양인격
+ * - 겁재 + 음간 → 건록격
  * - 그 외 → 해당 십성격
  */
 export function determineGeokGuk(
@@ -39,13 +40,22 @@ export function determineGeokGuk(
   // 월지의 정기(본기) = 첫 번째 지장간
   const monthMainGan = monthJiInfo.jijanggan[0];
   const sipseong = getSipseong(dayGan, monthMainGan);
-  const geokgukName = SIPSEONG_TO_GEOKGUK[sipseong];
+  let geokgukName = SIPSEONG_TO_GEOKGUK[sipseong];
+
+  // 겁재 + 양간 → 양인격, 겁재 + 음간 → 건록격
+  if (sipseong === "겁재") {
+    const dayInfo = getCheonganByHanja(dayGan);
+    if (dayInfo?.yinYang === "양") {
+      geokgukName = "양인격";
+    }
+    // 음간은 기본값 건록격 유지
+  }
 
   let basis: string;
   if (sipseong === "비견") {
     basis = `월지 ${monthPillar.ji}의 정기 ${monthMainGan} → 일간과 비견(같은 오행+같은 음양)이므로 건록격`;
   } else if (sipseong === "겁재") {
-    basis = `월지 ${monthPillar.ji}의 정기 ${monthMainGan} → 일간과 겁재(같은 오행+다른 음양)이므로 양인격`;
+    basis = `월지 ${monthPillar.ji}의 정기 ${monthMainGan} → 일간과 겁재(같은 오행+다른 음양)이므로 ${geokgukName}`;
   } else {
     basis = `월지 ${monthPillar.ji}의 정기 ${monthMainGan} → 일간과 ${sipseong} 관계이므로 ${geokgukName}`;
   }

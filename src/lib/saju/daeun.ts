@@ -50,6 +50,10 @@ export function calculateDaeun(
   for (let i = 0; i < daYunList.length && i < 12; i++) {
     const daYun = daYunList[i];
     const ganJi = daYun.getGanZhi();
+
+    // 초운(初運, i=0)은 ganji가 비어있을 수 있음 → 건너뛰기
+    if (!ganJi || ganJi.length < 2) continue;
+
     const startAge = daYun.getStartAge();
     const startYear = daYun.getStartYear();
     const endYear = startYear + 9;
@@ -61,7 +65,7 @@ export function calculateDaeun(
     // 십성 계산 (대운 천간 기준)
     let sipseong = "";
     try {
-      sipseong = i === 0 ? "" : getSipseong(dayGan, gan);
+      sipseong = getSipseong(dayGan, gan);
     } catch {
       sipseong = "";
     }
@@ -69,7 +73,7 @@ export function calculateDaeun(
     // 12운성 계산
     let unseong = "";
     try {
-      unseong = i === 0 ? "" : getUnseong(dayGan, ji);
+      unseong = getUnseong(dayGan, ji);
     } catch {
       unseong = "";
     }
@@ -78,12 +82,10 @@ export function calculateDaeun(
     let ganElement: Element | "" = "";
     let jiElement: Element | "" = "";
     try {
-      if (i > 0) {
-        const ganInfo = getCheonganByHanja(gan);
-        if (ganInfo) ganElement = ganInfo.element;
-        const jiInfo = getJijiByHanja(ji);
-        if (jiInfo) jiElement = jiInfo.element;
-      }
+      const ganInfo = getCheonganByHanja(gan);
+      if (ganInfo) ganElement = ganInfo.element;
+      const jiInfo = getJijiByHanja(ji);
+      if (jiInfo) jiElement = jiInfo.element;
     } catch {
       // skip
     }
