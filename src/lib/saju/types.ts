@@ -238,6 +238,8 @@ export const ALL_SECTION_KEYS: ReportSectionKey[] = [
 export interface UsageStats {
   totalInputTokens: number;
   totalOutputTokens: number;
+  totalCacheWriteTokens: number;
+  totalCacheReadTokens: number;
   estimatedCostUsd: number;
 }
 

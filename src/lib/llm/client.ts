@@ -1,11 +1,21 @@
-// src/lib/llm/client.ts — Claude API 클라이언트
+// src/lib/llm/client.ts — Claude API 클라이언트 (Prompt Caching 지원)
 
 const ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
 const DEFAULT_MODEL = "claude-sonnet-4-5-20250514";
 
+// ─── Content Block 타입 (Anthropic Prompt Caching) ───
+
+export interface TextContentBlock {
+  type: "text";
+  text: string;
+  cache_control?: { type: "ephemeral" };
+}
+
 export interface LLMRequest {
-  system: string;
-  prompt: string;
+  /** string (legacy) 또는 ContentBlock[] (Prompt Caching) */
+  system: string | TextContentBlock[];
+  /** string (legacy) 또는 ContentBlock[] (Prompt Caching) */
+  prompt: string | TextContentBlock[];
   maxTokens?: number;
   model?: string;
 }
@@ -13,11 +23,16 @@ export interface LLMRequest {
 export interface LLMResponse {
   text: string;
   model: string;
-  usage: { inputTokens: number; outputTokens: number };
+  usage: {
+    inputTokens: number;
+    outputTokens: number;
+    cacheCreationInputTokens: number;
+    cacheReadInputTokens: number;
+  };
 }
 
 /**
- * Claude API 단일 호출
+ * Claude API 단일 호출 (Prompt Caching 지원)
  */
 export async function callClaude(req: LLMRequest): Promise<LLMResponse> {
   const apiKey = process.env.ANTHROPIC_API_KEY;
@@ -26,6 +41,18 @@ export async function callClaude(req: LLMRequest): Promise<LLMResponse> {
   }
 
   const model = req.model ?? DEFAULT_MODEL;
+
+  // system: string → ContentBlock[] 변환
+  const systemBlocks: TextContentBlock[] =
+    typeof req.system === "string"
+      ? [{ type: "text", text: req.system }]
+      : req.system;
+
+  // prompt: string → ContentBlock[] 변환
+  const userContent: string | TextContentBlock[] =
+    typeof req.prompt === "string"
+      ? req.prompt
+      : req.prompt;
 
   const response = await fetch(ANTHROPIC_API_URL, {
     method: "POST",
@@ -37,8 +64,8 @@ export async function callClaude(req: LLMRequest): Promise<LLMResponse> {
     body: JSON.stringify({
       model,
       max_tokens: req.maxTokens ?? 2000,
-      system: req.system,
-      messages: [{ role: "user", content: req.prompt }],
+      system: systemBlocks,
+      messages: [{ role: "user", content: userContent }],
     }),
   });
 
@@ -50,12 +77,25 @@ export async function callClaude(req: LLMRequest): Promise<LLMResponse> {
   }
 
   const data = await response.json();
+
+  const cacheCreation = data.usage?.cache_creation_input_tokens ?? 0;
+  const cacheRead = data.usage?.cache_read_input_tokens ?? 0;
+
+  // Cache hit logging (per section)
+  if (cacheCreation > 0 || cacheRead > 0) {
+    console.log(
+      `[LLM Cache] cache_write=${cacheCreation} cache_read=${cacheRead}`
+    );
+  }
+
   return {
     text: data.content?.[0]?.text ?? "",
     model,
     usage: {
       inputTokens: data.usage?.input_tokens ?? 0,
       outputTokens: data.usage?.output_tokens ?? 0,
+      cacheCreationInputTokens: cacheCreation,
+      cacheReadInputTokens: cacheRead,
     },
   };
 }

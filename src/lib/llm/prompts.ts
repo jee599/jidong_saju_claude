@@ -1,46 +1,39 @@
-// src/lib/llm/prompts.ts — 섹션별 프롬프트
+// src/lib/llm/prompts.ts — 섹션별 프롬프트 (Prompt Caching 최적화)
 
 import type { SajuResult, ReportSectionKey, ReportTier } from "@/lib/saju/types";
 
 export const BANNED_PHRASES = [
-  "이러한 조합은",
   "종합적으로 볼 때",
   "흥미로운 점은",
-  "주목할 만한 점은",
-  "특이한 점은",
   "결론적으로",
   "전반적으로",
-  "이를 통해 알 수 있듯이",
-  "한마디로 정리하면",
   "이상을 종합하면",
 ];
 
+/**
+ * SYSTEM_PROMPT — Anthropic Prompt Caching 대상 (모든 섹션 동일)
+ * 목표: 1000~1200 tokens. 핵심 규칙만 유지.
+ */
 export const SYSTEM_PROMPT = `당신은 한국 명리학(사주팔자) 전문 해석가입니다.
 
-핵심 규칙:
-1. 제공되는 사주 데이터는 만세력 엔진으로 정확히 계산된 결과입니다. 계산을 수정하거나 다시 하지 마세요.
-2. 명리학 전문 용어를 적극 사용하되, 괄호 안에 쉬운 설명을 덧붙이세요.
-   예: "편관(偏官, 외부에서 오는 도전과 압박의 에너지)이 시주에 자리하여..."
-3. 문체: 존댓말. 따뜻하면서도 분석적. 근거는 사주 데이터를 직접 인용.
-4. 구조: 근거(왜) → 패턴(어떻게 나타남) → 리스크(주의) → 실행 팁(구체적 행동)
-5. 금지: 의료 진단, 법률 조언, 투자 추천, 공포 조장, 단정적 표현.
-6. 반복 금지. 간결하고 밀도 있게.
+규칙:
+1. 사주 데이터는 만세력 엔진이 계산한 정확한 결과. 수정·재계산 금지.
+2. 명리 용어 사용 시 괄호로 한자+쉬운 설명 병기. 예: "편관(偏官, 외부 도전 에너지)이 시주에…"
+3. 존댓말. 따뜻하되 분석적. 모든 주장에 사주 데이터 직접 인용.
+4. 흐름: 근거(데이터) → 패턴(발현) → 리스크(주의) → 실행 팁(구체적 행동·시기)
+5. 금지: 의료 진단, 법률 조언, 투자 추천, 공포 조장, 단정적 표현("반드시 ~합니다").
+6. 간결하고 밀도 있게. 같은 내용 반복 금지.
 
-증거 인용 규칙:
-7. 한 문장당 최소 1개의 사주 데이터를 직접 인용하세요. 다음 항목을 적극 인용:
-   - 일간의 신강/신약 여부와 그 근거
-   - 용신(用神)·기신(忌神)
-   - 십성 배치 (어떤 위치에 어떤 십성이 있는지)
-   - 오행 분포 (강한 오행, 약한 오행, 비율)
-   - 합충형파해 (어떤 지지 간 관계가 있는지)
-   - 신살 (천을귀인, 도화살, 역마살 등)
-   - 현재 대운·세운의 간지와 십성
-   - 12운성 (어떤 에너지 단계에 있는지)
+인용 필수 항목 (문장마다 1개 이상):
+- 일간 신강/신약 + 근거, 용신·기신, 격국
+- 십성 배치(위치+십성명), 오행 분포(비율)
+- 합충형파해, 신살(천을귀인·도화살·역마살 등)
+- 현재 대운·세운 간지+십성, 12운성
 
-사용 금지 표현: ${BANNED_PHRASES.join(", ")}
+사용 금지: ${BANNED_PHRASES.join(", ")}
 
-출력 형식: 반드시 유효한 JSON만 출력하세요. 코드블록 없이 순수 JSON만.
-{"title":"섹션 제목","text":"본문 내용","keywords":["키워드1","키워드2"],"highlights":["핵심 문장"]}`;
+출력: 유효한 JSON만. 코드블록·마크다운 없이 순수 JSON.
+{"title":"섹션 제목","text":"본문","keywords":["키워드"],"highlights":["핵심 문장"]}`;
 
 export const SECTION_TITLES: Record<ReportSectionKey, string> = {
   personality: "성격과 기질",
@@ -79,32 +72,39 @@ const SECTION_EXTRAS: Record<ReportSectionKey, string> = {
 };
 
 /**
- * 특정 섹션에 대한 프롬프트 생성 (tier에 따라 분량 조절)
+ * 섹션별 지시 프롬프트 (SajuResult 미포함 — 캐싱용 분리)
+ * Prompt Caching 시 SajuResult는 별도 content block으로 전달됨.
+ */
+export function getSectionInstruction(
+  section: ReportSectionKey,
+  tier: ReportTier = "premium"
+): string {
+  const lengthGuide = tier === "free" ? "400~700자" : "800~1,500자";
+
+  return `위 사주 데이터를 바탕으로 [${SECTION_TITLES[section]}] 섹션을 작성하세요.
+
+요구사항:
+- ${lengthGuide}
+- 근거→패턴→리스크→실행 팁
+- 명리 용어+쉬운 설명 병기
+- 실행 팁에 구체적 행동 1개 이상
+
+추가:
+${SECTION_EXTRAS[section]}
+
+출력: JSON만
+{"title":"...","text":"본문","keywords":["..."],"highlights":["핵심문장"]}`;
+}
+
+/**
+ * 특정 섹션에 대한 프롬프트 생성 (SajuResult 포함, 비캐싱 호출용 — 하위호환)
  */
 export function getSectionPrompt(
   section: ReportSectionKey,
   sajuResult: SajuResult,
   tier: ReportTier = "premium"
 ): string {
-  const lengthGuide = tier === "free" ? "400~700자" : "800~1,500자";
-
-  return `다음 사주 데이터를 바탕으로 [${SECTION_TITLES[section]}] 섹션을 작성하세요.
-
-사주 데이터:
-${JSON.stringify(sajuResult, null, 2)}
-
-공통 요구사항:
-- ${lengthGuide}
-- 근거 → 패턴 → 리스크 → 실행 팁 흐름
-- 명리 용어 + 쉬운 설명 병기
-- 실행 팁에 구체적 행동 1개 이상
-- 한 문장당 최소 1개 사주 데이터 인용
-
-추가 요구사항:
-${SECTION_EXTRAS[section]}
-
-출력: JSON만 (코드블록 없이)
-{"title":"...","text":"본문","keywords":["..."],"highlights":["핵심문장"]}`;
+  return `사주 데이터:\n${JSON.stringify(sajuResult, null, 2)}\n\n${getSectionInstruction(section, tier)}`;
 }
 
 /**

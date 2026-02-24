@@ -1,4 +1,4 @@
-// src/lib/llm/parallel.ts — 섹션별 병렬 호출 + 에러 재시도 + 사용량 추적
+// src/lib/llm/parallel.ts — 섹션별 병렬 호출 + Prompt Caching + 사용량 추적
 
 import type {
   SajuResult,
@@ -6,16 +6,21 @@ import type {
   ReportSectionKey,
   ReportResult,
   ReportTier,
-  UsageStats,
 } from "@/lib/saju/types";
 import { FREE_SECTION_KEYS, ALL_SECTION_KEYS } from "@/lib/saju/types";
 import { generateAlgorithmicSections } from "@/lib/saju/interpretations";
 import { callClaudeWithRetry } from "./client";
-import { SYSTEM_PROMPT, getSectionPrompt, SECTION_TITLES } from "./prompts";
+import type { TextContentBlock } from "./client";
+import { SYSTEM_PROMPT, getSectionInstruction, SECTION_TITLES } from "./prompts";
 
 interface SectionResult {
   section: ReportSection;
-  usage: { inputTokens: number; outputTokens: number };
+  usage: {
+    inputTokens: number;
+    outputTokens: number;
+    cacheCreationInputTokens: number;
+    cacheReadInputTokens: number;
+  };
 }
 
 interface GenerateReportOptions {
@@ -24,19 +29,34 @@ interface GenerateReportOptions {
 }
 
 /**
- * 섹션 하나 생성 (Claude API 호출 + JSON 파싱 + 사용량 반환)
+ * 섹션 하나 생성 (Prompt Caching 적용)
+ *
+ * - system: SYSTEM_PROMPT + cache_control (모든 섹션 동일 → 캐시 히트)
+ * - user[0]: SajuResult JSON + cache_control (모든 섹션 동일 → 캐시 히트)
+ * - user[1]: 섹션별 지시문 (섹션마다 다름)
  */
 async function generateSection(
   sajuResult: SajuResult,
+  sajuJsonText: string,
   section: ReportSectionKey,
   tier: ReportTier = "premium"
 ): Promise<SectionResult> {
-  const prompt = getSectionPrompt(section, sajuResult, tier);
+  const sectionInstruction = getSectionInstruction(section, tier);
   const maxTokens = tier === "free" ? 800 : 2000;
 
+  // Prompt Caching: system + SajuResult는 캐시, 섹션 지시만 변경
+  const systemBlocks: TextContentBlock[] = [
+    { type: "text", text: SYSTEM_PROMPT, cache_control: { type: "ephemeral" } },
+  ];
+
+  const userBlocks: TextContentBlock[] = [
+    { type: "text", text: `사주 데이터:\n${sajuJsonText}`, cache_control: { type: "ephemeral" } },
+    { type: "text", text: sectionInstruction },
+  ];
+
   const response = await callClaudeWithRetry({
-    system: SYSTEM_PROMPT,
-    prompt,
+    system: systemBlocks,
+    prompt: userBlocks,
     maxTokens,
   });
 
@@ -63,6 +83,8 @@ async function generateSection(
     usage: {
       inputTokens: response.usage.inputTokens,
       outputTokens: response.usage.outputTokens,
+      cacheCreationInputTokens: response.usage.cacheCreationInputTokens,
+      cacheReadInputTokens: response.usage.cacheReadInputTokens,
     },
   };
 }
@@ -87,6 +109,8 @@ async function generateFreeLiteReport(
   // Step 2: One small LLM call for a personalized 1-line insight/summary
   let totalInputTokens = 0;
   let totalOutputTokens = 0;
+  let totalCacheWriteTokens = 0;
+  let totalCacheReadTokens = 0;
   let model = "algorithmic";
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
@@ -105,6 +129,8 @@ async function generateFreeLiteReport(
 
       totalInputTokens = response.usage.inputTokens;
       totalOutputTokens = response.usage.outputTokens;
+      totalCacheWriteTokens = response.usage.cacheCreationInputTokens;
+      totalCacheReadTokens = response.usage.cacheReadInputTokens;
       model = response.model;
 
       try {
@@ -129,14 +155,12 @@ async function generateFreeLiteReport(
     }
   }
 
-  const inputPricePerM = parseFloat(process.env.LLM_INPUT_PRICE_PER_M ?? "3");
-  const outputPricePerM = parseFloat(process.env.LLM_OUTPUT_PRICE_PER_M ?? "15");
-  const estimatedCostUsd =
-    (totalInputTokens / 1_000_000) * inputPricePerM +
-    (totalOutputTokens / 1_000_000) * outputPricePerM;
+  const estimatedCostUsd = computeCost(
+    totalInputTokens, totalOutputTokens, totalCacheWriteTokens, totalCacheReadTokens
+  );
 
   console.log(
-    `[LLM Usage] tier=free-lite sections=${FREE_SECTION_KEYS.length} input=${totalInputTokens} output=${totalOutputTokens} cost=$${estimatedCostUsd.toFixed(4)}`
+    `[LLM Usage] tier=free-lite sections=${FREE_SECTION_KEYS.length} input=${totalInputTokens} output=${totalOutputTokens} cache_write=${totalCacheWriteTokens} cache_read=${totalCacheReadTokens} cost=$${estimatedCostUsd.toFixed(4)}`
   );
 
   return {
@@ -147,16 +171,40 @@ async function generateFreeLiteReport(
     usage: {
       totalInputTokens,
       totalOutputTokens,
+      totalCacheWriteTokens,
+      totalCacheReadTokens,
       estimatedCostUsd,
     },
   };
 }
 
 /**
+ * 비용 계산 (env-configurable pricing)
+ */
+function computeCost(
+  inputTokens: number,
+  outputTokens: number,
+  cacheWriteTokens: number,
+  cacheReadTokens: number
+): number {
+  const inputPrice = parseFloat(process.env.LLM_INPUT_PRICE_PER_M ?? "3");
+  const outputPrice = parseFloat(process.env.LLM_OUTPUT_PRICE_PER_M ?? "15");
+  const cacheWritePrice = parseFloat(process.env.LLM_CACHE_WRITE_PRICE_PER_M ?? "3.75");
+  const cacheReadPrice = parseFloat(process.env.LLM_CACHE_READ_PRICE_PER_M ?? "0.30");
+
+  return (
+    (inputTokens / 1_000_000) * inputPrice +
+    (outputTokens / 1_000_000) * outputPrice +
+    (cacheWriteTokens / 1_000_000) * cacheWritePrice +
+    (cacheReadTokens / 1_000_000) * cacheReadPrice
+  );
+}
+
+/**
  * tier에 따라 섹션 리스트 선택 → 병렬 호출 → 사용량 집계
  *
  * - free: algorithmic text + 1 small LLM call (free-lite mode)
- * - premium: full LLM parallel calls (10 sections)
+ * - premium: full LLM parallel calls (10 sections) with Prompt Caching
  */
 export async function generateReport(
   sajuResult: SajuResult,
@@ -169,20 +217,29 @@ export async function generateReport(
     return generateFreeLiteReport(sajuResult, onSectionComplete);
   }
 
-  // Premium tier: full LLM parallel calls
+  // Premium tier: full LLM parallel calls with Prompt Caching
   const sectionKeys = ALL_SECTION_KEYS;
+
+  // SajuResult JSON은 모든 섹션에 동일 → 한 번만 직렬화하여 캐시 블록으로 사용
+  const sajuJsonText = JSON.stringify(sajuResult, null, 2);
 
   const results = new Map<ReportSectionKey, ReportSection>();
   let totalInputTokens = 0;
   let totalOutputTokens = 0;
+  let totalCacheWriteTokens = 0;
+  let totalCacheReadTokens = 0;
 
   // 병렬 호출
   const promises = sectionKeys.map(async (section) => {
     try {
-      const { section: result, usage } = await generateSection(sajuResult, section, tier);
+      const { section: result, usage } = await generateSection(
+        sajuResult, sajuJsonText, section, tier
+      );
       results.set(section, result);
       totalInputTokens += usage.inputTokens;
       totalOutputTokens += usage.outputTokens;
+      totalCacheWriteTokens += usage.cacheCreationInputTokens;
+      totalCacheReadTokens += usage.cacheReadInputTokens;
       onSectionComplete?.(section, result);
     } catch (err) {
       console.error(`Section ${section} failed:`, err);
@@ -200,14 +257,12 @@ export async function generateReport(
   await Promise.all(promises);
 
   // 비용 계산
-  const inputPricePerM = parseFloat(process.env.LLM_INPUT_PRICE_PER_M ?? "3");
-  const outputPricePerM = parseFloat(process.env.LLM_OUTPUT_PRICE_PER_M ?? "15");
-  const estimatedCostUsd =
-    (totalInputTokens / 1_000_000) * inputPricePerM +
-    (totalOutputTokens / 1_000_000) * outputPricePerM;
+  const estimatedCostUsd = computeCost(
+    totalInputTokens, totalOutputTokens, totalCacheWriteTokens, totalCacheReadTokens
+  );
 
   console.log(
-    `[LLM Usage] tier=${tier} sections=${sectionKeys.length} input=${totalInputTokens} output=${totalOutputTokens} cost=$${estimatedCostUsd.toFixed(4)}`
+    `[LLM Usage] tier=${tier} sections=${sectionKeys.length} input=${totalInputTokens} output=${totalOutputTokens} cache_write=${totalCacheWriteTokens} cache_read=${totalCacheReadTokens} cost=$${estimatedCostUsd.toFixed(4)}`
   );
 
   const sections = Object.fromEntries(results) as Record<string, ReportSection>;
@@ -220,6 +275,8 @@ export async function generateReport(
     usage: {
       totalInputTokens,
       totalOutputTokens,
+      totalCacheWriteTokens,
+      totalCacheReadTokens,
       estimatedCostUsd,
     },
   };

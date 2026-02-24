@@ -1,4 +1,4 @@
-// tests/llm/parallel.test.ts — 병렬 호출 tier 선택 + 사용량 테스트
+// tests/llm/parallel.test.ts — 병렬 호출 tier 선택 + 사용량 + Prompt Caching 테스트
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import type { SajuResult } from "@/lib/saju/types";
@@ -53,7 +53,7 @@ const mockSajuResult = {
 describe("generateReport", () => {
   beforeEach(() => {
     mockedCallClaude.mockReset();
-    // Return a valid JSON response with usage data
+    // Return a valid JSON response with usage data including cache fields
     mockedCallClaude.mockResolvedValue({
       text: JSON.stringify({
         title: "테스트 섹션",
@@ -62,7 +62,12 @@ describe("generateReport", () => {
         highlights: ["핵심"],
       }),
       model: "claude-sonnet-4-5-20250514",
-      usage: { inputTokens: 1000, outputTokens: 500 },
+      usage: {
+        inputTokens: 1000,
+        outputTokens: 500,
+        cacheCreationInputTokens: 200,
+        cacheReadInputTokens: 800,
+      },
     });
   });
 
@@ -103,6 +108,64 @@ describe("generateReport", () => {
     expect(mockedCallClaude).toHaveBeenCalledTimes(0);
   });
 
+  it("premium tier passes system as ContentBlock[] with cache_control", async () => {
+    await generateReport(mockSajuResult, { tier: "premium" });
+
+    const firstCall = mockedCallClaude.mock.calls[0][0];
+    // system should be ContentBlock[] array
+    expect(Array.isArray(firstCall.system)).toBe(true);
+    const systemBlocks = firstCall.system as Array<{ type: string; text: string; cache_control?: { type: string } }>;
+    expect(systemBlocks[0].type).toBe("text");
+    expect(systemBlocks[0].cache_control).toEqual({ type: "ephemeral" });
+  });
+
+  it("premium tier passes prompt as ContentBlock[] with SajuResult cached", async () => {
+    await generateReport(mockSajuResult, { tier: "premium" });
+
+    const firstCall = mockedCallClaude.mock.calls[0][0];
+    // prompt should be ContentBlock[] array
+    expect(Array.isArray(firstCall.prompt)).toBe(true);
+    const userBlocks = firstCall.prompt as Array<{ type: string; text: string; cache_control?: { type: string } }>;
+    // First block: SajuResult with cache_control
+    expect(userBlocks[0].type).toBe("text");
+    expect(userBlocks[0].text).toContain("사주 데이터:");
+    expect(userBlocks[0].cache_control).toEqual({ type: "ephemeral" });
+    // Second block: section instruction, no cache_control
+    expect(userBlocks[1].type).toBe("text");
+    expect(userBlocks[1].cache_control).toBeUndefined();
+  });
+
+  it("premium tier uses identical SYSTEM_PROMPT across all sections", async () => {
+    await generateReport(mockSajuResult, { tier: "premium" });
+
+    const systemTexts = mockedCallClaude.mock.calls.map((call) => {
+      const system = call[0].system;
+      if (Array.isArray(system)) {
+        return (system as Array<{ text: string }>)[0].text;
+      }
+      return system;
+    });
+
+    // All should be identical
+    const uniqueSystemTexts = new Set(systemTexts);
+    expect(uniqueSystemTexts.size).toBe(1);
+  });
+
+  it("premium tier uses identical SajuResult JSON across all sections", async () => {
+    await generateReport(mockSajuResult, { tier: "premium" });
+
+    const sajuTexts = mockedCallClaude.mock.calls.map((call) => {
+      const prompt = call[0].prompt;
+      if (Array.isArray(prompt)) {
+        return (prompt as Array<{ text: string }>)[0].text;
+      }
+      return "";
+    });
+
+    const uniqueSajuTexts = new Set(sajuTexts);
+    expect(uniqueSajuTexts.size).toBe(1);
+  });
+
   it("premium tier uses maxTokens 2000", async () => {
     await generateReport(mockSajuResult, { tier: "premium" });
 
@@ -118,24 +181,34 @@ describe("generateReport", () => {
     // No API key → 0 tokens
     expect(result.usage!.totalInputTokens).toBe(0);
     expect(result.usage!.totalOutputTokens).toBe(0);
+    expect(result.usage!.totalCacheWriteTokens).toBe(0);
+    expect(result.usage!.totalCacheReadTokens).toBe(0);
     expect(result.usage!.estimatedCostUsd).toBe(0);
   });
 
-  it("premium tier aggregates usage totals correctly", async () => {
+  it("premium tier aggregates usage totals correctly (including cache tokens)", async () => {
     const result = await generateReport(mockSajuResult, { tier: "premium" });
 
     expect(result.usage).toBeDefined();
     expect(result.usage!.totalInputTokens).toBe(ALL_SECTION_KEYS.length * 1000);
     expect(result.usage!.totalOutputTokens).toBe(ALL_SECTION_KEYS.length * 500);
+    expect(result.usage!.totalCacheWriteTokens).toBe(ALL_SECTION_KEYS.length * 200);
+    expect(result.usage!.totalCacheReadTokens).toBe(ALL_SECTION_KEYS.length * 800);
   });
 
-  it("computes cost from default pricing (premium)", async () => {
+  it("computes cost including cache pricing (premium)", async () => {
     const result = await generateReport(mockSajuResult, { tier: "premium" });
 
-    const expectedInput = ALL_SECTION_KEYS.length * 1000;
-    const expectedOutput = ALL_SECTION_KEYS.length * 500;
+    const n = ALL_SECTION_KEYS.length;
+    const expectedInput = n * 1000;
+    const expectedOutput = n * 500;
+    const expectedCacheWrite = n * 200;
+    const expectedCacheRead = n * 800;
     const expectedCost =
-      (expectedInput / 1_000_000) * 3 + (expectedOutput / 1_000_000) * 15;
+      (expectedInput / 1_000_000) * 3 +
+      (expectedOutput / 1_000_000) * 15 +
+      (expectedCacheWrite / 1_000_000) * 3.75 +
+      (expectedCacheRead / 1_000_000) * 0.30;
 
     expect(result.usage!.estimatedCostUsd).toBeCloseTo(expectedCost, 6);
   });
@@ -152,13 +225,13 @@ describe("generateReport", () => {
       .mockResolvedValueOnce({
         text: JSON.stringify({ title: "OK", text: "ok", keywords: [], highlights: [] }),
         model: "test",
-        usage: { inputTokens: 100, outputTokens: 50 },
+        usage: { inputTokens: 100, outputTokens: 50, cacheCreationInputTokens: 10, cacheReadInputTokens: 90 },
       })
       .mockRejectedValueOnce(new Error("API error"))
       .mockResolvedValue({
         text: JSON.stringify({ title: "OK", text: "ok", keywords: [], highlights: [] }),
         model: "test",
-        usage: { inputTokens: 100, outputTokens: 50 },
+        usage: { inputTokens: 100, outputTokens: 50, cacheCreationInputTokens: 10, cacheReadInputTokens: 90 },
       });
 
     const result = await generateReport(mockSajuResult, { tier: "premium" });
@@ -167,6 +240,8 @@ describe("generateReport", () => {
     expect(Object.keys(result.sections)).toHaveLength(ALL_SECTION_KEYS.length);
     // Usage only from successful calls (9 x 100 = 900)
     expect(result.usage!.totalInputTokens).toBe(900);
+    expect(result.usage!.totalCacheWriteTokens).toBe(90);
+    expect(result.usage!.totalCacheReadTokens).toBe(810);
   });
 });
 
